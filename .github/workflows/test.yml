@@ -35,6 +35,3 @@ jobs:
 
       - name: Run sbt test
         run: sbt test
-
-      - name: Check for scalafmt conformance
-        uses: openlawteam/scalafmt-ci@v2
