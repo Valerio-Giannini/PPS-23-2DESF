@@ -102,7 +102,7 @@ Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 | Studiare un modo per implementare la GUI                            | Studiare Laminar                        | Giannini  | Da iniziare  |
 |                                                                     | Fare test implementativi                | Giannini  | Da iniziare  |
 |                                                                     | Realizzare implementazione di base      | Giannini  | Da iniziare  |
-| Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu   | Da iniziare  |
+| Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu   | Iniziato     |
 |                                                                     | Definire DSL per la view                | Vasiliu   | Da iniziare  |
 |                                                                     | Definire DSL per core avanzato          | Vasiliu   | Da iniziare  |
 | Migliorare il nucleo del framework                                  | Risolvere la problematica di sparse set | Bennici   | Da iniziare  |
