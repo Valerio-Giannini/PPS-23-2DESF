@@ -97,14 +97,14 @@ Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 > Per questo sprint ci prefiggiamo di iniziare gli item del backlog, completando almeno uno o più sprint task in modo tale da avere una visione più concreta
 > su quello che sarà il framework finale. La durata prevista di questo sprint è quindi di una settimana.
 
-| Product backlog item                                                | Sprint task                             | Assignee  | Status       |
-|---------------------------------------------------------------------|-----------------------------------------|-----------|--------------|
-| Studiare un modo per implementare la GUI                            | Studiare Laminar                        | Giannini  | Da iniziare  |
-|                                                                     | Fare test implementativi                | Giannini  | Da iniziare  |
-|                                                                     | Realizzare implementazione di base      | Giannini  | Da iniziare  |
-| Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu   | Iniziato     |
-|                                                                     | Definire DSL per la view                | Vasiliu   | Da iniziare  |
-|                                                                     | Definire DSL per core avanzato          | Vasiliu   | Da iniziare  |
-| Migliorare il nucleo del framework                                  | Risolvere la problematica di sparse set | Bennici   | Da iniziare  |
-|                                                                     | Cercare di preservare l'immutabilità    | Bennici   | Da iniziare  |
-|                                                                     | Ridurre la complessità computazionale   | Bennici   | Da iniziare  |
+| Product backlog item                                                | Sprint task                             | Assignee  | Status      |
+|---------------------------------------------------------------------|-----------------------------------------|-----------|-------------|
+| Studiare un modo per implementare la GUI                            | Studiare Laminar                        | Giannini  | Iniziato    |
+|                                                                     | Fare test implementativi                | Giannini  | Da iniziare |
+|                                                                     | Realizzare implementazione di base      | Giannini  | Da iniziare |
+| Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu   | Iniziato    |
+|                                                                     | Definire DSL per la view                | Vasiliu   | Da iniziare |
+|                                                                     | Definire DSL per core avanzato          | Vasiliu   | Da iniziare |
+| Migliorare il nucleo del framework                                  | Risolvere la problematica di sparse set | Bennici   | Da iniziare |
+|                                                                     | Cercare di preservare l'immutabilità    | Bennici   | Da iniziare |
+|                                                                     | Ridurre la complessità computazionale   | Bennici   | Da iniziare |
