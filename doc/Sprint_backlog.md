@@ -100,8 +100,8 @@ Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 | Product backlog item                                                | Sprint task                             | Assignee  | Status      |
 |---------------------------------------------------------------------|-----------------------------------------|-----------|-------------|
 | Studiare un modo per implementare la GUI                            | Studiare Laminar                        | Giannini  | Iniziato    |
-|                                                                     | Fare test implementativi                | Giannini  | Da iniziare |
-|                                                                     | Realizzare implementazione di base      | Giannini  | Da iniziare |
+|                                                                     | Fare test implementativi                | Giannini  | Iniziato    |
+|                                                                     | Realizzare implementazione di base      | Giannini  | Iniziato    |
 | Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu   | Iniziato    |
 |                                                                     | Definire DSL per la view                | Vasiliu   | Da iniziare |
 |                                                                     | Definire DSL per core avanzato          | Vasiliu   | Da iniziare |
