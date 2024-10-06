@@ -7,7 +7,7 @@
 > L'obiettivo finale dello sprint è sviluppare una prima implementazione funzionante dell'architettura ECS.
 > Considerata la natura delle attività previste, lavoreremo tutti e tre in stretta collaborazione durante questo sprint.
 > Per questo sprint sono simate 2 settimane di lavoro
-> 
+>
 | **Product backlog item**                         | **Sprint task**                              | **Assignee** | **Status** |
 |--------------------------------------------------|----------------------------------------------|--------------|------------| 
 | **Configurazione del progetto**                  | Creare la Repository                         | Tutti        | Finito     |
@@ -22,19 +22,19 @@
 |                                                  | Requisiti di implementazione                 | Tutti        | Finito     |
 
 ### Review
-> In questo primo sprint è stata fatta una ricerca approfondita sullo stato dell'arte relativo a questo genere 
+> In questo primo sprint è stata fatta una ricerca approfondita sullo stato dell'arte relativo a questo genere
 > di applicazione. La ricerca è stata necessaria per avere un'idea del funzionamento delle soluzioni già esistenti,
 > dal punto di vista dei strumenti e delle architetture utilizzate.
 > Lo studio effettuato ha indirizzato la scelta dell'architettura su un sistema basato su architettura ECS,
 > i membri del gruppo hanno dunque approfondito la conoscenza di tale pattern per essere in grado di implementarlo.
-> Allo stesso modo è stato valutato che per la view potrebbe essere conveniente utilizzare Laminar, tuttavia verrà studiato nel 
+> Allo stesso modo è stato valutato che per la view potrebbe essere conveniente utilizzare Laminar, tuttavia verrà studiato nel
 > dettaglio e implementato solo in seguito.
 > Sono stati configurati Scalafmt, per garantire uno stile uniforme nello sviluppo del progetto, e Scalatest.
 > Il team ha creato un design architetturale di massima, con l'ausilio di diagrammi UML (in modo che si avesse una
 > struttura solida) e implementato una versione base del core del progetto dove vengono definiti i componenti principali dell'ECS,
 > ossia Entity, Components e Systems, ed un World con l'essenziale per gestire il tutto.
 > L'implementazione si è svolta seguendo la metodologia TDD con una copertura del 100% sul codice sviluppato.
-> Lo sprint si è concluso con la creazione di una simulazione di base che mostra il funzionamento di questa versione 
+> Lo sprint si è concluso con la creazione di una simulazione di base che mostra il funzionamento di questa versione
 > del core del framework..
 > Siamo rimasti nei tempi definiti ad inizio sprint. Tuttavia, abbiamo riscontrato delle problematiche relative alla configurazione di Laminar.
 
@@ -105,6 +105,6 @@ Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 | Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu   | Iniziato    |
 |                                                                     | Definire DSL per la view                | Vasiliu   | Da iniziare |
 |                                                                     | Definire DSL per core avanzato          | Vasiliu   | Da iniziare |
-| Migliorare il nucleo del framework                                  | Risolvere la problematica di sparse set | Bennici   | Da iniziare |
-|                                                                     | Cercare di preservare l'immutabilità    | Bennici   | Da iniziare |
-|                                                                     | Ridurre la complessità computazionale   | Bennici   | Da iniziare |
+| Migliorare il nucleo del framework                                  | Introdurre test di performance          | Bennici   | Iniziato    |
+|                                                                     | Ricerca ed analisi dei possibili design | Bennici   | Iniziato    |
+|                                                                     | Implementazione delle migliorie         | Bennici   | Da iniziare |
