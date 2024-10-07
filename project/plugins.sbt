@@ -1,3 +1,2 @@
-// Quality Assurance
-//addSbtPlugin("org.wartremover" % "sbt-wartremover" % "3.1.8")
+// Formatter
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
