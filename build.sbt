@@ -4,7 +4,7 @@ ThisBuild / name         := "2DESF"
 
 lazy val root = project
   .in(file("."))
-  .aggregate(core, examples)
+  .aggregate(core, examples, view)
 
 lazy val core = project
   .in(file("core"))
@@ -23,3 +23,16 @@ lazy val examples = project
     resolvers += "Artima Maven Repository" at "https://repo.artima.com/releases"
   )
 
+lazy val view = project
+  .in(file("view"))
+  .dependsOn(core, examples)
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.raquo" %%% "laminar" % "17.0.0",
+      "com.raquo" %%% "airstream" % "17.0.0",
+      "org.scala-js" %%% "scalajs-dom" % "2.8.0"
+    ),
+    scalaJSUseMainModuleInitializer := true,
+    Compile / fastOptJS / artifactPath := baseDirectory.value / "target/scala-3.3.3/main.js" // Corretto il percorso del file
+  )
