@@ -36,3 +36,8 @@ lazy val view = project
     scalaJSUseMainModuleInitializer := true,
     Compile / fastOptJS / artifactPath := baseDirectory.value / "target/scala-3.3.3/main.js" // Corretto il percorso del file
   )
+
+lazy val benchmarks = project
+  .in(file("benchmarks"))
+  .dependsOn(core)
+  .enablePlugins(JmhPlugin)
