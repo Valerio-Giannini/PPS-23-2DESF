@@ -1,7 +1,6 @@
-package sprint_prototype
+package bouncing_ball
 
 import core.World
-import sprint_prototype.Simulation.*
 
 object Simulation:
   private val world = World()
@@ -27,5 +26,5 @@ object Simulation:
         println(s"Entity ${entity.id}: $position, $speed")
       println("-------------------")
 
-@main def runSimulation(): Unit =
-  start()
+  @main def runSimulation(): Unit =
+    start()
