@@ -169,7 +169,7 @@ Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 |---------------------------------------------------------------------|-----------------------------------------|----------|--------------|
 | Studiare un modo per implementare la GUI                            | Studiare Laminar                        | Giannini | Iniziato     |
 |                                                                     | Realizzare implementazione di base      | Giannini | Iniziato     |
-|                                                                     | Progettare struttura GUI per il DSL     | Giannini | Non Iniziato |
+|                                                                     | Integrare JCEF                          | Giannini | Non Iniziato |
 | Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu  | Iniziato     |
 |                                                                     | Definire DSL per la view                | Vasiliu  | Da iniziare  |
 |                                                                     | Definire DSL per core avanzato          | Vasiliu  | Da iniziare  |
