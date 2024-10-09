@@ -3,6 +3,8 @@ package view
 
 import com.raquo.laminar.api.L.*
 
+import RenderEntity.*
+
 object RenderWorld:
 
   def renderWorld(): HtmlElement =
@@ -11,5 +13,7 @@ object RenderWorld:
       width := "500px",  // Definisci la dimensione del mondo
       height := "500px",
       position := "relative", //Definisce la posizione del World relazione alla sua posizione normale nel flusso del documento
-      border := "1px solid black"
+      border := "1px solid black",
+      renderEntity(randomPosition(), 1),  
+      renderEntity(randomPosition(), 2)   
     )
