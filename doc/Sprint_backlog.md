@@ -116,7 +116,7 @@ Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 | Product backlog item                                                | Sprint task                             | Assignee | Status      |
 |---------------------------------------------------------------------|-----------------------------------------|----------|-------------|
 | Studiare un modo per implementare la GUI                            | Studiare Laminar                        | Giannini | Iniziato    |
-|                                                                     | Fare test implementativi                | Giannini | Iniziato    |
+|                                                                     | Fare test implementativi                | Giannini | Finito      |
 |                                                                     | Realizzare implementazione di base      | Giannini | Iniziato    |
 | Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu  | Iniziato    |
 |                                                                     | Definire DSL per la view                | Vasiliu  | Da iniziare |
@@ -124,3 +124,54 @@ Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 | Migliorare il nucleo del framework                                  | Introdurre test di performance          | Bennici  | Iniziato    |
 |                                                                     | Ricerca ed analisi dei possibili design | Bennici  | Iniziato    |
 |                                                                     | Implementazione delle migliorie         | Bennici  | Da iniziare |
+
+### Review
+
+> In questo secondo sprint abbiamo iniziato a lavorare, in modo disgiunto, all'implementazione vera e propria del progetto,
+> portando avanti in parallelo il core, il DSL e la view.  
+> [core] -> Si è iniziato a lavorare sul miglioramento del core del framework, con particolare attenzione alle performance.
+> Sono stati introdotti benchmark di base ed è stato individuato un possibile design architetturale.
+> L'effettiva implementazione dello stesso, ancora incompleta, verrà riproposta nello sprint successivo.  
+> [DSL]  -> È stato fatto da prima uno studio di quale poteva essera la sintassi del DSL prendendo in considerazione
+> implementazioni esistendi di DSL. Dopo aver valutato sintassi come ad esempio "obj method param" o "method {param}",
+> la scelta è ricaduta su una sintassi del tipo "method(param1, param2).method2(param1, param2)" in quanto valutata più
+> coerente e con un'implementazione più semlice. Lo studio e la valutazione delle varie implementazioni hanno richiesto
+> più tempo del previso, rimane quindi incompleta la task "Definire DSL per il core base". Nel prossimo sprint verrà scritta
+> la logica per implementare il DSL anche per utilizzare i system e verrà riscritta la simulazione utilizzando il DSL implementato.   
+> [view] -> È stato fatto uno studio su come implementare Laminar al progetto, inserendo le dependencies in modo tale
+> che non interferiscano con la parte del core in quanto nello sprint precedente avevamo notato che le 
+> dipendenze relative a JS interferivano con scalatest impendendo di eseguire i test. 
+> Una volta fatto ciò è stato rifinito il file HTML necessario per l'esecuzione della view.
+> È stata introdotta un'implementazione di base per verificare l'effettivo funzionamento del modulo view e, in seguito, è
+> stata strutturata un'architettura essenziale che permetta di renderizzare la logica delle simulazioni definita nel modulo "examples".
+> L'implementazione di base è ancora incompleta e sarà il punto di partenza dello Sprint 2.
+
+#### Simulazione implementata
+
+> La simulazione implementata consiste nella visualizzazione del world con due entità statiche posizionate in modo randomico  
+> Lo scopo era verificare la corretta implementazione di Laminar all'interno del progetto.
+
+![view_prototype](resources/view_prototype.png)
+
+
+## Sprint 2 (9/10/2024)
+
+### Sprint planning
+
+> Nel secondo sprint continuiamo le attività rimanenti dal primo sprint.
+> Si inizierà a ragionare sull'integrazione della view con la logica del core e del DSL.
+> Verranno fatti dei refactor del codice per eliminare riddondanze per quanto rigarda component e system comuni in modo
+> tale da semplificare la scrittura dei test e per fornire all'utente finale un set di strumenti per definire simulazioni
+> base. Tali strumenti potrebbero essere utilizzati successivamente per la scrittura delle simulazioni di esempio.
+> La durata prevista di questo sprint è di una settimana.
+
+| Product backlog item                                                | Sprint task                             | Assignee | Status       |
+|---------------------------------------------------------------------|-----------------------------------------|----------|--------------|
+| Studiare un modo per implementare la GUI                            | Studiare Laminar                        | Giannini | Iniziato     |
+|                                                                     | Realizzare implementazione di base      | Giannini | Iniziato     |
+|                                                                     | Progettare struttura GUI per il DSL     | Giannini | Non Iniziato |
+| Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu  | Iniziato     |
+|                                                                     | Definire DSL per la view                | Vasiliu  | Da iniziare  |
+|                                                                     | Definire DSL per core avanzato          | Vasiliu  | Da iniziare  |
+| Migliorare il nucleo del framework                                  | Ricerca ed analisi dei possibili design | Bennici  | Iniziato     |
+|                                                                     | Implementazione delle migliorie         | Bennici  | Iniziato     |
