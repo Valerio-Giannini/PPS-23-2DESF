@@ -15,6 +15,8 @@ object worldDSL:
 
 case class fromWorld(world: World):
   def getEntitiesCount: Int = world.worldEntitiesToComponents.size
+  def getEntities: List[Entity] = world.getEntities
+
   def reset(): Unit = world.clearFromEntities()
 
   def removeEntity(entity: Entity): Unit = world.removeEntity(entity)
@@ -35,6 +37,9 @@ case class onWorld(world: World):
 
   def addComponent(component:Component): componentActions[Entity, Unit] =
     componentActions(utils.addComponent(world, component))
+
+  def addSystem(system: System): Unit = world.addSystem(system)
+  def update: Unit = world.update()
 
 object utils:
   def addEntity(world: World, entity: Entity, components: Set[Component]): Unit = world.addEntity(entity, components.toSeq*)

@@ -151,7 +151,7 @@ class WorldSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         val entity = world.createEntity(ComponentA())
         world.removeComponent(entity, ComponentB())
         world.worldEntitiesToComponents(entity) shouldBe Set(ComponentA())
-      "do nothing when retrieval of an existing component" in:
+      "do nothing when retrieval of a non-existing component" in:
         val entity = world.createEntity(ComponentA())
         world.getComponent[ComponentB](entity) shouldBe None
     "managing non-existent entity" should:
