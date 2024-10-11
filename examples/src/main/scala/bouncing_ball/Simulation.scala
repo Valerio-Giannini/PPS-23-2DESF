@@ -1,38 +1,43 @@
 package bouncing_ball
 
-import core.{Entity, World}
+import core.{World, Entity}
+
+import view.RenderWorld
+import com.raquo.laminar.api.L.*
 
 object Simulation:
-  private val world = World()
-
-  def initializeWorld(): Unit =
+  
+  val world: World = World()
+  
+  private def initializeWorld(): Unit =
     val entity1 = world.createEntity(Position(0, 0), Speed(1, 1))
     val entity2 = world.createEntity(Position(10, 10), Speed(-1, -1))
-
+    //RenderWorld.renderWorld()
     world.addSystem(MovementSystem())
     world.addSystem(CollisionSystem())
 
-  def start(): Unit =
+  private def start(): Unit =
     initializeWorld()
 
     for tick <- 1 to 10 do
-      println(s"Tick $tick")
       world.update()
-      // Inizializzi l'accumulatore come una lista vuota prima del ciclo
-      var acc: List[(Entity.ID, String)] = List.empty
+      // Crea la lista delle entità con la loro posizione aggiornata
+      val newEntities = updateEntities()
+      // Aggiorna la variabile osservabile con le nuove posizioni
+      entitiesVar.set(newEntities)
+      RenderWorld.renderWorld(entitiesSignal)
 
-      for entity <- world.getEntities do
-        val position =
-          world.getComponent[Position](entity).map(pos => s"Position(${pos.x}, ${pos.y})").getOrElse("No Position")
-        val speed =
-          world.getComponent[Speed](entity).map(speed => s"Speed(${speed.vx}, ${speed.vy})").getOrElse("No Speed")
-          // Aggiungi l'entity corrente e la sua posizione all'accumulatore
-        acc = (entity.id, position) :: acc
+  // Observable che contiene la lista delle posizioni delle entità
+  private val entitiesVar = Var[List[(Entity.ID, (Double, Double))]](List.empty)
+  private def updateEntities(): List[(Entity.ID, (Double, Double))] =
+    world.getEntities.map:
+      entity => val position = world.getComponent[Position](entity).getOrElse(Position(0, 0))
+      (entity.id, (position.x, position.y))
+  
+  // Funzione per ottenere l'observable delle entità (pubblica)
+  private def entitiesSignal: Signal[List[(Entity.ID, (Double, Double))]] = entitiesVar.signal
 
-        // Alla fine del ciclo avrai l'accumulatore con tutte le entities e le rispettive posizioni
-        //println(s"Entity ${entity.id}: $position, $speed")
-        println(acc.toString())
-      println("-------------------")
-
-  @main def runSimulation(): Unit =
+  // Funzione per iniziare la simulazione
+  def runSimulation(): Unit =
     start()
+

@@ -1,16 +1,16 @@
-//Quuesto file mi renderizza la singola entity.
 package view
 
-import com.raquo.laminar.api.L.*
-import bouncing_ball.Position // Usa la Position dal modulo examples
+import core.Entity
+import com.raquo.laminar.api.L._
 
 object RenderEntity:
 
-  def renderEntity(entityPos: Signal[Position], entityId: Int): HtmlElement =
+  def renderEntity(entityPos: (Double, Double), entityId: Entity.ID): HtmlElement =
+    val (x, y) = entityPos
     div(
       cls("entity"),
-      left <-- entityPos.map(p => s"${p.x}px"),
-      top <-- entityPos.map(p => s"${p.y}px"),
+      left := s"${x}px",
+      top := s"${y}px",
       width := "20px",  // Dimensione dell'entità
       height := "20px",
       backgroundColor := "blue",
