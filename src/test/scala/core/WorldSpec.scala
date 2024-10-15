@@ -1,201 +1,136 @@
 package core
 
+import fixtures.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class WorldSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
+class WorldSpec
+    extends AnyWordSpec
+    with Matchers
+    with BeforeAndAfterEach
+    with ComponentsFixture:
 
-  var world: World = _
+  implicit var world: World = _
 
   override def beforeEach(): Unit =
     world = World()
 
-  case class ComponentA() extends Component
-  case class ComponentB() extends Component
-
-  case class ComponentWithValue(value: Double) extends Component
-
-  case class Position(x: Double, y: Double) extends Component
-  case class Speed(vx: Double, vy: Double)  extends Component
-
-  class IncreaseSpeedSystem extends System:
-    override def update(world: World): Unit =
-      for entity <- world.getEntities do
-        world.getComponent[Speed](entity) match
-          case Some(speed) =>
-            world.addComponent(entity, speed.copy(speed.vx + 1, speed.vy + 1))
-          case _ =>
-
-  class AddEntitySystem extends System:
-    override def update(world: World): Unit =
-      world.createEntity()
-
-  class MovementSystem extends System:
-    override def update(world: World): Unit =
-      for entity <- world.getEntities do
-        world.getComponent[Position](entity) match
-          case Some(pos) =>
-            world.addComponent(entity, pos.copy(x = pos.x + 1, y = pos.y + 1))
-          case _ =>
-
-  class MovementWithSpeedSystem extends System:
-    override def update(world: World): Unit =
-      for entity <- world.getEntities do
-        (
-          world.getComponent[Position](entity),
-          world.getComponent[Speed](entity)
-        ) match
-          case (Some(pos), Some(speed)) =>
-            world.addComponent(
-              entity,
-              pos.copy(pos.x + speed.vx, pos.y + speed.vy)
-            )
-          case _ =>
-
-  class MovementWithDecreasingSpeedSystem extends System:
-    override def update(world: World): Unit =
-      for entity <- world.getEntities do
-        (
-          world.getComponent[Position](entity),
-          world.getComponent[Speed](entity)
-        ) match
-          case (Some(pos), Some(speed)) =>
-            world.addComponent(
-              entity,
-              pos.copy(pos.x + speed.vx, pos.y + speed.vy)
-            )
-            world.addComponent(entity, speed.copy(speed.vx - 1, speed.vy - 1))
-          case _ =>
-
   "A World" when:
     "initialized" should:
       "be empty" in:
-        world.worldEntitiesToComponents.size shouldBe 0
+        world.worldEntitiesToComponents should have size 0
+    "managing the presence of entities" should:
       "increase the entity count when new entities are added" in:
         List.fill(100)(world.createEntity())
-        world.worldEntitiesToComponents.size shouldBe 100
-      "be empty after is been cleared from entities" in:
+        world.worldEntitiesToComponents should have size 100
+      "return empty after is been cleared from entities" in:
         List.fill(100)(world.createEntity())
+        world.worldEntitiesToComponents should have size 100
         world.clearFromEntities()
-        world.worldEntitiesToComponents.size shouldBe 0
-    "managing entity" should:
-      "allow adding already existing entity" in:
-        world.addEntity(Entity())
-        world.worldEntitiesToComponents.size shouldBe 1
-      "allow adding already existing entity with components" in:
-        val entity = Entity()
-        world.addEntity(entity, ComponentA(), ComponentB())
-        world.worldEntitiesToComponents.size shouldBe 1
-        world.worldEntitiesToComponents(entity) shouldBe Set(
-          ComponentA(),
-          ComponentB()
+        world.worldEntitiesToComponents should have size 0
+    "managing outer world entity" should:
+      "allow adding it" in new OuterWorldEntity:
+        world.addEntity(outerWorldEntity)
+        world.worldEntitiesToComponents should have size 1
+      "allow adding it with components" in new OuterWorldEntity:
+        world.addEntity(outerWorldEntity, position, speed)
+        world.worldEntitiesToComponents should have size 1
+        world.worldEntitiesToComponents(outerWorldEntity) shouldBe Set(
+          position,
+          speed
         )
+      "do nothing when trying to remove it" in new OuterWorldEntity:
+        world.createEntity()
+        world.removeEntity(outerWorldEntity)
+        world.worldEntitiesToComponents should have size 1
+    "managing entity" should:
       "allow creation of an entity without components" in:
         val entity = world.createEntity()
-        world.worldEntitiesToComponents.size shouldBe 1
+        world.worldEntitiesToComponents should have size 1
         world.worldEntitiesToComponents(entity) shouldBe Set()
       "allow creation of an entity without duplicate components" in:
         val entity =
-          world.createEntity(ComponentWithValue(2), ComponentWithValue(3))
+          world.createEntity(Position(0, 0), Position(1, 1))
         world.worldEntitiesToComponents(entity).size shouldBe 1
         world.worldEntitiesToComponents(entity) shouldBe Set(
-          ComponentWithValue(3)
+          Position(1, 1)
         )
       "allow the removal of an entity" in:
-        val entityA = world.createEntity()
-        val entityB = world.createEntity()
-        world.removeEntity(entityB)
-        world.worldEntitiesToComponents.size shouldBe 1
-      "allow the removal and reinsertion of an entity with its components" in:
-        val entityA = world.createEntity()
-        val entityB = world.createEntity(ComponentA(), ComponentWithValue(5))
-        val componentsOfEntityB: Set[Component] = world.worldEntitiesToComponents(entityB)
-        world.removeEntity(entityB)
-        world.addEntity(entityB, componentsOfEntityB.toSeq*)
-        world.worldEntitiesToComponents.size shouldBe 2
-        world.worldEntitiesToComponents(entityB) shouldBe Set(
-          ComponentA(),
-          ComponentWithValue(5)
-        )
-      "do nothing when trying to remove a non-existent entity" in:
         world.createEntity()
-        world.removeEntity(Entity())
-        world.worldEntitiesToComponents.size shouldBe 1
+        world.removeEntity(world.createEntity())
+        world.worldEntitiesToComponents should have size 1
+      "allow the removal and reinsertion of an entity with its components" in new EntityWithPositionAndSpeed:
+        val componentsOfEntity: Set[Component] =
+          world.worldEntitiesToComponents(entity)
+        world.removeEntity(entity)
+        world.addEntity(entity, componentsOfEntity.toSeq*)
+        world.worldEntitiesToComponents should have size 1
+        world.worldEntitiesToComponents(
+          entity
+        ) shouldBe Set(
+          position,
+          speed
+        )
     "managing entity's components" should:
-      "allow adding a new component" in:
-        val entity = world.createEntity(ComponentA())
-        world.addComponent(entity, ComponentB())
+      "allow adding a new component" in new EntityWithPosition:
+        world.addComponent(entity, speed)
         world.worldEntitiesToComponents(entity).size shouldBe 2
         world.worldEntitiesToComponents(entity) shouldBe Set(
-          ComponentA(),
-          ComponentB()
+          position,
+          speed
         )
-      "allow updating an existing component" in:
-        val entity = world.createEntity(ComponentWithValue(0))
-        for i <- 1 to 100 do world.addComponent(entity, ComponentWithValue(i))
+      "allow updating an existing component" in new EntityWithPosition:
+        for i <- 1 to 100 do
+          world.addComponent(entity, Position(i, i))
         world.worldEntitiesToComponents(entity) shouldBe Set(
-          ComponentWithValue(100)
+          Position(100, 100)
         )
-      "allow retrieval of an existing component" in:
-        val entity = world.createEntity(ComponentWithValue(10))
-        world.getComponent[ComponentWithValue](entity) shouldBe Some(
-          ComponentWithValue(10)
-        )
-      "allow remove an existing component" in:
-        val entity = world.createEntity(ComponentA(), ComponentB())
-        world.removeComponent(entity, ComponentB())
-        world.worldEntitiesToComponents(entity).size shouldBe 1
-        world.worldEntitiesToComponents(entity) shouldBe Set(ComponentA())
-      "do nothing when trying to remove a component that does not exist" in:
-        val entity = world.createEntity(ComponentA())
-        world.removeComponent(entity, ComponentB())
-        world.worldEntitiesToComponents(entity) shouldBe Set(ComponentA())
-      "do nothing when retrieval of a non-existing component" in:
-        val entity = world.createEntity(ComponentA())
-        world.getComponent[ComponentB](entity) shouldBe None
-    "managing non-existent entity" should:
-      "throw an exception when adding a component" in:
-        val entity = Entity()
-        an[IllegalArgumentException] should be thrownBy world.addComponent(
-          entity,
-          ComponentA()
-        )
-      "throw an exception when removing a component" in:
-        val entity = Entity()
-        an[IllegalArgumentException] should be thrownBy world.removeComponent(
-          entity,
-          ComponentA()
-        )
-      "throw an exception when retrieval a component" in:
-        val entity = Entity()
-        an[IllegalArgumentException] should be thrownBy world
-          .getComponent[ComponentA](entity)
-    "managing a system" should:
-      "allow adding a system" in:
-        world.addSystem(IncreaseSpeedSystem())
-        val entity = world.createEntity(Speed(0, 0))
-        for _ <- 1 to 100 do world.update()
-        world.getComponent[Speed](entity) shouldBe Some(Speed(100, 100))
-      "allow the system to add new entities" in:
-        world.addSystem(AddEntitySystem())
-        for _ <- 1 to 100 do world.update()
-        world.worldEntitiesToComponents.size shouldBe 100
-      "allow updating with multiple systems" in:
-        world.addSystem(IncreaseSpeedSystem())
-        world.addSystem(MovementSystem())
-        val entity = world.createEntity(Position(5, 5), Speed(0, 0))
-        val tics   = 100
-        for _ <- 1 to tics do world.update()
-        world.getComponent[Speed](entity) shouldBe Some(Speed(tics, tics))
+      "allow the retrieval of an existing component" in new EntityWithPosition:
         world.getComponent[Position](entity) shouldBe Some(
-          Position(5 + tics, 5 + tics)
+          position
         )
-      "allow updating multiple entities" in:
-        world.addSystem(MovementSystem())
-        val entityA = world.createEntity(Position(5, 5))
-        val entityB = world.createEntity(Position(10, 10))
-        val tics    = 100
+      "allow remove an existing component" in new EntityWithPositionAndSpeed:
+        world.removeComponent(entity, speed)
+        world.worldEntitiesToComponents(
+          entity
+        ) shouldBe Set(position)
+      "do nothing when trying to remove a non-existing component" in new EntityWithPosition:
+        world.removeComponent(entity, speed)
+        world.worldEntitiesToComponents(entity).size shouldBe 1
+        world.worldEntitiesToComponents(entity) shouldBe Set(
+          position
+        )
+      "do nothing when retrieval of a non-existing component" in new EntityWithPosition:
+        world.getComponent[Speed](entity) shouldBe None
+    "dealing with operations on outer world entity" should:
+      "throw an exception when trying to add a component" in new OuterWorldEntity:
+        an[IllegalArgumentException] should be thrownBy world.addComponent(
+          outerWorldEntity,
+          position
+        )
+      "throw an exception when trying to remove a component" in new OuterWorldEntity:
+        an[IllegalArgumentException] should be thrownBy world.removeComponent(
+          outerWorldEntity,
+          position
+        )
+      "throw an exception when trying to retrieval a component" in new OuterWorldEntity:
+        an[IllegalArgumentException] should be thrownBy world
+          .getComponent[Position](outerWorldEntity)
+    "managing a system" should:
+      "allow adding a system" in new MovementSystem
+        with EntityWithPositionAndSpeed:
+        for _ <- 1 to 100 do world.update()
+        world.getComponent[Position](entity) shouldBe Some(
+          Position(100, 100)
+        )
+      "allow the system to add new entities" in new AddEntitySystem:
+        for _ <- 1 to 100 do world.update()
+        world.worldEntitiesToComponents should have size 100
+      "allow updating multiple entities" in new MovementSystem:
+        val entityA: Entity = world.createEntity(Position(5, 5), speed)
+        val entityB: Entity = world.createEntity(Position(10, 10), speed)
+        val tics            = 100
         for _ <- 1 to tics do world.update()
         world.getComponent[Position](entityA) shouldBe Some(
           Position(5 + tics, 5 + tics)
@@ -203,23 +138,10 @@ class WorldSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         world.getComponent[Position](entityB) shouldBe Some(
           Position(10 + tics, 10 + tics)
         )
-      "allow updating a component using multiple components" in:
-        world.addSystem(MovementWithSpeedSystem())
-        val entity = world.createEntity(Position(0, 0), Speed(2, 2))
-        val tics   = 100
+      "do nothing if entity doesn't have all the necessary components" in new MovementSystem
+        with EntityWithPosition:
+        val tics = 10
         for _ <- 1 to tics do world.update()
         world.getComponent[Position](entity) shouldBe Some(
-          Position(tics * 2, tics * 2)
+          Position(0, 0)
         )
-      "allow updating multiple components" in:
-        world.addSystem(MovementWithDecreasingSpeedSystem())
-        val entity = world.createEntity(Position(0, 0), Speed(10, 10))
-        world.update()
-        world.getComponent[Position](entity) shouldBe Some(Position(10, 10))
-        world.getComponent[Speed](entity) shouldBe Some(Speed(9, 9))
-      "do nothing if entity doesn't have all the necessary components" in:
-        world.addSystem(MovementWithSpeedSystem())
-        val entity = world.createEntity(Position(0, 0), ComponentWithValue(5))
-        val tics   = 100
-        for _ <- 1 to tics do world.update()
-        world.getComponent[Position](entity) shouldBe Some(Position(0, 0))
