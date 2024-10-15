@@ -1,6 +1,5 @@
-package dsl
+package core
 
-import core.*
 import dsl.coreDSL.*
 import fixtures.*
 import org.scalatest.BeforeAndAfterEach

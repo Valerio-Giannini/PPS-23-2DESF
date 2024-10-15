@@ -1,7 +1,6 @@
 package fixtures
 
-import core.System
-import core.World
+import core.{System, World}
 
 private class Movement extends System:
   override def update(world: World): Unit =
