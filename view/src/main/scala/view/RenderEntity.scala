@@ -1,11 +1,12 @@
 package view
 
-import core.Entity
+// import core.Entity //Questa è l'import originale
+import model.Entity
 import com.raquo.laminar.api.L._
 
 object RenderEntity:
 
-  def renderEntity(entityPos: (Double, Double), entityId: Entity.ID): HtmlElement =
+  def renderEntity(entityId: Entity.ID, entityPos: (Double, Double)): HtmlElement =
     val (x, y) = entityPos
     div(
       cls("entity"),

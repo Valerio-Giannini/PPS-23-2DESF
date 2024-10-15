@@ -1,11 +1,11 @@
 package bouncing_ball
 
-import core.{System, World}
+import view.model.{System, WorldBase}
 
 // Movement system: updates position using speed
 class MovementSystem extends System:
 
-  override def update(world: World): Unit =
+  override def update(world: WorldBase): Unit =
     for entity <- world.getEntities do
       (world.getComponent[Position](entity), world.getComponent[Speed](entity)) match
       case (Some(pos), Some(speed)) =>
@@ -15,7 +15,7 @@ class MovementSystem extends System:
 // Collision system: if entities collide, set speed to zero
 class CollisionSystem extends System:
 
-  override def update(world: World): Unit =
+  override def update(world: WorldBase): Unit =
     val entities = world.getEntities
     for i <- entities.indices do
       for j <- (i + 1) until entities.size do
