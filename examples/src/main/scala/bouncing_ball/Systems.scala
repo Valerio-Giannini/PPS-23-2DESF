@@ -1,4 +1,4 @@
-package sprint_prototype
+package bouncing_ball
 
 import core.System
 import core.World
