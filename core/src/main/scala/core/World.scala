@@ -1,6 +1,7 @@
 package core
 
-/** This trait represents the core of the ECS (Entity-Component-System) architecture.
+/** This trait represents the core of the ECS (Entity-Component-System)
+  * architecture.
   *
   * A [[World]] manage entities, components, and systems.
   */
@@ -14,7 +15,8 @@ trait World:
     */
   def createEntity(components: Component*): Entity
 
-  /** Add an existing [[Entity]] to the world, associating the provided components with it.
+  /** Add an existing [[Entity]] to the world, associating the provided
+    * components with it.
     *
     * @param entity
     *   the entity to add.
@@ -59,7 +61,8 @@ trait World:
     * @tparam T
     *   the type of the component.
     * @return
-    *   an [[Option]] containing the component if it exists, or `None` if not found.
+    *   an [[Option]] containing the component if it exists, or `None` if not
+    *   found.
     */
   def getComponent[T <: Component](entity: Entity)(implicit
       tag: scala.reflect.ClassTag[T]
@@ -74,10 +77,12 @@ trait World:
     */
   def removeComponent(entity: Entity, component: Component): Unit
 
-  /** Get a mapping of all entities in the world to their associated [[Component]] sets.
+  /** Get a mapping of all entities in the world to their associated
+    * [[Component]] sets.
     *
     * @return
-    *   a map where the key is an [[Entity]] and the value is a set of components.
+    *   a map where the key is an [[Entity]] and the value is a set of
+    *   components.
     */
   def worldEntitiesToComponents: Map[Entity, Set[Component]]
 
@@ -89,9 +94,6 @@ trait World:
   def addSystem(system: System): Unit
 
   /** Update the world by running all the systems with the given delta time.
-    *
-    * @param deltaTime
-    *   the time that has passed since the last update, used to drive the logic in systems.
     */
   def update(): Unit
 
@@ -124,28 +126,30 @@ object World:
 
     def addComponent(entity: Entity, component: Component): Unit =
       entitiesToComponents.get(entity) match
-      case Some(components) =>
-        val updatedComponents = components.filterNot(_.getClass == component.getClass) + component
-        entitiesToComponents += (entity -> updatedComponents)
-      case None => throw new IllegalArgumentException("Entity does not exist")
+        case Some(components) =>
+          val updatedComponents =
+            components.filterNot(_.getClass == component.getClass) + component
+          entitiesToComponents += (entity -> updatedComponents)
+        case None => throw new IllegalArgumentException("Entity does not exist")
 
     def getComponent[T <: Component](
         entity: Entity
     )(implicit tag: scala.reflect.ClassTag[T]): Option[T] =
       entitiesToComponents
         .get(entity) match
-      case Some(existingComponents) =>
-        existingComponents.collectFirst { case component: T => component }
-      case None => throw new IllegalArgumentException("Entity does not exist")
+        case Some(existingComponents) =>
+          existingComponents.collectFirst { case component: T => component }
+        case None => throw new IllegalArgumentException("Entity does not exist")
 
     def removeComponent(entity: Entity, component: Component): Unit =
       entitiesToComponents.get(entity) match
-      case Some(existingComponents) =>
-        val updatedComponents = existingComponents.filterNot(_ == component)
-        entitiesToComponents += (entity -> updatedComponents)
-      case None => throw new IllegalArgumentException("Entity does not exist")
+        case Some(existingComponents) =>
+          val updatedComponents = existingComponents.filterNot(_ == component)
+          entitiesToComponents += (entity -> updatedComponents)
+        case None => throw new IllegalArgumentException("Entity does not exist")
 
-    def worldEntitiesToComponents: Map[Entity, Set[Component]] = entitiesToComponents
+    def worldEntitiesToComponents: Map[Entity, Set[Component]] =
+      entitiesToComponents
 
     def addSystem(system: System): Unit =
       systems = system :: systems
