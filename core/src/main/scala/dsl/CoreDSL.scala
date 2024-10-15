@@ -178,10 +178,7 @@ case class componentActionsForEntity[Entity, T](action: Entity => T):
    * @param entity the entity to apply the action to
    * @return the result of the action
    */
-  def of(entity: Entity): T = {
-    printf(action.toString())
-    action(entity)
-  }
+  def of(entity: Entity): T = action(entity)
 
   /**
    * Applies the action to the specified entity.
