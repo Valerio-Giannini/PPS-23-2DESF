@@ -12,4 +12,4 @@ trait System:
     * @param world
     *   the [[World]] containing the entities and their components.
     */
-  def update(world: World): Unit
+  def update(world: WorldBase): Unit

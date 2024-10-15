@@ -19,9 +19,9 @@ class WorldSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
   case class Position(x: Double, y: Double) extends Component
   case class Speed(vx: Double, vy: Double)  extends Component
 
-  class IncreaseSpeedSystem extends System:
+  class IncreaseSpeedSystem extends System :
 
-    override def update(world: World): Unit =
+    override def update(world: WorldBase): Unit =
       for entity <- world.getEntities do
         world.getComponent[Speed](entity) match
         case Some(speed) =>
@@ -30,12 +30,12 @@ class WorldSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
 
   class AddEntitySystem extends System:
 
-    override def update(world: World): Unit =
+    override def update(world: WorldBase): Unit =
       world.createEntity()
 
   class MovementSystem extends System:
 
-    override def update(world: World): Unit =
+    override def update(world: WorldBase): Unit =
       for entity <- world.getEntities do
         world.getComponent[Position](entity) match
         case Some(pos) =>
@@ -44,7 +44,7 @@ class WorldSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
 
   class MovementWithSpeedSystem extends System:
 
-    override def update(world: World): Unit =
+    override def update(world: WorldBase): Unit =
       for entity <- world.getEntities do
         (
           world.getComponent[Position](entity),
@@ -59,7 +59,7 @@ class WorldSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
 
   class MovementWithDecreasingSpeedSystem extends System:
 
-    override def update(world: World): Unit =
+    override def update(world: WorldBase): Unit =
       for entity <- world.getEntities do
         (
           world.getComponent[Position](entity),

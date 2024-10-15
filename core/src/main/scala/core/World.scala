@@ -4,7 +4,7 @@ package core
   *
   * A [[World]] manage entities, components, and systems.
   */
-trait World:
+trait World extends WorldBase:
   /** Create a new [[Entity]] with the given components.
     *
     * @param components
