@@ -2,7 +2,7 @@ package bouncing_ball
 
 import core.World
 import dsl.coreDSL.*
-import sprint_prototype.Simulation.*
+import bouncing_ball.Simulation.*
 
 object Simulation:
   private val world = World()
