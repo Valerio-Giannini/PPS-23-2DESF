@@ -165,13 +165,73 @@ Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 > base. Tali strumenti potrebbero essere utilizzati successivamente per la scrittura delle simulazioni di esempio.
 > La durata prevista di questo sprint è di una settimana.
 
-| Product backlog item                                                | Sprint task                             | Assignee | Status       |
-|---------------------------------------------------------------------|-----------------------------------------|----------|--------------|
-| Studiare un modo per implementare la GUI                            | Studiare Laminar                        | Giannini | Iniziato     |
-|                                                                     | Realizzare implementazione di base      | Giannini | Iniziato     |
-|                                                                     | Integrare JCEF                          | Giannini | Non Iniziato |
-| Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu  | Iniziato     |
-|                                                                     | Definire DSL per la view                | Vasiliu  | Da iniziare  |
-|                                                                     | Definire DSL per core avanzato          | Vasiliu  | Da iniziare  |
-| Migliorare il nucleo del framework                                  | Ricerca ed analisi dei possibili design | Bennici  | Iniziato     |
-|                                                                     | Implementazione delle migliorie         | Bennici  | Iniziato     |
+
+| Product backlog item                                                | Sprint task                             | Assignee | Status      |
+|---------------------------------------------------------------------|-----------------------------------------|----------|-------------|
+| Studiare un modo per implementare la GUI                            | Studiare Laminar                        | Giannini | Iniziato    |
+|                                                                     | Realizzare implementazione di base      | Giannini | Finito      |
+|                                                                     | Integrare JCEF                          | Giannini | Iniziato    |
+| Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu  | Finito      |
+|                                                                     | Definire DSL per la view                | Vasiliu  | Da iniziare |
+|                                                                     | Definire DSL per core avanzato          | Vasiliu  | Da iniziare |
+| Migliorare il nucleo del framework                                  | Ricerca ed analisi dei possibili design | Bennici  | Finito      |
+|                                                                     | Implementazione delle migliorie         | Bennici  | Iniziato    |
+
+### Review
+
+> In questo sprint abbiamo continuato a lavorare ai task iniziati nello sprint precedente.  
+> [core] -> Viene confermato il design individuato nello sprint precedente. L'implementazione rimane in fase di
+> finalizzazione, dunque riproposta nello sprint successivo.  
+> [DSL] -> Il DSL per il core base è stato portato a termine, finendo di implementare la logica per utilizzare i system.
+> Inoltre i test sono stati riscritti per essere più chiari e il codice è stato rifinito per essere condiderato "done".  
+> [view] -> Durante questo sprint mi sono concentrato sul integrare la view con i moduli core ed examples.
+> Lo sprint non è stato infruttuoso a causa di errori di compilazioni dovute alle dipendenze del core. Il problema dipende 
+> dal fatto che view ed examples sono strutturati in modo tale da essere compilata da JS ed eseguiti su browser; il core 
+> invece dipende unicamente dalla JVM e il codice scritto non viene interpretato correttamente in fase di compilazione.
+> La soluzione più efficace dovrebbe essere creare il modulo core come se fosse un crossproject. 
+> In questa fase ho però preferito non toccare il file build e creare un package in view riscrivendo il core in laminar;
+> in questo modo ho potuto verificarne la correttezza. Al termine dello sprint ho iniziato a studiare come implementare 
+> JCEF.
+
+
+#### Simulazione Implementata tramite DSL
+``` scala
+private val world = World()
+
+def initializeWorld(): Unit =
+    into(world).spawnNewEntityWith(Position(0, 0), Speed(1, 1))
+    into(world).spawnNewEntityWith(Position(10, 10), Speed(-1, -1))
+    
+    into(world).includeSystem(PrintPositionAndSpeedOfEntitiesSystem())
+    into(world).includeSystem(CollisionSystem())
+    into(world).includeSystem(MovementSystem())
+
+def start(): Unit =
+    initializeWorld()
+
+for tick <- 1 to 10 do
+  println(s"Tick $tick")
+  update(world)
+``` 
+#### Simulazione Implementata per la view (feature/view)
+![view_prototype](resources/Simulation-Sprint-2.gif)
+## Sprint 3 (23/10/2024)
+
+| Product backlog item                                                                            | Sprint task                             | Assignee | Status      |
+|-------------------------------------------------------------------------------------------------|-----------------------------------------|----------|-------------|
+| Implementare la GUI                                                                             | Studiare Laminar                        | Giannini | Iniziato    |
+|                                                                                                 | Modificare il core -> CrossProject      | Giannini | Iniziato    |
+|                                                                                                 | Integrare JCEF                          | Giannini | Iniziato    |
+|                                                                                                 | Aggiungere le varie funzionalità        | Giannini | Da iniziare |
+| Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework | Pensare le possibili simulazioni        | Vasiliu  | Da iniziare |
+|                                                                                                 | Progettare le simulazioni               | Tutti    | Da iniziare |
+|                                                                                                 | Implemetare le simulazioni              | Tutti    | Da iniziare |
+| Come utente voglio avere un report dell'andamento della simulazione                             | Progettare come realizzare il report    | Vasiliu  | Da iniziare |
+| Migliorare il nucleo del framework                                                              | Implementazione delle migliorie         | Bennici  | Iniziato    |
+
+
+### Sprint planning
+
+Durante questo terzo sprint ci prefiggiamo di finire il core avanzato del framework e continuare lo sviluppo della view. Parallelamente inizieremo a pensare
+quali simlazioni d'esempio andremo a realizzare e come realizzare i report che tali simulazioni dovranno avere.
+L'obiettivo di questo sprint è quindi avere gli strumenti per realizzare una simulazione di prova del framework.
