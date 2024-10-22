@@ -28,3 +28,9 @@ class EntityTest extends AnyWordSpec with Matchers:
       "allow retrieving an existing component" in:
         val entity = Entity(C1(1))
         entity.get[C1] should matchPattern { case Some(C1(1)) => }
+
+      "allow removing a component" in:
+        val entity        = Entity(C1(1))
+        val updatedEntity = entity.remove[C1]
+        updatedEntity.get[C1] shouldBe None
+
