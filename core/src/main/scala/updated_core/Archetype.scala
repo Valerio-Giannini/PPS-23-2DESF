@@ -7,11 +7,12 @@ sealed trait Archetype:
   def entities: Iterable[Entity]
   def add(entity: Entity): Archetype
   def get(entity: Entity): Option[Entity]
+  def remove(entity: Entity): Archetype
   def equalsTo(componentTags: Set[ComponentTag[_]]): Boolean
 
 object Archetype:
 
-  def apply(componentTags: ComponentTag[_]*): Archetype =
+  def apply(componentTags: ComponentTag[?]*): Archetype =
     ArchetypeImpl(componentTags.toSet)
 
   def apply(componentTags: Set[ComponentTag[_]]): Archetype =
@@ -30,6 +31,12 @@ object Archetype:
 
     def get(entity: Entity): Option[Entity] =
       entityContainer.find(_.equals(entity))
+
+    def remove(entity: Entity): Archetype =
+      get(entity) match
+      case Some(e) => entityContainer -= entity
+      case _       =>
+      this
 
     def equalsTo(componentTags: Set[ComponentTag[_]]): Boolean =
       componentTags == tags
