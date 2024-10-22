@@ -9,14 +9,22 @@ sealed trait Entity:
 object Entity:
 
   def apply(): Entity =
-    SimpleEntity(IdGenerator.nextId())
+    SimpleEntity(IdGenerator.nextId(), HashMap.empty)
 
+  def apply(components: Component*): Entity =
+    val initialMap = HashMap.empty[ComponentTag[_], Component]
+    val map: HashMap[ComponentTag[_], Component] = components.foldLeft(initialMap) { (acc, component) =>
+      val tag = ClassTag(component.getClass)
+      acc.updated(tag, component)
+    }
+    SimpleEntity(IdGenerator.nextId(), map)
 
-
-  private final case class SimpleEntity(ID: Int)
+  private final case class SimpleEntity(ID: Int, private val componentsMap: Map[ComponentTag[_], Component])
       extends Entity:
 
     def id: Int = this.ID
+
+
 
   private object IdGenerator:
     private var currentId: Int = 0
