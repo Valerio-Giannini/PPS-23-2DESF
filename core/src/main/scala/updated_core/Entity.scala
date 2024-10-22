@@ -5,6 +5,7 @@ import scala.reflect.ClassTag
 
 sealed trait Entity:
   def id: Int
+  def add[C <: Component: ComponentTag](component: C): Entity
 
 object Entity:
 
@@ -24,7 +25,10 @@ object Entity:
 
     def id: Int = this.ID
 
-
+    def add[C <: Component: ComponentTag](component: C): Entity =
+      val newComponentsMap = componentsMap + (summon[ComponentTag[C]] -> component)
+      SimpleEntity(id, newComponentsMap)
+  
 
   private object IdGenerator:
     private var currentId: Int = 0

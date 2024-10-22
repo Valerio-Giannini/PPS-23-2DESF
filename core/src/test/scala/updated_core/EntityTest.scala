@@ -19,3 +19,8 @@ class EntityTest extends AnyWordSpec with Matchers:
         Entity(C1(1))
         Entity(C1(1), C2(2))
         Entity(C1(1), C2(2), C3(3))
+
+    "managing components" should:
+      "allow adding a new component" in:
+        val entity        = Entity()
+        val updatedEntity = entity.add(C1(1))
