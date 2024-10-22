@@ -1,5 +1,6 @@
 package updated_core
 
+import org.scalatest.Inside.inside
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -26,3 +27,17 @@ class ArchetypeTest extends AnyWordSpec with Matchers:
 
         archetype.add(entity2)
         archetype.entities shouldNot contain(entity2)
+        
+      "allow to get an entity" in :
+        val archetype = Archetype(ComponentTag[C1])
+        val entity = Entity(C1(1))
+
+        archetype.add(entity)
+        val retrievedEntity = archetype.get(entity)
+        inside(retrievedEntity) { case Some(e) =>
+          e.id shouldEqual entity.id
+        }
+
+        val entity2 = Entity(C2(2))
+        val retrievedEntity2 = archetype.get(entity2)
+        retrievedEntity2 should matchPattern { case None => }

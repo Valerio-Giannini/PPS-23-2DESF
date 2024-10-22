@@ -4,16 +4,14 @@ import scala.collection.mutable
 
 sealed trait Archetype:
   def componentTags: Set[ComponentTag[_]]
-
   def entities: Iterable[Entity]
-
   def add(entity: Entity): Archetype
-
+  def get(entity: Entity): Option[Entity]
   def equalsTo(componentTags: Set[ComponentTag[_]]): Boolean
 
 object Archetype:
 
-  def apply(componentTags: ComponentTag[?]*): Archetype =
+  def apply(componentTags: ComponentTag[_]*): Archetype =
     ArchetypeImpl(componentTags.toSet)
 
   def apply(componentTags: Set[ComponentTag[_]]): Archetype =
@@ -29,6 +27,9 @@ object Archetype:
     def add(entity: Entity): Archetype =
       if equalsTo(entity.componentTags) then entityContainer += entity
       this
+
+    def get(entity: Entity): Option[Entity] =
+      entityContainer.find(_.equals(entity))
 
     def equalsTo(componentTags: Set[ComponentTag[_]]): Boolean =
       componentTags == tags
