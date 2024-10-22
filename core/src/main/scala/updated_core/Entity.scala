@@ -7,8 +7,9 @@ sealed trait Entity:
   def id: Int
   def add[C <: Component: ComponentTag](component: C): Entity
   def get[C <: Component: ComponentTag]: Option[C]
-  def remove[C <: Component : ComponentTag]: Entity
-  
+  def remove[C <: Component: ComponentTag]: Entity
+  def componentTags: Set[ComponentTag[_]]
+
 object Entity:
 
   def apply(): Entity =
@@ -37,7 +38,8 @@ object Entity:
     def remove[C <: Component: ComponentTag]: Entity =
       val newComponentsMap = componentsMap - summon[ComponentTag[C]]
       SimpleEntity(id, newComponentsMap)
-  
+
+    def componentTags: Set[ComponentTag[_]] = componentsMap.keySet
 
   private object IdGenerator:
     private var currentId: Int = 0
