@@ -34,3 +34,7 @@ class EntityTest extends AnyWordSpec with Matchers:
         val updatedEntity = entity.remove[C1]
         updatedEntity.get[C1] shouldBe None
 
+      "updating a component" in:
+        val entity        = Entity(C1(1))
+        val updatedEntity = entity.add(C1(2))
+        updatedEntity.get[C1] should matchPattern { case Some(C1(2)) => }
