@@ -223,7 +223,7 @@ for tick <- 1 to 10 do
 |                                                                                                 | Modificare il core -> CrossProject      | Giannini | Iniziato    |
 |                                                                                                 | Integrare JCEF                          | Giannini | Iniziato    |
 |                                                                                                 | Aggiungere le varie funzionalità        | Giannini | Da iniziare |
-| Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework | Pensare le possibili simulazioni        | Vasiliu  | Iniziato    |
+| Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework | Pensare le possibili simulazioni        | Vasiliu  | Finito      |
 |                                                                                                 | Progettare le simulazioni               | Tutti    | Da iniziare |
 |                                                                                                 | Implemetare le simulazioni              | Tutti    | Da iniziare |
 | Come utente voglio avere un report dell'andamento della simulazione                             | Progettare come realizzare il report    | Vasiliu  | Iniziato    |
