@@ -14,3 +14,15 @@ class ArchetypeTest extends AnyWordSpec with Matchers:
 
         archetype1.equalsTo(archetype2.componentTags) shouldBe true
         archetype1.equalsTo(archetype3.componentTags) shouldBe false
+    "managing entities" should :
+      "allow to add only a matching entity" in :
+        val archetype = Archetype(ComponentTag[C1])
+        val entity = Entity(C1(1))
+
+        archetype.add(entity)
+        archetype.entities should contain(entity)
+
+        val entity2 = Entity(C2(2))
+
+        archetype.add(entity2)
+        archetype.entities shouldNot contain(entity2)
