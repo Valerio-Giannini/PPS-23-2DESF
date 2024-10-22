@@ -10,6 +10,7 @@ sealed trait Archetype:
   def remove(entity: Entity): Archetype
   def clearEntities(): Archetype
   def equalsTo(componentTags: Set[ComponentTag[_]]): Boolean
+  def isSubsetOf(componentTags: Set[ComponentTag[_]]): Boolean
 
 object Archetype:
 
@@ -36,7 +37,7 @@ object Archetype:
     def remove(entity: Entity): Archetype =
       get(entity) match
       case Some(e) => entityContainer -= entity
-      case _       =>
+      case _ => 
       this
 
     def clearEntities(): Archetype =
@@ -45,3 +46,6 @@ object Archetype:
 
     def equalsTo(componentTags: Set[ComponentTag[_]]): Boolean =
       componentTags == tags
+
+    def isSubsetOf(componentTags: Set[ComponentTag[_]]): Boolean =
+      tags.subsetOf(componentTags)
