@@ -1,4 +1,4 @@
-package view.model
+package coreJS
 
 /** This trait represents an entity with a unique identifier.
   */

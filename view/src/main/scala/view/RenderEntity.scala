@@ -1,8 +1,7 @@
 package view
 
-// import core.Entity //Questa è l'import originale
-import model.Entity
-import com.raquo.laminar.api.L._
+import coreJS.Entity
+import com.raquo.laminar.api.L.*
 
 object RenderEntity:
 

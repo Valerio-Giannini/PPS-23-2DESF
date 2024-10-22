@@ -1,4 +1,4 @@
-package view.model
+package coreJS
 
 /** This trait represents a generic system in an ECS (Entity-Component-System) architecture.
   *
@@ -12,4 +12,4 @@ trait System:
     * @param world
     *   the [[World]] containing the entities and their components.
     */
-  def update(world: WorldBase): Unit
+  def update(world: WorldTrait): Unit

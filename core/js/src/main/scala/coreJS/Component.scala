@@ -1,4 +1,4 @@
-package view.model
+package coreJS
 
 /** This trait represents a generic component in an ECS (Entity-Component-System) architecture.
   *
