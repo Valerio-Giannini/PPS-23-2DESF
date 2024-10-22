@@ -8,6 +8,7 @@ sealed trait Archetype:
   def add(entity: Entity): Archetype
   def get(entity: Entity): Option[Entity]
   def remove(entity: Entity): Archetype
+  def clearEntities(): Archetype
   def equalsTo(componentTags: Set[ComponentTag[_]]): Boolean
 
 object Archetype:
@@ -36,6 +37,10 @@ object Archetype:
       get(entity) match
       case Some(e) => entityContainer -= entity
       case _       =>
+      this
+
+    def clearEntities(): Archetype =
+      entityContainer.clear()
       this
 
     def equalsTo(componentTags: Set[ComponentTag[_]]): Boolean =
