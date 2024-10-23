@@ -217,6 +217,14 @@ for tick <- 1 to 10 do
 ![view_prototype](resources/Simulation-Sprint-2.gif)
 ## Sprint 3 (23/10/2024)
 
+### Sprint planning
+
+> Durante questo terzo sprint ci prefiggiamo di finire il core avanzato del framework e continuare lo sviluppo della view. Parallelamente inizieremo a pensare
+> quali simlazioni d'esempio andremo a realizzare e come realizzare i report che tali simulazioni dovranno avere.
+> L'obiettivo di questo sprint è quindi avere gli strumenti per realizzare una simulazione di prova del framework.
+
+
+
 | Product backlog item                                                                            | Sprint task                             | Assignee | Status      |
 |-------------------------------------------------------------------------------------------------|-----------------------------------------|----------|-------------|
 | Implementare la GUI                                                                             | Studiare Laminar                        | Giannini | Iniziato    |
@@ -224,7 +232,7 @@ for tick <- 1 to 10 do
 |                                                                                                 | Integrare JCEF                          | Giannini | Iniziato    |
 |                                                                                                 | Aggiungere le varie funzionalità        | Giannini | Da iniziare |
 | Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework | Pensare le possibili simulazioni        | Vasiliu  | Finito      |
-|                                                                                                 | Progettare le simulazioni               | Tutti    | Da iniziare |
+|                                                                                                 | Progettare le simulazioni               | Tutti    | Iniziato    |
 |                                                                                                 | Implemetare le simulazioni              | Tutti    | Da iniziare |
 | Come utente voglio avere un report dell'andamento della simulazione                             | Progettare come realizzare il report    | Vasiliu  | Iniziato    |
 | Migliorare il nucleo del framework                                                              | Implementazione delle migliorie         | Bennici  | Iniziato    |
