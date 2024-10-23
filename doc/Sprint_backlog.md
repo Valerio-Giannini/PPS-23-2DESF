@@ -227,13 +227,23 @@ for tick <- 1 to 10 do
 | Implementare la GUI                                                                             | Studiare Laminar                        | Giannini | Iniziato    |
 |                                                                                                 | Modificare il core -> CrossProject      | Giannini | Iniziato    |
 |                                                                                                 | Integrare JCEF                          | Giannini | Iniziato    |
-|                                                                                                 | Aggiungere le varie funzionalità        | Giannini | Da iniziare |
+|                                                                                                 | Aggiungere le varie funzionalità        | Giannini | Iniziato    |
 | Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework | Pensare le possibili simulazioni        | Vasiliu  | Finito      |
 |                                                                                                 | Progettare le simulazioni               | Tutti    | Iniziato    |
 |                                                                                                 | Implemetare le simulazioni              | Tutti    | Da iniziare |
 | Come utente voglio avere un report dell'andamento della simulazione                             | Progettare come realizzare il report    | Vasiliu  | Iniziato    |
 | Migliorare il nucleo del framework                                                              | Implementazione delle migliorie         | Bennici  | Iniziato    |
 
+
+
+### Review
+ 
+> [core] -> L'implementazione è completa ma non ancora done.  
+> [simulazioni] -> Sono state pensate le simulazioni di esempio per il framework e abbiamo iniziato a progettarle.  
+> [view] -> In questo sprint l'avanzamento della view ha visto la possibilità di inserire il numero delle entità, tuttavia la 
+> configuraione dei parametri è ancora indietro. Il non avanzamento in questo sprint non è dovuto a difficoltà o imprevisti relativi
+> al progetto.
+## Sprint 4 (23/10/2024)
 
 ### Sprint planning
 
@@ -251,4 +261,3 @@ for tick <- 1 to 10 do
 |                                                                                                 | Implemetare le simulazioni              | Tutti    | Da iniziare |
 | Come utente voglio avere un report dell'andamento della simulazione                             | Progettare come realizzare il report    | Vasiliu  | Iniziato    |
 | Migliorare il nucleo del framework                                                              | Implementazione delle migliorie         | Bennici  | Iniziato    |
-
