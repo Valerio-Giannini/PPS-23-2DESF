@@ -100,7 +100,6 @@ Entity 1: Position(5.0, 5.0), Speed(0.0, 0.0)
 Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 -------------------
 ```
-
 ## Sprint 1 (2/10/2024)
 
 ### Sprint planning
@@ -152,8 +151,6 @@ Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 > Lo scopo era verificare la corretta implementazione di Laminar all'interno del progetto.
 
 ![view_prototype](resources/view_prototype.png)
-
-
 ## Sprint 2 (9/10/2024)
 
 ### Sprint planning
@@ -215,7 +212,7 @@ for tick <- 1 to 10 do
 ``` 
 #### Simulazione Implementata per la view (feature/view)
 ![view_prototype](resources/Simulation-Sprint-2.gif)
-## Sprint 3 (23/10/2024)
+## Sprint 3 (16/10/2024)
 
 ### Sprint planning
 
@@ -240,6 +237,18 @@ for tick <- 1 to 10 do
 
 ### Sprint planning
 
-Durante questo terzo sprint ci prefiggiamo di finire il core avanzato del framework e continuare lo sviluppo della view. Parallelamente inizieremo a pensare
-quali simlazioni d'esempio andremo a realizzare e come realizzare i report che tali simulazioni dovranno avere.
-L'obiettivo di questo sprint è quindi avere gli strumenti per realizzare una simulazione di prova del framework.
+> In questo sprint ci prefiggiamo di terminare la parte relativa alla view, implementare il prototipo di simulazione. Parallelamente finiremo di progettare le simulazioni 
+> di esempio e finiremo di implementare la logica per realizzare il report.
+
+
+| Product backlog item                                                                            | Sprint task                             | Assignee | Status      |
+|-------------------------------------------------------------------------------------------------|-----------------------------------------|----------|-------------|
+| Implementare la GUI                                                                             | Studiare Laminar                        | Giannini | Iniziato    |
+|                                                                                                 | Modificare il core -> CrossProject      | Giannini | Iniziato    |
+|                                                                                                 | Integrare JCEF                          | Giannini | Iniziato    |
+|                                                                                                 | Aggiungere le varie funzionalità        | Giannini | Iniziato    |
+| Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework | Progettare le simulazioni               | Tutti    | Da iniziare |
+|                                                                                                 | Implemetare le simulazioni              | Tutti    | Da iniziare |
+| Come utente voglio avere un report dell'andamento della simulazione                             | Progettare come realizzare il report    | Vasiliu  | Iniziato    |
+| Migliorare il nucleo del framework                                                              | Implementazione delle migliorie         | Bennici  | Iniziato    |
+
