@@ -20,6 +20,10 @@ class EntityTest extends AnyWordSpec with Matchers:
         Entity(C1(1), C2(2))
         Entity(C1(1), C2(2), C3(3))
 
+      "not have multiple component of the same type" in:
+        val entity = Entity(C1(1), C1(2))
+        entity.componentTags.size shouldBe 1
+
     "managing components" should:
       "allow adding a new component" in:
         val entity        = Entity()
