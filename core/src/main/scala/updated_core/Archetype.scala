@@ -28,7 +28,8 @@ object Archetype:
     def entities: Iterable[Entity] = entityContainer
 
     def add(entity: Entity): Archetype =
-      if equalsTo(entity.componentTags) then entityContainer += entity
+      if equalsTo(entity.componentTags) && !entityContainer.contains(entity) 
+      then entityContainer += entity
       this
 
     def get(entity: Entity): Option[Entity] =

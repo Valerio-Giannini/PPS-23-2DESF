@@ -27,6 +27,15 @@ class ArchetypeTest extends AnyWordSpec with Matchers:
 
         archetype.add(entity2)
         archetype.entities shouldNot contain(entity2)
+
+      "do nothing when trying to add the same entity twice" in :
+        val archetype = Archetype(ComponentTag[C1])
+        val entityA    = Entity(C1(1))
+        archetype.add(entityA)
+        val archetypeWithEntityA = archetype.entities
+        archetype.add(entityA)
+        archetype.entities shouldBe archetypeWithEntityA
+
       "allow to get an entity" in:
         val archetype = Archetype(ComponentTag[C1])
         val entity    = Entity(C1(1))
