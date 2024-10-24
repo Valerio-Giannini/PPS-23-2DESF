@@ -68,9 +68,30 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         inside(world.entities.find(_.id == entity.id)) {
           case Some(e) =>
             e.get[C1] should not be empty
-            e.get[C1].get shouldBe C1(newValue)
+            e.get[C1] shouldBe Some(C1(newValue))
           case None => fail("Entity not found")
         }
       "allow retrieval of an existing component" in:
         val entity = world.createEntity(C1(1))
         world.getComponent[C1](entity) shouldBe Some(C1(1))
+      "do nothing when retrieval of an existing component" in:
+        val entity = world.createEntity(C1(1))
+        world.getComponent[C2](entity) shouldBe None
+      "allow remove an existing component" in:
+        val entity = world.createEntity(C1(1), C2(2))
+        world.removeComponent[C2](entity)
+        inside(world.entities.find(_.id == entity.id)) {
+          case Some(e) =>
+            e.componentTags should have size 1
+            e.get[C2] shouldBe None
+          case None => fail("Entity not found")
+        }
+      "do nothing when trying to remove a component that does not exist" in:
+        val entity = world.createEntity(C1(1))
+        world.removeComponent[C2](entity)
+        inside(world.entities.find(_.id == entity.id)) {
+          case Some(e) =>
+            e.componentTags should have size 1
+            e.get[C1] shouldBe Some(C1(1))
+          case None => fail("Entity not found")
+        }

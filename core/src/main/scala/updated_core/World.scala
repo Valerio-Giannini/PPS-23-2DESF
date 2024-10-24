@@ -8,6 +8,8 @@ trait World:
   def clearEntities(): World
   def addComponent[C <: Component: ComponentTag](entity: Entity, component: C): World
   def getComponent[C <: Component: ComponentTag](entity: Entity): Option[C]
+  def removeComponent[C <: Component: ComponentTag](entity: Entity): World
+
 
 class SimpleWorld extends World:
   private var archetypes: Map[Set[ComponentTag[_]], Archetype] = Map.empty
@@ -62,3 +64,12 @@ class SimpleWorld extends World:
       case Some(e) => e.get[C]
       case _       => None
     case _ => None
+
+  def removeComponent[C <: Component : ComponentTag](entity: Entity): World =
+    getArchetype(entity) match
+      case Some(archetype) =>
+        archetype.remove(entity)
+        val updatedEntity = entity.remove[C]
+        addEntity(updatedEntity)
+      case _ =>
+    this
