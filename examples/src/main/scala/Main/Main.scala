@@ -10,10 +10,7 @@ object Main:
   def main(args: Array[String]): Unit =
     val app = div(
       h1("Simulation App"),
-      button("Start Simulation", onClick --> (_ => {Simulation.runSimulation()
-        // Rimuove tutti gli elementi presenti nel body
-        dom.document.body.innerHTML = ""
-      }))
+      button("Start Simulation", onClick --> (_ => Simulation.runSimulation()))
   )
     render(dom.document.body, app)
 
