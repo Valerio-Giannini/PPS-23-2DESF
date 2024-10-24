@@ -6,6 +6,7 @@ trait World:
   def addEntity(entity: Entity): World
   def removeEntity(entity: Entity): World
   def clearEntities(): World
+  def addComponent[C <: Component : ComponentTag](entity: Entity, component: C): World
 
 class SimpleWorld extends World:
   private var archetypes: Map[Set[ComponentTag[_]], Archetype] = Map.empty
@@ -42,4 +43,13 @@ class SimpleWorld extends World:
 
   def clearEntities(): World =
     archetypes.values.foreach(_.clearEntities())
+    this
+
+  def addComponent[C <: Component : ComponentTag](entity: Entity, component: C): World =
+    getArchetype(entity) match
+      case Some(archetype) =>
+        archetype.remove(entity)
+        val updatedEntity = entity.add(component)
+        addEntity(updatedEntity)
+      case None =>
     this

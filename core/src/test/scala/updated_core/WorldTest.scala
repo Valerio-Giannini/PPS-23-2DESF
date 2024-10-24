@@ -1,6 +1,7 @@
 package updated_core
 
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.Inside.inside
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -52,3 +53,11 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         List.fill(numEntities)(world.createEntity())
         world.clearEntities()
         world.entities shouldBe empty
+    "managing entity's components" should :
+      "allow adding a new component" in :
+        val entity = world.createEntity(C1(1))
+        world.addComponent(entity, C2(2))
+        inside(world.entities.find(_.id == entity.id)) {
+          case Some(e) => e.componentTags should have size 2
+          case None => fail("Entity not found")
+        }
