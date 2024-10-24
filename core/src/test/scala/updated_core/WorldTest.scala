@@ -61,3 +61,13 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
           case Some(e) => e.componentTags should have size 2
           case None => fail("Entity not found")
         }
+      "allow updating an existing component" in :
+        val entity = world.createEntity(C1(1))
+        val newValue = 2
+        world.addComponent(entity, C1(newValue))
+        inside(world.entities.find(_.id == entity.id)) {
+          case Some(e) =>
+            e.get[C1] should not be empty
+            e.get[C1].get shouldBe C1(newValue)
+          case None => fail("Entity not found")
+        }
