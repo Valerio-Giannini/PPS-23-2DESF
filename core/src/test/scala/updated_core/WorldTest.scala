@@ -109,3 +109,15 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
             e.get[C1] shouldBe Some(C1(1))
           case None => fail("Entity not found")
         }
+    "managing a system" should :
+      "allow adding a system" in :
+        world.addSystem(IncrementC1System())
+        val baseValue = 0
+        val numIteration = 100
+        val entity = world.createEntity(C1(0))
+        (1 to numIteration).foreach{ _ => world.update() }
+        inside(world.entities.find(_.id == entity.id)) {
+          case Some(e) =>
+            e.get[C1] shouldBe Some(C1(baseValue + numIteration))
+          case None => fail("Entity not found")
+        }

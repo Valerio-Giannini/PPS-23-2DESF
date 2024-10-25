@@ -2,6 +2,8 @@ package updated_core
 
 trait World:
   def entities: Iterable[Entity]
+  def addSystem(system: System): List[System]
+  def update(): Unit
   def createEntity(components: Component*): Entity
   def addEntity(entity: Entity): World
   def removeEntity(entity: Entity): World
@@ -14,9 +16,17 @@ trait World:
 
 class SimpleWorld extends World:
   private var archetypes: Map[Set[ComponentTag[_]], Archetype] = Map.empty
+  private var systems: List[System]                            = List.empty
 
   def entities: Iterable[Entity] =
     archetypes.values.flatMap(_.entities)
+
+  def addSystem(system: System): List[System] =
+    systems = systems :+ system
+    systems
+
+  def update(): Unit =
+    systems.foreach(_.update(this))
 
   def createEntity(components: Component*): Entity =
     val newEntity = Entity(components*)
