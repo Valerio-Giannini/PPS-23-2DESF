@@ -70,20 +70,3 @@ class ArchetypeTest extends AnyWordSpec with Matchers:
         archetype.clearEntities()
 
         archetype.entities shouldBe empty
-
-    "comparing ComponentTag" should:
-      "correctly determine equality relationships" in:
-        val archetype1 = Archetype(ComponentTag[C1], ComponentTag[C2])
-        val archetype2 = Archetype(ComponentTag[C2], ComponentTag[C1])
-        val archetype3 = Archetype(ComponentTag[C1], ComponentTag[C2], ComponentTag[C3])
-
-        archetype1.equalsTo(archetype2.componentTags) shouldBe true
-        archetype1.equalsTo(archetype3.componentTags) shouldBe false
-      "correctly determine subset relationships" in:
-        val archetype1 = Archetype(ComponentTag[C1], ComponentTag[C2])
-        val archetype2 = Archetype(ComponentTag[C2], ComponentTag[C1])
-        val archetype3 = Archetype(ComponentTag[C1], ComponentTag[C2], ComponentTag[C3])
-
-        archetype1.isSubsetOf(archetype2.componentTags) shouldBe true
-        archetype1.isSubsetOf(archetype3.componentTags) shouldBe true
-        archetype3.isSubsetOf(archetype1.componentTags) shouldBe false
