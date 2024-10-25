@@ -1,10 +1,14 @@
 package core
 
-import core.*
-import core.fixtures.SampleComponent
+import core._
 import org.openjdk.jmh.annotations.*
 
 import java.util.concurrent.TimeUnit
+
+
+
+case class C1(value: Double) extends Component
+case class C2(value: Double) extends Component
 
 @State(Scope.Thread)
 @BenchmarkMode(Array(Mode.SampleTime))
@@ -13,7 +17,6 @@ import java.util.concurrent.TimeUnit
 @Fork(1)
 @Warmup(iterations = 100, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 @Measurement(iterations = 100, time = 200, timeUnit = TimeUnit.MILLISECONDS)
-
 /** Benchmarks the performance of updating components.
   */
 class ComponentsBenchmark:
@@ -26,12 +29,12 @@ class ComponentsBenchmark:
     world = World()
 
     (1 to numEntities)
-      .foreach(_ => world.createEntity(SampleComponent(1)))
+      .foreach(_ => world.createEntity(C1(1), C2(2)))
 
   @Benchmark
   def updateComponent(): Unit =
     for entity <- world.getEntities do
-      world.getComponent[SampleComponent](entity) match
-      case Some(sampleComponent) =>
-        world.addComponent(entity, sampleComponent.copy(sampleComponent.value + 1))
-      case _ =>
+      (world.getComponent[C1](entity), world.getComponent[C2](entity)) match
+        case (Some(c1), Some(c2)) =>
+          world.addComponent(entity, c1.copy(value = c1.value + c2.value))
+        case _ =>
