@@ -10,7 +10,7 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
   var world: World = _
 
   override def beforeEach(): Unit =
-    world = SimpleWorld()
+    world = World()
 
   "A World" when:
     "initialized" should:
