@@ -9,7 +9,8 @@ trait World:
   def addComponent[C <: Component: ComponentTag](entity: Entity, component: C): World
   def getComponent[C <: Component: ComponentTag](entity: Entity): Option[C]
   def removeComponent[C <: Component: ComponentTag](entity: Entity): World
-
+  def entitiesWithComponents(componentClasses: ComponentTag[?]*): Iterable[Entity]
+  def entitiesWithAtLeastComponents(componentClasses: ComponentTag[?]*): Iterable[Entity]
 
 class SimpleWorld extends World:
   private var archetypes: Map[Set[ComponentTag[_]], Archetype] = Map.empty
@@ -55,7 +56,7 @@ class SimpleWorld extends World:
       val updatedEntity = entity.add(component)
       addEntity(updatedEntity)
     case None =>
-    this
+      this
 
   def getComponent[C <: Component: ComponentTag](entity: Entity): Option[C] =
     getArchetype(entity) match
@@ -65,11 +66,24 @@ class SimpleWorld extends World:
       case _       => None
     case _ => None
 
-  def removeComponent[C <: Component : ComponentTag](entity: Entity): World =
+  def removeComponent[C <: Component: ComponentTag](entity: Entity): World =
     getArchetype(entity) match
-      case Some(archetype) =>
-        archetype.remove(entity)
-        val updatedEntity = entity.remove[C]
-        addEntity(updatedEntity)
-      case _ =>
+    case Some(archetype) =>
+      archetype.remove(entity)
+      val updatedEntity = entity.remove[C]
+      addEntity(updatedEntity)
+    case _ =>
     this
+
+  private def entitiesByFilter(filter: Set[ComponentTag[_]] => Boolean): Iterable[Entity] =
+    archetypes.values
+      .filter(archetype => filter(archetype.componentTags))
+      .flatMap(_.entities)
+
+  def entitiesWithAtLeastComponents(componentClasses: ComponentTag[_]*): Iterable[Entity] =
+    entitiesByFilter(componentClasses.toSet.subsetOf(_))
+
+  def entitiesWithComponents(componentClasses: ComponentTag[_]*): Iterable[Entity] =
+    entitiesByFilter(_ == componentClasses.toSet)
+
+

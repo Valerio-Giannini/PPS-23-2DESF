@@ -53,6 +53,20 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         List.fill(numEntities)(world.createEntity())
         world.clearEntities()
         world.entities shouldBe empty
+      "allow to get entities with specific component types" in:
+        val numEntities = 10
+        (1 to numEntities).foreach { _ =>
+          world.createEntity(C1(1))
+          world.createEntity(C2(2))
+          world.createEntity(C1(1), C2(2))
+        }
+        val entitiesWithC1 = world.entitiesWithComponents(ComponentTag[C1])
+        all(entitiesWithC1.map(_.get[C1])) should not be empty
+        entitiesWithC1 should have size numEntities
+        val entitiesWithAtLeastC1 = world.entitiesWithAtLeastComponents(ComponentTag[C1])
+        all(entitiesWithAtLeastC1.map(_.get[C1])) should not be empty
+        entitiesWithAtLeastC1 should have size numEntities*2
+
     "managing entity's components" should:
       "allow adding a new component" in:
         val entity = world.createEntity(C1(1))
