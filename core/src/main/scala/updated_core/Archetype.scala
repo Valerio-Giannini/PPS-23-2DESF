@@ -19,26 +19,25 @@ object Archetype:
     ArchetypeImpl(componentTags)
 
   private class ArchetypeImpl(tags: Set[ComponentTag[_]]) extends Archetype:
-    private val entityContainer: mutable.ArrayBuffer[Entity] = mutable.ArrayBuffer.empty
+    private val entityContainer: mutable.HashSet[Entity] = mutable.HashSet.empty
 
     def componentTags: Set[ComponentTag[_]] = tags
 
     def entities: Iterable[Entity] = entityContainer
 
     def add(entity: Entity): Archetype =
-      if tags == entity.componentTags && !entityContainer.contains(entity) 
-      then entityContainer += entity
+      if tags == entity.componentTags  then
+        entityContainer.add(entity)
       this
 
     def get(entity: Entity): Option[Entity] =
-      entityContainer.find(_.equals(entity))
+      Some(entity).filter(entityContainer.contains)
 
     def remove(entity: Entity): Archetype =
-      get(entity) match
-      case Some(e) => entityContainer -= entity
-      case _ => 
+      entityContainer -= entity
       this
 
     def clearEntities(): Archetype =
       entityContainer.clear()
       this
+
