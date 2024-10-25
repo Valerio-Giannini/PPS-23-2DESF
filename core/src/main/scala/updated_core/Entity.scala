@@ -1,5 +1,6 @@
 package updated_core
 
+import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.immutable.HashMap
 import scala.reflect.ClassTag
 
@@ -42,8 +43,7 @@ object Entity:
     def componentTags: Set[ComponentTag[_]] = componentsMap.keySet
 
   private object IdGenerator:
-    private var currentId: Int = 0
+    private val currentId: AtomicInteger = new AtomicInteger(0)
 
     def nextId(): Int =
-      currentId += 1
-      currentId
+      currentId.incrementAndGet()
