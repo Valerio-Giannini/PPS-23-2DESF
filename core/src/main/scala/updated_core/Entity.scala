@@ -88,7 +88,8 @@ object Entity:
    * Internal object dedicated to generating unique identifiers for each entity.
    */
   private object IdGenerator:
-    private val currentId: AtomicInteger = new AtomicInteger(0)
+    private var currentId: Int = 0 
 
     def nextId(): Int =
-      currentId.incrementAndGet()
+      currentId = currentId + 1
+      currentId
