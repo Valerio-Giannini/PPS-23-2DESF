@@ -1,6 +1,5 @@
 package core
 
-import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.immutable.HashMap
 import scala.reflect.ClassTag
 
