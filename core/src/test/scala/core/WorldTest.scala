@@ -1,4 +1,4 @@
-package updated_core
+package core
 
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Inside.inside

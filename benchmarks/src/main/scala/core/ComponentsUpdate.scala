@@ -1,7 +1,7 @@
-package updated_core
+package core
 
 import org.openjdk.jmh.annotations.*
-import updated_core.ComponentTag
+import core.ComponentTag
 
 import java.util.concurrent.TimeUnit
 
@@ -15,7 +15,7 @@ case class C2(value: Double) extends Component
 @Fork(1)
 @Warmup(iterations = 100, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 @Measurement(iterations = 100, time = 100, timeUnit = TimeUnit.MILLISECONDS)
-class ComponentsUpdateBenchmark:
+class ComponentsUpdate:
 
   var world: World     = _
   val numEntities: Int = 10_000
@@ -26,7 +26,7 @@ class ComponentsUpdateBenchmark:
     for _ <- 1 to numEntities do world.createEntity(C1(1), C2(1))
 
   @Benchmark
-  def componentsUpdateBenchmark(): Unit =
+  def componentsUpdate(): Unit =
     world.entitiesWithAtLeastComponents(ComponentTag[C1],ComponentTag[C2])
       .foreach { entity =>
         val c1 = entity.get[C1].get

@@ -1,4 +1,4 @@
-package updated_core
+package core
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

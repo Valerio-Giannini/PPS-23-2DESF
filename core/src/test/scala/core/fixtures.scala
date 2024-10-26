@@ -1,4 +1,4 @@
-package updated_core
+package core
 
 case class C1(x: Int) extends Component
 case class C2(x: Int) extends Component
