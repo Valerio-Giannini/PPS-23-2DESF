@@ -19,12 +19,10 @@ class ArchetypeTest extends AnyWordSpec with Matchers:
       "allow to add only a matching entity" in:
         val archetype = Archetype(ComponentTag[C1])
         val entity    = Entity(C1(1))
-
         archetype.add(entity)
         archetype.entities should contain(entity)
 
         val entity2 = Entity(C2(2))
-
         archetype.add(entity2)
         archetype.entities shouldNot contain(entity2)
 
@@ -48,7 +46,7 @@ class ArchetypeTest extends AnyWordSpec with Matchers:
 
         val entity2          = Entity(C2(2))
         val retrievedEntity2 = archetype.get(entity2)
-        retrievedEntity2 should matchPattern { case None => }
+        retrievedEntity2 shouldBe None
       "allow to remove an entity" in:
         val archetype = Archetype(ComponentTag[C1])
         val entity    = Entity(C1(1))
