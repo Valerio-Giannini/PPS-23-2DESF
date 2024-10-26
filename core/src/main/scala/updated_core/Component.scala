@@ -8,6 +8,8 @@ import scala.reflect.ClassTag
   */
 trait Component
 
+/** Type alias for [[ComponentTag]], a specialized ClassTag for [[Component]] types.
+  */
 type ComponentTag[C <: Component] = ClassTag[C]
 
 object ComponentTag:
