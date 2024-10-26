@@ -18,14 +18,15 @@ object Simulation:
     for tick <- 1 to 10 do
       println(s"Tick $tick")
       world.update()
-      for entity <- world.entitiesWithAtLeastComponents(ComponentTag[Position], ComponentTag[Speed]) do
+      for entity <- world.entitiesWithAtLeastComponents(ComponentTag[Position], ComponentTag[Speed]).toSeq.sortBy(_.id)
+      do
         (entity.get[Position], entity.get[Speed]) match
-          case (Some(pos), Some(speed)) =>
-            val positionInfo = s"Position(${pos.x}, ${pos.y})"
-            val speedInfo = s"Speed(${speed.vx}, ${speed.vy})"
-            println(s"Entity ${entity.id}: $positionInfo, $speedInfo")
-            println("-------------------")
-          case _ => println("Position Or Speed not found")
+        case (Some(pos), Some(speed)) =>
+          val positionInfo = s"Position(${pos.x}, ${pos.y})"
+          val speedInfo    = s"Speed(${speed.vx}, ${speed.vy})"
+          println(s"Entity ${entity.id}: $positionInfo, $speedInfo")
+        case _ => println("Position Or Speed not found")
+      println("-------------------")
 
   @main def runSimulation(): Unit =
     start()
