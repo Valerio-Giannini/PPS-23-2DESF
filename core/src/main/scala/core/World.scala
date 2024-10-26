@@ -1,158 +1,201 @@
 package core
 
-/** This trait represents the core of the ECS (Entity-Component-System)
-  * architecture.
+/** This trait represents the central context in an Entity-Component-System (ECS) framework.
   *
-  * A [[World]] manage entities, components, and systems.
+  * A World manages all entities, components, and systems.
   */
 trait World:
-  /** Create a new [[Entity]] with the given components.
-    *
-    * @param components
-    *   the [[Component]] instances to associate with the new entity.
-    * @return
-    *   the created entity.
-    */
-  def createEntity(components: Component*): Entity
 
-  /** Add an existing [[Entity]] to the world, associating the provided
-    * components with it.
-    *
-    * @param entity
-    *   the entity to add.
-    * @param components
-    *   the [[Component]] instances to associate with the entity.
-    */
-  def addEntity(entity: Entity, components: Component*): Unit
-
-  /** Remove the specified [[Entity]] from the world.
-    *
-    * @param entity
-    *   the entity to remove.
-    */
-  def removeEntity(entity: Entity): Unit
-
-  /** Remove all entities from the world.
-    */
-  def clearFromEntities(): Unit
-
-  /** Get all entities currently present in the world.
+  /** Retrieves all entities within the world.
     *
     * @return
-    *   a list of all entities.
+    *   An iterable collection of [[Entity]] present in the world.
     */
-  def getEntities: List[Entity]
+  def entities: Iterable[Entity]
 
-  /** Add a [[Component]] to the specified [[Entity]].
-    *
-    * @param entity
-    *   the entity to add the component to.
-    * @param component
-    *   the component to add.
-    */
-  def addComponent(entity: Entity, component: Component): Unit
-
-  /** Retrieve a specific [[Component]] from the given [[Entity]].
-    *
-    * @param entity
-    *   the entity to retrieve the component from.
-    * @param tag
-    *   implicit [[scala.reflect.ClassTag]] to identify the component type.
-    * @tparam T
-    *   the type of the component.
-    * @return
-    *   an [[Option]] containing the component if it exists, or `None` if not
-    *   found.
-    */
-  def getComponent[T <: Component](entity: Entity)(implicit
-      tag: scala.reflect.ClassTag[T]
-  ): Option[T]
-
-  /** Remove a specific [[Component]] from the given [[Entity]].
-    *
-    * @param entity
-    *   the entity to remove the component from.
-    * @param component
-    *   the component to remove.
-    */
-  def removeComponent(entity: Entity, component: Component): Unit
-
-  /** Get a mapping of all entities in the world to their associated
-    * [[Component]] sets.
-    *
-    * @return
-    *   a map where the key is an [[Entity]] and the value is a set of
-    *   components.
-    */
-  def worldEntitiesToComponents: Map[Entity, Set[Component]]
-
-  /** Add a [[System]] to the world to manage entities and components.
+  /** Adds a system to the world.
     *
     * @param system
-    *   the system to add.
+    *   The [[System]] to add
+    * @return
+    *   A list of all systems currently registered in the world, including the newly added system.
     */
-  def addSystem(system: System): Unit
+  def addSystem(system: System): List[System]
 
-  /** Update the world by running all the systems with the given delta time.
+  /** Executes an update on all systems in the world.
     */
   def update(): Unit
 
-/** Factory for creating a new instance of [[World]].
-  */
+  /** Creates a new entity with the specified components and adds it to the world.
+    *
+    * @param components
+    *   A variable number of components.
+    * @return
+    *   The newly created [[Entity]] instance.
+    */
+  def createEntity(components: Component*): Entity
+
+  /** Adds an existing entity to the world.
+    *
+    * @param entity
+    *   The entity to add to the world.
+    * @return
+    *   The current World instance with the entity added.
+    */
+  def addEntity(entity: Entity): World
+
+  /** Removes an entity from the world.
+    *
+    * @param entity
+    *   The entity to remove from the world.
+    * @return
+    *   The current World instance with the entity removed.
+    */
+  def removeEntity(entity: Entity): World
+
+  /** Removes all entities from the world.
+    *
+    * @return
+    *   The current World instance with all entities cleared.
+    */
+  def clearEntities(): World
+
+  /** Adds a component to a specified entity in the world, updating its archetype accordingly.
+    *
+    * @param entity
+    *   The entity to which the component should be added.
+    * @param component
+    *   The [[Component]] to add.
+    * @tparam C
+    *   The type of the component, constrained to [[Component]].
+    * @return
+    *   The current World instance with the component added to the specified entity.
+    */
+  def addComponent[C <: Component: ComponentTag](entity: Entity, component: C): World
+
+  /** Retrieves a specific component from an entity by type.
+    *
+    * @tparam C
+    *   The type of the component to retrieve, constrained to [[Component]].
+    * @param entity
+    *   The entity from which the component should be retrieved.
+    * @return
+    *   An Option containing the component if it exists, otherwise None.
+    */
+  def getComponent[C <: Component: ComponentTag](entity: Entity): Option[C]
+
+  /** Removes a specific component from an entity by type.
+    *
+    * @tparam C
+    *   The type of the component to remove, constrained to [[Component]].
+    * @param entity
+    *   The entity from which the component should be removed.
+    * @return
+    *   The current World instance with the specified component removed from the entity.
+    */
+  def removeComponent[C <: Component: ComponentTag](entity: Entity): World
+
+  /** Retrieves entities that have exactly the specified set of components.
+    *
+    * @param componentClasses
+    *   A variable number of component tags defining the required components.
+    * @return
+    *   An iterable collection of [[Entity]] containing exactly the specified components.
+    */
+  def entitiesWithComponents(componentClasses: ComponentTag[?]*): Iterable[Entity]
+
+  /** Retrieves entities that have at least the specified set of components.
+    *
+    * @param componentClasses
+    *   A variable number of component tags defining the minimum required components.
+    * @return
+    *   An iterable collection of [[Entity]] instances containing at least the specified components.
+    */
+  def entitiesWithAtLeastComponents(componentClasses: ComponentTag[?]*): Iterable[Entity]
+
+/**
+ * A Factory for [[World]].
+ */
 object World:
-  def apply(): World = WorldImpl()
+  def apply(): World = new WorldImpl
 
-  private case class WorldImpl() extends World:
-    private var entitiesToComponents: Map[Entity, Set[Component]] = Map()
-    private var systems: List[System]                             = List()
+  private class WorldImpl extends World:
+    private var archetypes: Vector[Archetype] = Vector.empty
+    private var systems: List[System]         = List.empty
 
-    def createEntity(components: Component*): Entity =
-      val entity = Entity()
-      entitiesToComponents += (entity -> Set())
-      components.foreach(addComponent(entity, _))
-      entity
+    def entities: Iterable[Entity] =
+      archetypes.flatMap(_.entities)
 
-    def addEntity(entity: Entity, components: Component*): Unit =
-      entitiesToComponents += (entity -> Set())
-      components.foreach(addComponent(entity, _))
-
-    def removeEntity(entity: Entity): Unit =
-      entitiesToComponents -= entity
-
-    def clearFromEntities(): Unit =
-      entitiesToComponents = Map()
-
-    def getEntities: List[Entity] = entitiesToComponents.keys.toList
-
-    def addComponent(entity: Entity, component: Component): Unit =
-      entitiesToComponents.get(entity) match
-        case Some(components) =>
-          val updatedComponents =
-            components.filterNot(_.getClass == component.getClass) + component
-          entitiesToComponents += (entity -> updatedComponents)
-        case None => throw new IllegalArgumentException("Entity does not exist")
-
-    def getComponent[T <: Component](
-        entity: Entity
-    )(implicit tag: scala.reflect.ClassTag[T]): Option[T] =
-      entitiesToComponents
-        .get(entity) match
-        case Some(existingComponents) =>
-          existingComponents.collectFirst { case component: T => component }
-        case None => throw new IllegalArgumentException("Entity does not exist")
-
-    def removeComponent(entity: Entity, component: Component): Unit =
-      entitiesToComponents.get(entity) match
-        case Some(existingComponents) =>
-          val updatedComponents = existingComponents.filterNot(_ == component)
-          entitiesToComponents += (entity -> updatedComponents)
-        case None => throw new IllegalArgumentException("Entity does not exist")
-
-    def worldEntitiesToComponents: Map[Entity, Set[Component]] =
-      entitiesToComponents
-
-    def addSystem(system: System): Unit =
-      systems = system :: systems
+    def addSystem(system: System): List[System] =
+      systems :+= system
+      systems
 
     def update(): Unit =
       systems.foreach(_.update(this))
+
+    def createEntity(components: Component*): Entity =
+      val newEntity = Entity(components*)
+      addEntity(newEntity)
+      newEntity
+
+    def addEntity(entity: Entity): World =
+      getArchetype(entity) match
+      case Some(archetype) =>
+        archetype.add(entity)
+      case None =>
+        val newArchetype = Archetype(entity.componentTags)
+        newArchetype.add(entity)
+        archetypes :+= newArchetype
+      this
+
+    private def getArchetype(entity: Entity): Option[Archetype] =
+      val componentTags = entity.componentTags
+      archetypes.find(_.componentTags == componentTags)
+
+    def removeEntity(entity: Entity): World =
+      getArchetype(entity) match
+      case Some(archetype) =>
+        archetype.remove(entity)
+      case None =>
+      this
+
+    def clearEntities(): World =
+      archetypes.foreach(_.clearEntities())
+      this
+
+    def addComponent[C <: Component: ComponentTag](entity: Entity, component: C): World =
+      getArchetype(entity) match
+      case Some(archetype) =>
+        archetype.remove(entity)
+        val updatedEntity = entity.add(component)
+        addEntity(updatedEntity)
+      case None =>
+      this
+
+    def getComponent[C <: Component: ComponentTag](entity: Entity): Option[C] =
+      getArchetype(entity) match
+      case Some(archetype) =>
+        archetype.get(entity) match
+        case Some(e) => e.get[C]
+        case _       => None
+      case _ => None
+
+    def removeComponent[C <: Component: ComponentTag](entity: Entity): World =
+      getArchetype(entity) match
+      case Some(archetype) =>
+        archetype.remove(entity)
+        val updatedEntity = entity.remove[C]
+        addEntity(updatedEntity)
+      case None =>
+      this
+
+    private def entitiesByFilter(filter: Set[ComponentTag[_]] => Boolean): Iterable[Entity] =
+      archetypes
+        .filter(archetype => filter(archetype.componentTags))
+        .flatMap(_.entities)
+
+    def entitiesWithAtLeastComponents(componentClasses: ComponentTag[?]*): Iterable[Entity] =
+      entitiesByFilter(componentClasses.toSet.subsetOf(_))
+
+    def entitiesWithComponents(componentClasses: ComponentTag[?]*): Iterable[Entity] =
+      entitiesByFilter(_ == componentClasses.toSet)
