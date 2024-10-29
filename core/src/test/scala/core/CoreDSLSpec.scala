@@ -6,7 +6,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class DSLCoreSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
+class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
 
   var world: World = _
 
