@@ -13,18 +13,15 @@ trait World:
     */
   def entities: Iterable[Entity]
 
-  /** Adds a system to the world.
-    *
-    * @param system
-    *   The [[System]] to add
-    * @return
-    *   A list of all systems currently registered in the world, including the newly added system.
-    */
-  def addSystem(system: System): List[System]
+  /** Retrieves an entity within the world that match the provided entity.
+   *
+   * @param entity
+   *   The entity to look for
+   * @return
+   *   An option containing the [[Entity]] present in the world if exists, None otherwise
+   */
 
-  /** Executes an update on all systems in the world.
-    */
-  def update(): Unit
+  def entity(entity: Entity): Option[Entity]
 
   /** Creates a new entity with the specified components and adds it to the world.
     *
@@ -113,6 +110,19 @@ trait World:
     */
   def entitiesWithAtLeastComponents(componentClasses: ComponentTag[?]*): Iterable[Entity]
 
+  /** Adds a system to the world.
+   *
+   * @param system
+   * The [[System]] to add
+   * @return
+   * The current World instance with the added system
+   */
+  def addSystem(system: System): World
+
+  /** Executes an update on all systems in the world.
+   */
+  def update(): Unit
+
 /**
  * A Factory for [[World]].
  */
@@ -126,9 +136,11 @@ object World:
     def entities: Iterable[Entity] =
       archetypes.flatMap(_.entities)
 
-    def addSystem(system: System): List[System] =
+    def entity(entity: Entity): Option[Entity] = entities.find(_.id == entity.id)
+
+    def addSystem(system: System): World =
       systems :+= system
-      systems
+      this
 
     def update(): Unit =
       systems.foreach(_.update(this))
