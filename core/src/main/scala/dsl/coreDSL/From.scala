@@ -11,7 +11,7 @@ trait From:
 
   def kill(entity: Entity): World
 
-  def componentOf(entity: Entity): FromComponentBuilder
+  def componentsOf(entity: Entity): FromComponentBuilder
 
   def entitiesHavingOnly(componentTag: ComponentTag[?], componentTags: ComponentTag[?]*): Iterable[Entity]
 
@@ -25,7 +25,7 @@ object From:
     override def entity(entity: Entity): Option[Entity]            = world.entity(entity)
     override def numberOfEntities: Int                             = world.entities.size
     override def kill(entity: Entity): World                       = world.removeEntity(entity)
-    override def componentOf(entity: Entity): FromComponentBuilder = FromComponentBuilder(world, entity)
+    override def componentsOf(entity: Entity): FromComponentBuilder = FromComponentBuilder(world, entity)
 
     override def entitiesHavingOnly(componentTag: ComponentTag[?], componentTags: ComponentTag[?]*): Iterable[Entity] =
       world.entitiesWithComponents(componentTag +: componentTags*).toSeq.sortBy(_.id)

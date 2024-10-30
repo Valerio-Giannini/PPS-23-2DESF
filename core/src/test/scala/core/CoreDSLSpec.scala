@@ -51,13 +51,13 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
       "allows to retrieve an existing component with componentOf and get" in:
         val c1         = C1(1)
         val entity     = into(world).spawnNewEntityWith(c1, C2(2))
-        val c1OfEntity = from(world).componentOf(entity).get[C1]
+        val c1OfEntity = from(world).componentsOf(entity).get[C1]
         c1OfEntity shouldBe Some(c1)
         entity.componentTags should have size 2
       "allows to remove an existing component with componentOf and remove" in:
         val c2     = C2(2)
         var entity = into(world).spawnNewEntityWith(C1(1), c2)
-        entity = from(world).componentOf(entity).remove[C1]
+        entity = from(world).componentsOf(entity).remove[C1]
         entity.componentTags should have size 1
         entity.componentTags should not contain ComponentTag[C1]
     "provide an into operator" which:
@@ -97,7 +97,7 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         val numIteration = 100
         val entity       = into(world).spawnNewEntityWith(C1(0))
         (1 to numIteration).foreach(_ => update(world))
-        from(world).componentOf(from(world).entity(entity).get).get[C1] shouldBe Some(
+        from(world).componentsOf(from(world).entity(entity).get).get[C1] shouldBe Some(
           C1(baseValue + numIteration)
         )
     "provide a reset operator" which:

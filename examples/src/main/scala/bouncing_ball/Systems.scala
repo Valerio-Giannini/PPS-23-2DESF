@@ -9,8 +9,8 @@ class MovementSystem extends System:
   override def update(world: World): Unit =
     for
       entity <- from(world).entitiesHaving(POSITION, SPEED)
-      pos    <- from(world).componentOf(entity).get[Position]
-      speed  <- from(world).componentOf(entity).get[Speed]
+      pos    <- from(world).componentsOf(entity).get[Position]
+      speed  <- from(world).componentsOf(entity).get[Speed]
     do into(world).componentsOf(entity).add(Position(pos.x + speed.vx, pos.y + speed.vy))
 
 // Collision system: if entities collide, set speed to zero
@@ -22,8 +22,8 @@ class CollisionSystem extends System:
       j <- (i + 1) until entities.size
       entityA = entities(i)
       entityB = entities(j)
-      posA <- from(world).componentOf(entityA).get[Position]
-      posB <- from(world).componentOf(entityB).get[Position]
+      posA <- from(world).componentsOf(entityA).get[Position]
+      posB <- from(world).componentsOf(entityB).get[Position]
       if posA.x == posB.x && posA.y == posB.y
     do
       println(s"Collision detected between Entity ${entityA.id} and Entity ${entityB.id}")
@@ -36,12 +36,12 @@ class PrintPositionAndSpeedOfEntitiesSystem extends System:
     for
       entity <- from(world).entitiesHaving(POSITION, SPEED)
       pos = from(world)
-        .componentOf(entity)
+        .componentsOf(entity)
         .get[Position]
         .map(pos => s"Position(${pos.x}, ${pos.y})")
         .getOrElse("No Position")
       speed = from(world)
-        .componentOf(entity)
+        .componentsOf(entity)
         .get[Speed]
         .map(speed => s"Speed(${speed.vx}, ${speed.vy})")
         .getOrElse("No Speed")
