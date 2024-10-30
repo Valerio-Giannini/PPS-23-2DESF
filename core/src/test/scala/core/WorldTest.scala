@@ -45,8 +45,8 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         world.addEntity(entity)
         world.entities should contain(entity)
       "do nothing when trying to remove a non-existent entity" in:
-        val outWorldEntity = Entity()
-        world.removeEntity(outWorldEntity)
+        val outerWorldEntity = Entity()
+        world.removeEntity(outerWorldEntity)
         world.entities shouldBe empty
       "allow to clear all of them" in:
         val numEntities = 10
