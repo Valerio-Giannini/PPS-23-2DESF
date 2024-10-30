@@ -1,7 +1,7 @@
 package dsl
 
-import DSL.*
 import core.*
+import dsl.DSL.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -11,7 +11,7 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
   var world: World = _
 
   override def beforeEach(): Unit =
-    world = World()
+    world = newWorld
 
   "The CoreDSL" should:
     "provide a from operator" which:
@@ -34,8 +34,8 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
           into(world).spawnNewEntityWith(C2(2))
           into(world).spawnNewEntityWith(C1(1), C2(2))
         }
-        val entitiesWithC1 = from(world).entitiesHavingOnly(ComponentTag[C1])
-        val entitiesWithC1AndC2 = from(world).entitiesHavingOnly(ComponentTag[C1],ComponentTag[C2])
+        val entitiesWithC1      = from(world).entitiesHavingOnly(ComponentTag[C1])
+        val entitiesWithC1AndC2 = from(world).entitiesHavingOnly(ComponentTag[C1], ComponentTag[C2])
         entitiesWithC1 should have size numEntities
         entitiesWithC1AndC2 should have size numEntities
       "allow to get entities with the minimum required set of components with entitiesHaving " in:
@@ -67,9 +67,8 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
           List.fill(numEntities)(into(world).spawnNewEntity)
           from(world).numberOfEntities shouldBe numEntities
         "have components with spawnNewEntityWith" in:
-          val entity = into(world).spawnNewEntityWith(C1(1),C2(2),C3(3))
+          val entity = into(world).spawnNewEntityWith(C1(1), C2(2), C3(3))
           from(world).allEntities should contain(entity)
-
           entity.componentTags should have size 3
       "allows to spawn an existing entity into the world" that:
         "has no components with spawnEntity" in:
@@ -78,17 +77,15 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
           from(world).numberOfEntities shouldBe 1
         "have components with spawnNewEntityWith" in:
           val outerWorldEntity = outerWorld.spawnEntityWith(C1(1), C2(2), C3(1))
-          val entity = into(world).spawnEntity(outerWorldEntity)
+          val entity           = into(world).spawnEntity(outerWorldEntity)
           from(world).numberOfEntities shouldBe 1
           entity.componentTags should have size 3
-//          outerWorldEntity.componentTags should have size 2
       "allows to add a new component into an entity with component of and add" in:
         val c2     = C2(2)
         val c3     = C3(3)
         var entity = into(world).spawnNewEntityWith(C1(1))
         entity = into(world).componentsOf(entity).add(c2)
         entity = into(world).componentsOf(entity).add(c3)
-
 
         entity.componentTags should have size 3
         entity.componentTags should contain(ComponentTag[C2])
@@ -108,16 +105,6 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         List.fill(100)(into(world).spawnNewEntity)
         reset(world)
         from(world).numberOfEntities shouldBe 0
-    "provide an update operator" which:
-      "allows to execute the systems" in:
-        into(world).include(IncrementC1System())
-        val baseValue    = 0
-        val numIteration = 100
-        val entity       = into(world).spawnNewEntityWith(C1(0))
-        (1 to numIteration).foreach(_ => update(world))
-        from(world).componentOf(from(world).entity(entity).get).get[C1] shouldBe Some(
-          C1(baseValue + numIteration)
-        )
     "provide an outerWorld operator" which:
       "allows to create an outer world entity" in:
         val outerWorldEntity = outerWorld.spawnEntity

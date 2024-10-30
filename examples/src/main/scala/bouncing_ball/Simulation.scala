@@ -7,11 +7,12 @@ object Simulation:
   private val world = newWorld
 
   def initializeWorld(): Unit =
-    val entity1 = world.createEntity(Position(0, 0), Speed(1, 1))
-    val entity2 = world.createEntity(Position(10, 10), Speed(-1, -1))
+    into(world).spawnNewEntityWith(Position(0, 0), Speed(1, 1))
+    into(world).spawnNewEntityWith(Position(10, 10), Speed(-1, -1))
 
-    world.addSystem(MovementSystem())
-    world.addSystem(CollisionSystem())
+    into(world).include(MovementSystem())
+    into(world).include(CollisionSystem())
+    into(world).include(PrintPositionAndSpeedOfEntitiesSystem())
 
   def start(): Unit =
     initializeWorld()
