@@ -251,13 +251,54 @@ for tick <- 1 to 10 do
 > di esempio e finiremo di implementare la logica per realizzare il report.
 
 
-| Product backlog item                                                                            | Sprint task                             | Assignee | Status      |
-|-------------------------------------------------------------------------------------------------|-----------------------------------------|----------|-------------|
-| Implementare la GUI                                                                             | Studiare Laminar                        | Giannini | Iniziato    |
-|                                                                                                 | Modificare il core -> CrossProject      | Giannini | Iniziato    |
-|                                                                                                 | Integrare JCEF                          | Giannini | Iniziato    |
-|                                                                                                 | Aggiungere le varie funzionalità        | Giannini | Iniziato    |
-| Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework | Progettare le simulazioni               | Tutti    | Da iniziare |
-|                                                                                                 | Implemetare le simulazioni              | Tutti    | Da iniziare |
-| Come utente voglio avere un report dell'andamento della simulazione                             | Progettare come realizzare il report    | Vasiliu  | Iniziato    |
-| Migliorare il nucleo del framework                                                              | Implementazione delle migliorie         | Bennici  | Iniziato    |
+| Product backlog item                                                                                         | Sprint task                               | Assignee | Status      |
+|--------------------------------------------------------------------------------------------------------------|-------------------------------------------|----------|-------------|
+| Implementare la GUI                                                                                          | Studiare Laminar                          | Giannini | Iniziato    |
+|                                                                                                              | Modificare il core -> CrossProject        | Giannini | Finito      |
+|                                                                                                              | Integrare JCEF                            | Giannini | Iniziato    |
+| Come utente voglio poter configurare i parametri della mia simulazione (anche) tramite GUI prima di avviarla | Sistema per definire i parametri          | Giannini | Iniziato    |
+|                                                                                                              | Logica per passare i parametri alla view  | Bennici  | Iniziato    |
+| Come utente voglio poter definire la mia simulazione con semplicità                                          | Definire DSL per core avanzato            | Vasiliu  | Finito      |
+| Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework              | Progettare le simulazioni                 | Tutti    | Da iniziare |
+|                                                                                                              | Implemetare le simulazioni                | Tutti    | Da iniziare |
+| Come utente voglio avere un report dell'andamento della simulazione                                          | Progettare come realizzare il report      | Vasiliu  | Iniziato    |
+| Migliorare il nucleo del framework                                                                           | Implementazione delle migliorie           | Bennici  | Finito      |
+
+
+### Review
+
+> [DSL] -> Il DSL per il core avanzato è stato portato a termine, migliorandolo rispetto al DSL precendente.  
+> [simulazione] -> Abbiamo iniziato a pensare alla logica per passare i parametri alla view, progettando le strutture dati che conterranno i parametri e i dati per il report e
+> per l'andamento che saranno passati alla view.  
+> [view] -> Durante la settimana è stata aggiunta una nuova classe per definire (Nel modo più generico possibile, in modo da lasciare completa libertà all'utente) i parametri della simulazione.
+> Allo stesso modo anche un oggetto che, leggendo la lista di parametri da settare renderizza sotto forma di lista compilabile i vari parametri ed effettua un controllo sulla validità
+> del dato inserito. 
+> 
+> Non sono stati raggiunti tutti gli obiettivi prefissati a causa di rallentamenti causati da impegni relativi ai corsi, ma ci siamo portati al punto da avere tutti gli strumenti
+> per raggiungere gli obbiettivi prefissati (View per definire i parametri, pseudocodice per simulazioni e sistema per report).
+
+## Sprint 5 (30/10/2024)
+
+### Sprint planning
+
+> In questo sprint ci prefiggiamo di implementare il prototipo di simulazione e scrivere le simulazioni d'esempio. 
+> Parallelamente finiremo di implementare la logica per realizzare il report.
+> Più precisamente
+> * intendiamo integrare la view con il core in modo tale da visualizzare il prototipo di simulazione e terminare il sistema per definire i parametri
+> della simulazione.
+> * finire di progettare le simulazioni, definendo come realizzare i system
+> * continuare a lavorare alla logica per realizzare il report finale e iniziare a realizzare la logica per visualizzare l'andamento della simulazione
+
+
+| Product backlog item                                                                                          | Sprint task                              | Assignee  | Status       |
+|---------------------------------------------------------------------------------------------------------------|------------------------------------------|-----------|--------------|
+| Implementare la GUI                                                                                           | Studiare Laminar                         | Giannini  | Iniziato     |
+|                                                                                                               | Integrare JCEF                           | Giannini  | Iniziato     |
+| Come utente voglio poter configurare i parametri della mia simulazione (anche) tramite GUI prima di avviarla  | Sistema per definire i parametri         | Giannini  | Iniziato     |
+|                                                                                                               | Logica per passare i parametri alla view | Bennici   | Iniziato     |
+| Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework               | Progettare le simulazioni                | Tutti     | Da iniziare  |
+|                                                                                                               | Implemetare le simulazioni               | Tutti     | Da iniziare  |
+| Come utente voglio avere un report dell'andamento della simulazione                                           | Progettare come realizzare il report     | Vasiliu   | Iniziato     |
+| Come utente voglio sapere come sta evolvendo la simulazione                                                   | Progettare la logica                     | Vasiliu   | Da iniziare  |
+
+
