@@ -19,7 +19,7 @@ object Simulation:
 
     for tick <- 1 to 10 do
       println(s"Tick $tick")
-      world.update()
+      update(world)
 
   @main def runSimulation(): Unit =
     start()
