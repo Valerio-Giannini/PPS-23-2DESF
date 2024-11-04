@@ -13,46 +13,46 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue // Import per
 object Simulation:
 
   val world: WorldTrait = WorldJS.apply()
+  private var running = false
 
-  // Funzione per inizializzare il mondo dopo aver ricevuto il numero di entità
-  private def initializeWorld(entitiesNumber: List[(String, Int)]): Unit =
-    createEntities(entitiesNumber)
+  // Funzione per inizializzare il mondo dopo aver ricevuto il numero di entità e le loro posizioni
+  private def initializeWorld(entitiesNumber: Int, posX: Double, posY: Double): Unit =
+    createEntities(entitiesNumber, posX, posY)
 
     world.addSystem(MovementSystem())
     world.addSystem(CollisionSystem())
 
-  // Funzione per creare le entità
-  private def createEntities(entitiesNumber: List[(String, Int)]): List[Entity] =
-    entitiesNumber.flatMap {
-      case ("Entities", n) =>
-        List.fill(n)(world.createEntity(Position(randomPos()._1, randomPos()._2), Speed(randomVel()._1, randomVel()._2)))
-      case _ =>
-        List.empty // Ignora altre coppie che non sono "Entità"
+  // Funzione per creare le entità con le posizioni specificate
+  private def createEntities(entitiesNumber: Int, posX: Double, posY: Double): List[Entity] =
+    List.fill(entitiesNumber) {
+      val entity = world.createEntity()
+      world.addComponent(entity, Position(posX, posY))
+      world.addComponent(entity, Speed(randomSpeed()._1, randomSpeed()._2))
+      entity
     }
 
-  // Funzione per generare una posizione casuale
-  private def randomPos(): (Double, Double) =
-    val randomX: Double = Random.between(0, 500)
-    val randomY: Double = Random.between(0, 500)
-    (randomX, randomY)
-
-  // Funzione per generare una posizione casuale
-  private def randomVel(): (Double, Double) =
-    val randomX: Double = Random.between(-1, 1)
-    val randomY: Double = Random.between(-1, 1)
-    (randomX, randomY)
+  def randomSpeed(): (Double, Double) = {
+    val speedX = -1 + (2) * Random.nextDouble()
+    val speedY = -1 + (2) * Random.nextDouble()
+    (speedX, speedY)
+  }
 
   // Funzione per avviare la simulazione
   private def start(): Unit =
     val worldDiv = RenderWorld.renderWorld(entitiesSignal)
     render(dom.document.getElementById("simulation-container"), worldDiv)
 
-    // Rallento la simulazione
-    EventStream.periodic(50).take(1000).foreach { _ =>
-      world.update()
-      val newEntities = updateEntities()
-      entitiesVar.set(newEntities)
-    }(unsafeWindowOwner)
+    EventStream.periodic(50)
+      .takeWhile(_ => running) // Continua solo finché `running` è `true`
+      .foreach { _ =>
+        world.update()
+        val newEntities = updateEntities()
+        entitiesVar.set(newEntities)
+      }(unsafeWindowOwner)
+
+  def stop(): Unit =
+    running = false
+
 
   private val entitiesVar = Var[List[(Entity.ID, (Double, Double))]](List.empty)
 
@@ -66,13 +66,42 @@ object Simulation:
 
   // Funzione per avviare la simulazione e attendere la configurazione delle entità
   def runSimulation(): Unit =
-    // Chiamata alla configurazione (restituisce un Future)
-    val entitiesFuture: Future[List[(String, Int)]] = ConfigureSimulation.configureSimulation("BouncingBalls")(Nil)
+    if (!running) {
+      running = true
+      // Creo la lista di parametri da settare
+      val entities = ViewParameter(
+        label = Some("Numero di entità"),
+        value = 1, // Imposta qui il valore iniziale, ad esempio 0 o un altro valore di default
+        minValue = Some(1)
+      )
+      val posX = ViewParameter(
+        label = Some("Posizione Asse X"),
+        value = 0, // Imposta qui il valore iniziale, ad esempio 0 o un altro valore di default
+        minValue = Some(0),
+        maxValue = Some(500)
+      )
+      val posY = ViewParameter(
+        label = Some("Posizione Asse Y"),
+        value = 0, // Imposta qui il valore iniziale, ad esempio 0 o un altro valore di default
+        minValue = Some(0),
+        maxValue = Some(500)
+      )
 
-    // Gestiamo il risultato asincrono con `map`
-    entitiesFuture.foreach: entitiesNumber =>
-      initializeWorld(entitiesNumber) // Inizializza il mondo con le entità configurate
-      start()                         // Avvia la simulazione
+      // Chiamata alla configurazione (restituisce un Future)
+      val entitiesConfigurations: Future[List[(String, AnyVal)]] = ConfigureParam.configureParameters(entities :: posX :: posY :: Nil)
+
+      // Gestiamo il risultato asincrono con `map`
+      entitiesConfigurations.foreach { configurations =>
+        val entityCount = configurations.collectFirst { case ("Numero di entità", n: Int) => n }.getOrElse(1)
+        val initialPosX = configurations.collectFirst { case ("Posizione Asse X", x: Double) => x }.getOrElse(0.0)
+        val initialPosY = configurations.collectFirst { case ("Posizione Asse Y", y: Double) => y }.getOrElse(0.0)
+
+        // Inizializza il mondo con il numero di entità configurato e le posizioni specificate
+        initializeWorld(entityCount, initialPosX, initialPosY)
+      }
+
+      start() // Avvia la simulazione
+    }
 
 
 

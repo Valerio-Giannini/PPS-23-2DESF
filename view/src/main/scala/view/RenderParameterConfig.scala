@@ -12,69 +12,83 @@ object RenderParameterConfig:
                               onSave: Map[String, AnyVal] => Unit
                             ): Div = {
 
-    // Variabile per salvare i risultati
-    val results = scala.collection.mutable.Map[String, AnyVal]()
+    // Lista di coppie (parametro, campo di input) per riferimento diretto
+    val inputFields = paramsList.map { param =>
+      val inputBox = input(
+        placeholder := param.value.toString
+      )
+      (param, inputBox)
+    }
 
-    // Funzione che verifica se il valore è idoneo
-    def validateAndSave(param: ViewParameter, inputBox: Input, errorHandler: Span): Unit = {
-      val rawValue = inputBox.ref.value
+    // Funzione per validare tutti i parametri e, se tutti sono validi, salvare i risultati
+    def validateAll(): Unit = {
+      // Prova a costruire la mappa dei risultati solo se tutti i parametri sono validi
+      val maybeResults = inputFields.flatMap { case (param, inputBox) =>
+        val rawValue = inputBox.ref.value
 
-      // Controlla se il valore è un numero
-      val parsedValue = Try(rawValue.toDouble).toOption
+        // Controlla se il valore è un numero
+        val parsedValue = Try(rawValue.toDouble).toOption
 
-      parsedValue match {
-        case Some(value) =>
-          // Verifica i limiti, se presenti
-          val minCheck = param.minValue.forall(min => value >= min.asInstanceOf[Double])
-          val maxCheck = param.maxValue.forall(max => value <= max.asInstanceOf[Double])
+        parsedValue match {
+          case Some(value) =>
+            // Verifica i limiti, se presenti
+            val minCheck = param.minValue.forall(min => value >= min.asInstanceOf[Double])
+            val maxCheck = param.maxValue.forall(max => value <= max.asInstanceOf[Double])
 
-          if (minCheck && maxCheck) {
-            inputBox.amend(
-              borderColor := "green",
-              borderWidth := "1px"
-            ) // Bordo verde per indicare successo
-            results(param.id) = value.asInstanceOf[AnyVal]
-            
-          } else {
+            if (minCheck && maxCheck) {
+              // Imposta il bordo verde per indicare successo
+              inputBox.amend(
+                borderColor := "green",
+                borderWidth := "1px"
+              )
+              // Restituisci una Some con la coppia chiave-valore se valido
+              Some(param.label.getOrElse("Unnamed") -> value.asInstanceOf[AnyVal])
+            } else {
+              // Imposta il bordo rosso in caso di errore
+              inputBox.amend(
+                borderColor := "red",
+                borderWidth := "1px"
+              )
+              None // Indica che questo parametro non è valido
+            }
+
+          case None =>
+            // Imposta il bordo rosso in caso di errore
             inputBox.amend(
               borderColor := "red",
               borderWidth := "1px"
             )
-            
-          }
-
-        case None =>
-          inputBox.amend(
-            borderColor := "red",
-            borderWidth := "1px"
-          )
-          
+            None // Indica che questo parametro non è valido
+        }
       }
 
-      // Verifica se tutti i parametri sono validi e completi
-      if (results.size == paramsList.size) onSave(results.toMap)
+      // Verifica se tutti i parametri sono validi (ossia, `maybeResults` ha lo stesso numero di elementi di `paramsList`)
+      if (maybeResults.size == paramsList.size) {
+        // Completa `onSave` con la mappa dei risultati solo se tutti sono validi
+        onSave(maybeResults.toMap)
+      }
     }
 
-    // Elemento Div che contiene la lista di parametri renderizzati
+    // Elemento Div che contiene la lista di parametri renderizzati e il pulsante OK
     div(
-      children <-- Var(paramsList.map { param =>
-        val inputBox = input().amend(
-          placeholder := param.value.toString
-        )
+      // Inseriamo ogni elemento come parte della lista `Seq`
+      inputFields.map { case (param, inputBox) =>
         val errorHandler = span()
 
         div(
           cls := "parameter-row",
-          label(param.label.getOrElse(param.id)),
+          label(param.label.getOrElse("Unnamed")),
+          paddingRight := "20px",
           param.minValue.map(min => span(s"Min: $min")),
+          paddingRight := "20px",
           inputBox,
+          paddingRight := "20px",
           param.maxValue.map(max => span(s"Max: $max")),
-          button(
-            "OK",
-            onClick --> { _ => validateAndSave(param, inputBox, errorHandler) }
-          ),
           errorHandler
         )
-      })
+      } :+ button(
+        "OK",
+        onClick --> { _ => validateAll() }
+      )
     )
   }
