@@ -7,7 +7,7 @@ import RenderEntity.renderEntity
 object RenderWorld:
 
   // Funzione che prende la lista di entità e le renderizza
-  def renderWorld(entitiesSignal: Signal[List[(Entity.ID, (Double, Double))]]): HtmlElement =
+  def renderWorld(entitiesSignal: Signal[List[(Int, (Double, Double))]]): HtmlElement =
       div(
       cls("world"),
       width := "510px",  // Dimensione del mondo

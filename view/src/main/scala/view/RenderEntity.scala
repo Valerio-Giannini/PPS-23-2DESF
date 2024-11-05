@@ -5,7 +5,7 @@ import com.raquo.laminar.api.L.*
 
 object RenderEntity:
 
-  def renderEntity(entityId: Entity.ID, entityPos: (Double, Double)): HtmlElement =
+  def renderEntity(entityPos: (Int, (Double, Double))): HtmlElement =
     val (x, y) = entityPos
     div(
       cls("entity"),
@@ -20,8 +20,7 @@ object RenderEntity:
       justifyContent := "center",
       alignItems := "center",
       color := "white",
-      fontSize := "20px",
-      entityId.toString  // Mostra il numero al centro
+      fontSize := "20px"
     )
 
 

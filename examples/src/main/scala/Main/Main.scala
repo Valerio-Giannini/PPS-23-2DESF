@@ -18,7 +18,7 @@ object Main:
       if (running) {
         Simulation.runSimulation() // Avvia la simulazione
       } else {
-        Simulation.stop() // Ferma la simulazione
+        //Simulation.stop() // Ferma la simulazione
       }
     }(unsafeWindowOwner)
 
