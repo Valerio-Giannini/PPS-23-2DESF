@@ -10,12 +10,11 @@ object ConfigureParam:
   def configureParameters(paramsList: List[ViewParameter]): Future[List[(String, AnyVal)]] =
     val promise = Promise[List[(String, AnyVal)]]()
 
-    // Funzione `onSave` per completare la promise con i risultati configurati
-    val onSave: Map[String, AnyVal] => Unit = results => {
+    // Funzione onSave per completare la promise con i risultati configurati
+    val onSave: Map[String, AnyVal] => Unit = results =>
       promise.success(results.toList)
-    }
 
-    // Chiama `renderParametersConfig` con `paramsList` e `onSave`
+    // Chiama renderParametersConfig con paramsList e onSave
     val parameterConfig = RenderParameterConfig.renderParametersConfig(paramsList, onSave)
 
     // Renderizza l'elemento di configurazione nel contenitore della simulazione

@@ -65,7 +65,9 @@ object Simulation:
 
   // Funzione per avviare la simulazione
   private def start(): Unit =
-    val worldDiv = RenderWorld.renderWorld(entitiesSignal)
+    
+    val worldDiv = RenderWorld.renderWorld(entitiesSignal, (20,"red"), 500)
+    
     render(dom.document.getElementById("simulation-container"), worldDiv)
 
     EventStream.periodic(50)
@@ -102,13 +104,13 @@ object Simulation:
       )
       val posX = ViewParameter(
         label = Some("Posizione Asse X"),
-        value = 0, // Imposta qui il valore iniziale, ad esempio 0 o un altro valore di default
+        value = 0, 
         minValue = Some(0),
         maxValue = Some(500)
       )
       val posY = ViewParameter(
         label = Some("Posizione Asse Y"),
-        value = 0, // Imposta qui il valore iniziale, ad esempio 0 o un altro valore di default
+        value = 0, 
         minValue = Some(0),
         maxValue = Some(500)
       )

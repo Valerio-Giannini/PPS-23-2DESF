@@ -1,27 +1,32 @@
 package view
 
-import core.Entity
 import com.raquo.laminar.api.L.*
 
 object RenderEntity:
 
-  def renderEntity(entityPos: (Int, (Double, Double))): HtmlElement =
-    val (x, y) = entityPos
+  def renderEntity(entityPos: (Int, (Double, Double)),
+                   visualParameter: (Int, String)): HtmlElement =
+    
+    val (id, (x, y)) = entityPos
+    val (dimension, entityColor) = visualParameter    
+
     div(
       cls("entity"),
       left := s"${x}px",
       top := s"${y}px",
-      width := "20px",  // Dimensione dell'entità
-      height := "20px",
-      backgroundColor := "blue",
-      borderRadius := "50%",  // Trasforma il quadrato in un cerchio
+      width := s"${dimension}px",  
+      height := s"${dimension}px",
+      backgroundColor := entityColor,    
+      borderRadius := "50%",       
       position := "absolute",
       display := "flex",
       justifyContent := "center",
       alignItems := "center",
       color := "white",
-      fontSize := "20px"
+      fontSize := "20px",
+      s"$id"                       
     )
+
 
 
 
