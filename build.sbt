@@ -67,3 +67,8 @@ lazy val view = project
       "org.scala-js" %%% "scalajs-dom" % "2.8.0"
     )
   )
+
+lazy val benchmarks = project
+  .in(file("benchmarks"))
+  .dependsOn(core)
+  .enablePlugins(JmhPlugin)
