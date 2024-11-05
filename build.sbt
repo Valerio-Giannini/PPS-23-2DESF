@@ -54,7 +54,6 @@ lazy val examples = project
     ),
     scalaJSUseMainModuleInitializer := true,
     Compile / fastOptJS / artifactPath := baseDirectory.value / "target/scala-3.3.3/main.js",
-    Compile / mainClass := Some("Main.Main")
   )
 
 // Modulo view che dipende da coreJS
