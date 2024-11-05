@@ -1,6 +1,6 @@
 package view
 
-import coreJS.Entity
+import core.Entity
 import com.raquo.laminar.api.L.*
 
 object RenderEntity:

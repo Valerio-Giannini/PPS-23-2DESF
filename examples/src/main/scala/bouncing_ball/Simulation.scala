@@ -1,8 +1,8 @@
 package bouncing_ball
 
 import bouncing_ball.{Position, Speed}
-import coreJS.{Entity, WorldTrait}
-import coreJS.WorldJS
+import core.{Entity, World}
+import core.World
 import view.*
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
@@ -12,7 +12,7 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue // Import per
 
 object Simulation:
 
-  val world: WorldTrait = WorldJS.apply()
+  val world: World = World.apply()
   private var running = false
 
   // Funzione per inizializzare il mondo dopo aver ricevuto il numero di entità e le loro posizioni

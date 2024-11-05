@@ -1,11 +1,11 @@
 package bouncing_ball
 
-import coreJS.{System, WorldTrait}
+import core.{System, World}
 
 // Movement system: updates position using speed
 class MovementSystem extends System:
 
-  override def update(world: WorldTrait): Unit =
+  override def update(world: World): Unit =
     for entity <- world.getEntities do
       (world.getComponent[Position](entity), world.getComponent[Speed](entity)) match
       case (Some(pos), Some(speed)) =>
@@ -19,7 +19,7 @@ class CollisionSystem extends System:
   private val worldWidth = 500.0 // Larghezza del mondo
   private val worldHeight = 500.0 // Altezza del mondo
 
-  override def update(world: WorldTrait): Unit =
+  override def update(world: World): Unit =
     val entities = world.getEntities
 
     // Verifica le collisioni tra entità
