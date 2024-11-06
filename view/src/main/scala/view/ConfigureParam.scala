@@ -3,7 +3,6 @@ package view
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
 import scala.concurrent.{Future, Promise}
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 object ConfigureParam:
 

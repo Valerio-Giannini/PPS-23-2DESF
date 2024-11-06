@@ -1,8 +1,34 @@
+//package bouncing_ball
+//
+//
+//import dsl.DSL.*
+//
+//object Simulation:
+//  private val world = newWorld
+//
+//  def initializeWorld(): Unit =
+//    into(world).spawnNewEntityWith(Position(0, 0), Speed(1, 1))
+//    into(world).spawnNewEntityWith(Position(10, 10), Speed(-1, -1))
+//
+//    into(world).include(MovementSystem())
+//    into(world).include(CollisionSystem())
+//    into(world).include(PrintPositionAndSpeedOfEntitiesSystem())
+//
+//  def start(): Unit =
+//    initializeWorld()
+//
+//    for tick <- 1 to 10 do
+//      println(s"Tick $tick")
+//      world.update()
+//
+//  @main def runSimulation(): Unit =
+//    start()
+
+
 package bouncing_ball
 
 import bouncing_ball.{Position, Speed}
-import coreJS.{Entity, WorldTrait}
-import coreJS.WorldJS
+import core.{Entity, World, ComponentTag}
 import view.*
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
@@ -12,7 +38,7 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue // Import per
 
 object Simulation:
 
-  val world: WorldTrait = WorldJS.apply()
+  val world: World = World.apply()
   private var running = false
 
   // Funzione per inizializzare il mondo dopo aver ricevuto il numero di entità e le loro posizioni
@@ -54,15 +80,15 @@ object Simulation:
     running = false
 
 
-  private val entitiesVar = Var[List[(Entity.ID, (Double, Double))]](List.empty)
+  private val entitiesVar = Var[List[(Int, (Double, Double))]](List.empty)
 
-  private def updateEntities(): List[(Entity.ID, (Double, Double))] =
-    world.getEntities.map { entity =>
-      val position = world.getComponent[Position](entity).getOrElse(Position(0, 0))
-      (entity.id, (position.x, position.y))
-    }
+  private def updateEntities(): List[(Int, (Double, Double))] =
+    world.entitiesWithAtLeastComponents(ComponentTag[Position]).toList.map : entity =>
+      val pos= entity.get[Position].getOrElse(Position(0, 0))
+      (entity.id, (pos.x, pos.y))
 
-  def entitiesSignal: Signal[List[(Entity.ID, (Double, Double))]] = entitiesVar.signal
+
+  def entitiesSignal: Signal[List[(Int, (Double, Double))]] = entitiesVar.signal
 
   // Funzione per avviare la simulazione e attendere la configurazione delle entità
   def runSimulation(): Unit =
@@ -102,9 +128,3 @@ object Simulation:
 
       start() // Avvia la simulazione
     }
-
-
-
-
-
-

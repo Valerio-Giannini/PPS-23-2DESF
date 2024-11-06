@@ -1,6 +1,9 @@
 package bouncing_ball
 
-import coreJS.Component
+import core.{Component, ComponentTag}
 
-case class Position(var x: Double, var y: Double) extends Component
-case class Speed(var vx: Double, var vy: Double)  extends Component
+case class Position(x: Double, y: Double) extends Component
+case class Speed(vx: Double, vy: Double)  extends Component
+
+val POSITION = ComponentTag[Position]
+val SPEED = ComponentTag[Speed]

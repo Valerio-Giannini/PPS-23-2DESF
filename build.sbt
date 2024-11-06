@@ -13,10 +13,8 @@ lazy val root = project
 // Modulo core con sottoprogetti specifici per JVM e JS
 lazy val core = project
   .in(file("core/shared")) // Codice condiviso tra JVM e JS
+  .enablePlugins(ScalaJSPlugin)
   .settings(
-    libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.19",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19" % Test,
-    resolvers += "Artima Maven Repository" at "https://repo.artima.com/releases"
   )
 
 lazy val coreJVM = project
@@ -25,7 +23,7 @@ lazy val coreJVM = project
   .settings(
     libraryDependencies ++= Seq(
       "org.scalactic" %% "scalactic" % "3.2.19",
-      "org.scalatest" %% "scalatest" % "3.2.19" % Test
+      "org.scalatest" %% "scalatest" % "3.2.19" % Test,
     )
   )
 
@@ -68,3 +66,8 @@ lazy val view = project
       "org.scala-js" %%% "scalajs-dom" % "2.8.0"
     )
   )
+
+lazy val benchmarks = project
+  .in(file("benchmarks"))
+  .dependsOn(core)
+  .enablePlugins(JmhPlugin)
