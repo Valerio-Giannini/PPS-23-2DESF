@@ -32,8 +32,7 @@ import core.{ComponentTag, Entity, World}
 import view.*
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
-import view.init.{ConfigureParam, ViewParameter}
-import view.sim.RenderWorld
+import view.init.ViewParameter
 
 import scala.util.Random
 import scala.concurrent.Future

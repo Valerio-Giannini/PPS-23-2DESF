@@ -6,8 +6,7 @@ import com.raquo.airstream.core.EventStream
 import com.raquo.laminar.api.L.*
 import core.ComponentTag
 import org.scalajs.dom
-import view.init.{ConfigureParam, ViewParameter}
-import view.sim.RenderWorld
+import view.init.ViewParameter
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
