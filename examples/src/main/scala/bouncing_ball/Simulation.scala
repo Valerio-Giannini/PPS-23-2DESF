@@ -28,10 +28,13 @@
 package bouncing_ball
 
 import bouncing_ball.{Position, Speed}
-import core.{Entity, World, ComponentTag}
+import core.{ComponentTag, Entity, World}
 import view.*
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
+import view.init.{ConfigureParam, ViewParameter}
+import view.sim.RenderWorld
+
 import scala.util.Random
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue // Import per l'ExecutionContext globale
@@ -72,6 +75,10 @@ object Simulation:
       .takeWhile(_ => running) // Continua solo finché `running` è `true`
       .foreach { _ =>
         world.update()
+        val newEntities1 = world.entities
+        view.renderEntities(newEntities1)
+
+
         val newEntities = updateEntities()
         entitiesVar.set(newEntities)
       }(unsafeWindowOwner)

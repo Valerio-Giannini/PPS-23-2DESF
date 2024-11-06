@@ -1,7 +1,8 @@
-package view
+package view.init
 
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
+
 import scala.util.Try
 
 object RenderParameterConfig:

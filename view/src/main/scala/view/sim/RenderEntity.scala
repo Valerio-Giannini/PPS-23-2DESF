@@ -1,7 +1,7 @@
-package view
+package view.sim
 
-import core.Entity
 import com.raquo.laminar.api.L.*
+import core.Entity
 
 object RenderEntity:
 

@@ -3,7 +3,7 @@ package Main
 import bouncing_ball.Simulation
 import com.raquo.laminar.api.L._
 import org.scalajs.dom
-import view.StartStopSimulation
+import view.utils.StartStopSimulation
 
 object Main:
 

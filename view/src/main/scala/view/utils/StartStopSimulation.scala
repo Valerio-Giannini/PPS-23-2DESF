@@ -1,6 +1,6 @@
-package view
+package view.utils
 
-import com.raquo.laminar.api.L._
+import com.raquo.laminar.api.L.*
 
 object StartStopSimulation:
 

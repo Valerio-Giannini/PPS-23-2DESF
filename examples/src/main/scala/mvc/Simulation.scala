@@ -7,13 +7,14 @@ import scala.util.Random
 
 /** The main model managing the simulation-specific entities and systems. */
 trait Simulation:
-  def entities(): Iterable[Entity]
+  def entities(): Iterable[Entity] //
   var isRunning: Boolean
   def init(entityCount: Int, posX: Double, posY: Double): Unit
   def update(): Unit
-  
 
-object Simulation:
+
+
+object Simulation extends Simulation:
   private val world = World()
   var isRunning: Boolean = false
   
@@ -27,6 +28,7 @@ object Simulation:
   private def initEntities(entityCount: Int, posX: Double, posY: Double): Unit =
     (1 to entityCount).foreach { _ =>
       val entity = world.createEntity(Position(posX, posY), randomSpeed())
+      // ????
       world.addComponent(entity, Position(posX, posY))
       world.addComponent(entity, randomSpeed())
     }

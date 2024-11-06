@@ -3,13 +3,13 @@ package mvc
 import bouncing_ball.Simulation
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
-import view.{StartStopSimulation, ViewParameter}
+import view.init.ViewParameter
+import view.utils.StartStopSimulation
 
 object Main:
 
   def main(args: Array[String]): Unit = 
     InitSimulationView.start()
-
 
 
 object InitSimulationView:

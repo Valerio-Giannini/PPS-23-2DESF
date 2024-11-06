@@ -1,8 +1,8 @@
-package view
+package view.sim
 
-import core.Entity
 import com.raquo.laminar.api.L.*
-import RenderEntity.renderEntity
+import core.Entity
+import view.sim.RenderEntity.renderEntity
 
 object RenderWorld:
 
