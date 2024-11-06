@@ -5,10 +5,10 @@ import com.raquo.laminar.api.L.*
 object RenderEntity:
 
   def renderEntity(entityPos: (Int, (Double, Double)),
-                   visualParameter: (Int, String)): HtmlElement =
+                   entityDesign: (Int, String)): HtmlElement =
     
     val (id, (x, y)) = entityPos
-    val (dimension, entityColor) = visualParameter    
+    val (dimension, entityColor) = entityDesign 
 
     div(
       cls("entity"),

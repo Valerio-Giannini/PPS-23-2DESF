@@ -8,7 +8,7 @@ object RenderWorld:
   // Funzione che prende la lista di entità e le renderizza
   def renderWorld(
                    entitiesSignal: Signal[List[(Int, (Double, Double))]],
-                   visualParameter: (Int, String),
+                   entityDesign: (Int, String),
                    worldSize: Int
                  ): HtmlElement =
     
@@ -22,7 +22,7 @@ object RenderWorld:
       // Effettua il rendering di tutte le entità presenti nel mondo
       children <-- entitiesSignal.map(entities =>
         entities.map((entityId, entityPos) =>
-          renderEntity((entityId, entityPos), visualParameter) // Passa il VisualParameter a renderEntity
+          renderEntity((entityId, entityPos), entityDesign) // Passa il VisualParameter a renderEntity
         )
       )
     )
