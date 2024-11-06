@@ -60,7 +60,7 @@ lazy val view = project
   .dependsOn(coreJS)
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    libraryDependencies += "org.scalameta" %%% "munit" % "0.7.29" % Test,
+
     libraryDependencies ++= Seq(
       "com.raquo" %%% "laminar" % "17.0.0",
       "com.raquo" %%% "airstream" % "17.0.0",
