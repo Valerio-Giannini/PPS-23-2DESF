@@ -1,4 +1,4 @@
-//package bouncing_ball
+/*//package bouncing_ball
 //
 //
 //import dsl.DSL.*
@@ -116,4 +116,4 @@ object Simulation:
       }
 
       start() // Avvia la simulazione
-    }
+    }*/

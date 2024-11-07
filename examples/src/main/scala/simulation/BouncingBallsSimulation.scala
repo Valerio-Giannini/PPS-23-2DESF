@@ -51,7 +51,3 @@ object BounceSimulation extends Simulation:
     println(Report.getReport)
 //    Report.showAvgSpeed()
 //    Report.showMovingBalls()
-
-@main def run(): Unit =
-  val simView = SimulationViewImpl
-  SimulationController(BounceSimulation, simView).start()

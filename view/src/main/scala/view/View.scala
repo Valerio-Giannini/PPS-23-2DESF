@@ -47,8 +47,6 @@ object ParamsViewImpl extends ParamsView:
     promise.future
 
 object ReportViewImpl extends ReportView:
-  
-
   def report(infos: List[(String, List[(AnyVal, AnyVal)])]): Unit =
     val container = dom.document.getElementById("report-container")
     val renderInfos = renderReport(infos)
