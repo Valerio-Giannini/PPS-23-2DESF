@@ -1,8 +1,9 @@
 package renderSim
 
 import bouncing_ball.Position
-import view.View
+import view.{ReportViewImpl, View}
 import core.Entity
+
 import scala.concurrent.{Future, Promise}
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
