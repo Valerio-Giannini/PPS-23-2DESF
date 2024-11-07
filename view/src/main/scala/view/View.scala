@@ -38,7 +38,7 @@ object ParamsViewImpl extends ParamsView:
     val paramsConfig = RenderInit.renderInit(params, onSave)
     
     //Setta Il container dove visualizzare il render
-    val container = dom.document.getElementById("simulation-container")
+    val container = dom.document.getElementById("init-container")
     // Renderizza l'elemento di configurazione nel contenitore della simulazione
     ViewImpl.show(container, paramsConfig)
     

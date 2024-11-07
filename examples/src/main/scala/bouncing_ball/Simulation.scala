@@ -60,12 +60,13 @@ object Simulation:
       entity
 
   def randomSpeed(): (Double, Double) =
-    val speedX = -1 + (2) * Random.nextDouble()
-    val speedY = -1 + (2) * Random.nextDouble()
+    val speedX = 1
+    val speedY = 1
     (speedX, speedY)
 
   // Funzione per avviare la simulazione
   private def start(): Unit =
+  
     SimulationViewImpl.renderSim(world.entities)
     EventStream.periodic(50)
       .takeWhile(_ => running)
