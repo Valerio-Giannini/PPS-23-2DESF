@@ -3,17 +3,14 @@ package simulation
 import core.World
 import dsl.DSL.*
 
+import scala.annotation.tailrec
+
 trait Simulation:
   given world: World = newWorld
-
-  var tick: Int = 1
 
   def init: Unit =
     setParams
     initWorld
-    runSimulation
-    showReport
-
 
   def setParams: Unit
 
@@ -21,20 +18,26 @@ trait Simulation:
 
   def condition: Boolean
 
-  def runSimulation: Unit =
-    while condition
-    do
-      println(s"Tick: ${tick}")
+  def tick(current_tick: Int): Unit =
+    println(s"Tick: $current_tick")
+    update(world)
+    updateReport(current_tick)
+    showStats
+    println("-------------------")
 
-      update(world)
-      updateReport
-      showStats
-      println("-------------------")
+  def runSimulation(using initial_tick: Int = 0): Unit =
+    @tailrec
+    def _simulationLoop(current_tick: Int): Unit =
+      if condition then
+        tick(current_tick)
+        _simulationLoop(current_tick+1)
+    _simulationLoop(initial_tick)
+    showReport
 
-      tick += 1
   def showStats: Unit
 
-  def updateReport: Unit
+  def updateReport(current_tick: Int): Unit
+
   def showReport: Unit
 
 

@@ -15,10 +15,10 @@ object Report:
   val avgSpeed = new DataTracker[Int, Double]
   val movingBalls = new DataTracker[Int, Int]
 
-  def updateAvgSpeed(tick: Int, value: Double): Unit =
+  def updateAvgSpeed(value: Double)(using tick: Int = 0): Unit =
     avgSpeed.updateData(tick, value)
 
-  def updateMovingBalls(tick: Int, value: Int): Unit =
+  def updateMovingBalls(value: Int)(using tick: Int = 0): Unit =
     movingBalls.updateData(tick, value)
 
   def showAvgSpeed(): Unit =

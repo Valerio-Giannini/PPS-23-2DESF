@@ -32,20 +32,22 @@ object BounceSimulation extends Simulation:
     for ((pos, vel) <- positions.zip(velocities)) do
       into(world).spawnNewEntityWith(Position(pos._1, pos._2), Speed(vel._1, vel._2))
 
+    Report.updateAvgSpeed(Stats.calcAvgSpeed)
+    Report.updateMovingBalls(Stats.numberOfMovingBalls)
+
   override def showStats: Unit =
     println(s"Velocità media ${Stats.calcAvgSpeed}")
     println(s"Numero di entità in movimento ${Stats.numberOfMovingBalls}")
     println(s"Numero di entità ferme ${Stats.numberOfStoppedBalls}")
 
-  override def updateReport: Unit =
-    Report.updateAvgSpeed(tick, Stats.calcAvgSpeed)
-    Report.updateMovingBalls(tick, Stats.numberOfMovingBalls)
+  override def updateReport(using current_tick: Int): Unit =
+    Report.updateAvgSpeed(Stats.calcAvgSpeed)
+    Report.updateMovingBalls(Stats.numberOfMovingBalls)
 
   override def showReport: Unit =
     Report.showAvgSpeed()
     Report.showMovingBalls()
 
-
-
 @main def run(): Unit =
   BounceSimulation.init
+  BounceSimulation.runSimulation
