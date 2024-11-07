@@ -120,9 +120,9 @@ Entity 2: Position(5.0, 5.0), Speed(0.0, 0.0)
 | Come utente voglio poter definire la mia simulazione con semplicità | Definire DSL per il core base           | Vasiliu  | Iniziato    |
 |                                                                     | Definire DSL per la view                | Vasiliu  | Da iniziare |
 |                                                                     | Definire DSL per core avanzato          | Vasiliu  | Da iniziare |
-| Migliorare il nucleo del framework                                  | Introdurre test di performance          | Bennici  | Iniziato    |
+| Migliorare il nucleo del framework                                  | Introdurre test di performance          | Bennici  | Finito      |
 |                                                                     | Ricerca ed analisi dei possibili design | Bennici  | Iniziato    |
-|                                                                     | Implementazione delle migliorie         | Bennici  | Da iniziare |
+|                                                                     | Implementazione delle migliorie         | Bennici  | Iniziato    |
 
 ### Review
 

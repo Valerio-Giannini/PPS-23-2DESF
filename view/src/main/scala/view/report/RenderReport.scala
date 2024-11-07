@@ -1,3 +1,5 @@
+package view.report
+
 /*package view
 
 import com.raquo.laminar.api.L.*

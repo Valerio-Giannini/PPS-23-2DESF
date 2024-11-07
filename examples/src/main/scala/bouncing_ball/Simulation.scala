@@ -28,10 +28,13 @@
 package bouncing_ball
 
 import bouncing_ball.{Position, Speed}
-import core.{Entity, World, ComponentTag}
+import core.{ComponentTag, Entity, World}
 import view.*
+import renderSim.*
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
+import view.init.ViewParameter
+
 import scala.util.Random
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue // Import per l'ExecutionContext globale
@@ -49,48 +52,33 @@ object Simulation:
     world.addSystem(CollisionSystem())
 
   // Funzione per creare le entità con le posizioni specificate
-  private def createEntities(entitiesNumber: Int, posX: Double, posY: Double): List[Entity] =
-    List.fill(entitiesNumber) {
+  private def createEntities(entitiesNumber: Int, posX: Double, posY: Double): Iterable[Entity] =
+    Iterable.fill(entitiesNumber):
       val entity = world.createEntity()
       world.addComponent(entity, Position(posX, posY))
       world.addComponent(entity, Speed(randomSpeed()._1, randomSpeed()._2))
       entity
-    }
 
-  def randomSpeed(): (Double, Double) = {
-    val speedX = -1 + (2) * Random.nextDouble()
-    val speedY = -1 + (2) * Random.nextDouble()
+  def randomSpeed(): (Double, Double) =
+    val speedX = 1
+    val speedY = 1
     (speedX, speedY)
-  }
 
   // Funzione per avviare la simulazione
   private def start(): Unit =
-    
-    val worldDiv = RenderWorld.renderWorld(entitiesSignal, (20,"red"), 500)
-    
-    render(dom.document.getElementById("simulation-container"), worldDiv)
-
+  
+    SimulationViewImpl.renderSim(world.entities)
     EventStream.periodic(50)
-      .takeWhile(_ => running) // Continua solo finché `running` è `true`
+      .takeWhile(_ => running)
       .foreach { _ =>
+        val newEntities = world.entities
+        SimulationViewImpl.update(newEntities)
         world.update()
-        val newEntities = updateEntities()
-        entitiesVar.set(newEntities)
       }(unsafeWindowOwner)
 
   def stop(): Unit =
     running = false
 
-
-  private val entitiesVar = Var[List[(Int, (Double, Double))]](List.empty)
-
-  private def updateEntities(): List[(Int, (Double, Double))] =
-    world.entitiesWithAtLeastComponents(ComponentTag[Position]).toList.map : entity =>
-      val pos= entity.get[Position].getOrElse(Position(0, 0))
-      (entity.id, (pos.x, pos.y))
-
-
-  def entitiesSignal: Signal[List[(Int, (Double, Double))]] = entitiesVar.signal
 
   // Funzione per avviare la simulazione e attendere la configurazione delle entità
   def runSimulation(): Unit =
@@ -104,20 +92,19 @@ object Simulation:
       )
       val posX = ViewParameter(
         label = Some("Posizione Asse X"),
-        value = 0, 
+        value = 0, // Imposta qui il valore iniziale, ad esempio 0 o un altro valore di default
         minValue = Some(0),
         maxValue = Some(500)
       )
       val posY = ViewParameter(
         label = Some("Posizione Asse Y"),
-        value = 0, 
+        value = 0, // Imposta qui il valore iniziale, ad esempio 0 o un altro valore di default
         minValue = Some(0),
         maxValue = Some(500)
       )
 
       // Chiamata alla configurazione (restituisce un Future)
-      val entitiesConfigurations: Future[List[(String, AnyVal)]] = ConfigureParam.configureParameters(entities :: posX :: posY :: Nil)
-
+      val entitiesConfigurations: Future[Iterable[(String, AnyVal)]] = ParamsViewImpl.init(entities:: posX:: posY:: Nil)
       // Gestiamo il risultato asincrono con `map`
       entitiesConfigurations.foreach { configurations =>
         val entityCount = configurations.collectFirst { case ("Numero di entità", n: Int) => n }.getOrElse(1)
