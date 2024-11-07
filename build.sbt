@@ -50,7 +50,6 @@ lazy val examples = project
       "com.raquo" %%% "airstream" % "17.0.0",
       "org.scala-js" %%% "scalajs-dom" % "2.8.0"
     ),
-    scalaJSUseMainModuleInitializer := true,
     Compile / fastOptJS / artifactPath := baseDirectory.value / "target/scala-3.3.3/main.js",
   )
 
@@ -60,6 +59,7 @@ lazy val view = project
   .dependsOn(coreJS)
   .enablePlugins(ScalaJSPlugin)
   .settings(
+
     libraryDependencies ++= Seq(
       "com.raquo" %%% "laminar" % "17.0.0",
       "com.raquo" %%% "airstream" % "17.0.0",

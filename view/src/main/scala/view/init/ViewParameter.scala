@@ -8,7 +8,4 @@ case class ViewParameter(
                           maxValue: Option[AnyVal] = None
                         )
 
-case class VisualParameter(
-                          dimension: Option[Int] = Some(20),
-                          color: Option[String] = Some("Blue"),
-                        )
+
