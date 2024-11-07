@@ -7,14 +7,15 @@ class DataTracker[X, Y]:
     data = data :+ (x, y)
 
   def showData(label: String): Unit =
+    println(data)
     println(s"Data: $label")
     for (x, y) <- data
     do println(s"x: $x, y: $y")
 
 trait Report:
-    def getReport: List[(String, DataTracker[AnyVal, AnyVal])]
+    def getReport: List[(String, DataTracker[_, _])]
 
-object Report:
+object Report extends Report:
   val avgSpeed = new DataTracker[Int, Double]
   val movingBalls = new DataTracker[Int, Int]
 
@@ -30,9 +31,10 @@ object Report:
   def getMovingBalls(): Unit =
     movingBalls.showData("Moving balls")
 
-  def getReport[X, Y]: List[(String, DataTracker[AnyVal, AnyVal])] =
+  override def getReport: List[(String, DataTracker[_,_])] =
     List(
-      
+      ("Average speed", avgSpeed),
+      ("Moving balls", movingBalls),
     )
 
 

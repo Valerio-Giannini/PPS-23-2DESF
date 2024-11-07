@@ -47,8 +47,10 @@ object BounceSimulation extends Simulation:
     Report.updateMovingBalls(Stats.numberOfMovingBalls)
 
   override def showReport: Unit =
-    Report.showAvgSpeed()
-    Report.showMovingBalls()
+    Report.getReport
+    println(Report.getReport)
+//    Report.showAvgSpeed()
+//    Report.showMovingBalls()
 
 @main def run(): Unit =
   val simView = SimulationViewImpl

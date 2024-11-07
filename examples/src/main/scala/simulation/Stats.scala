@@ -6,7 +6,6 @@ import dsl.DSL.*
 trait Stats:
   def statsSnapshot(using world: World): List[(String, AnyVal)]
 
-
 object Stats extends Stats:
 
   def movingBalls(using world: World): Iterable[Entity] =
@@ -29,6 +28,6 @@ object Stats extends Stats:
   override def statsSnapshot(using world: World): List[(String, AnyVal)] =
     List(
       ("Average speed", calcAvgSpeed),
-      ("Number of movingBalls", numberOfMovingBalls),
+      ("Number of moving balls", numberOfMovingBalls),
       ("Number of stopped balls", numberOfStoppedBalls)
     )
