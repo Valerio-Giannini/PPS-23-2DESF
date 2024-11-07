@@ -25,5 +25,5 @@ object Report:
     avgSpeed.showData("Average speed")
 
   def showMovingBalls(): Unit =
-    avgSpeed.showData("Moving balls")
+    movingBalls.showData("Moving balls")
 
