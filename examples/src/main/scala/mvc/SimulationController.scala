@@ -1,3 +1,4 @@
+/*
 package mvc
 
 import bouncing_ball.Position
@@ -71,3 +72,4 @@ class SimulationController extends Controller:
         (entity.id, (pos.x, pos.y))
 
   override def stopSimulation(): Unit = Simulation.isRunning = false
+*/

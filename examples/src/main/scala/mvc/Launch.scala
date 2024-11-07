@@ -1,4 +1,4 @@
-package mvc
+/*package mvc
 
 import bouncing_ball.Simulation
 import com.raquo.laminar.api.L.*
@@ -26,4 +26,4 @@ object InitSimulationView:
         //SimulationController().stopSimulation()
       }
     }(unsafeWindowOwner)
-    render(dom.document.body, app)
+    render(dom.document.body, app)*/
