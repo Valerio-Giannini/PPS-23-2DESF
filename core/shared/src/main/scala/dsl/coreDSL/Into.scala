@@ -121,5 +121,5 @@ object IntoComponentBuilder:
   private class IntoComponentBuilderImpl(world: World, entity: Entity) extends IntoComponentBuilder:
 
     override def add[C <: Component: ComponentTag](component: C): Entity =
-      world.addComponent[C](entity, component)
+      world.addComponent[C](world.entity(entity).get, component)
       world.entity(entity).get
