@@ -1,6 +1,8 @@
 package simulation
 
+import controller.SimulationController
 import dsl.coreDSL.CoreDSL.into
+import renderSim.SimulationViewImpl
 import simulation.SimulationParameters.{ballRadius, borderSize, deceleration}
 
 object BounceSimulation extends Simulation:
@@ -49,5 +51,5 @@ object BounceSimulation extends Simulation:
     Report.showMovingBalls()
 
 @main def run(): Unit =
-  BounceSimulation.init
-  BounceSimulation.runSimulation
+  val simView = SimulationViewImpl
+  SimulationController(BounceSimulation, simView).start()

@@ -11,6 +11,9 @@ class DataTracker[X, Y]:
     for (x, y) <- data
     do println(s"x: $x, y: $y")
 
+trait Report:
+    def getReport: List[(String, DataTracker[AnyVal, AnyVal])]
+
 object Report:
   val avgSpeed = new DataTracker[Int, Double]
   val movingBalls = new DataTracker[Int, Int]
@@ -21,9 +24,15 @@ object Report:
   def updateMovingBalls(value: Int)(using tick: Int = 0): Unit =
     movingBalls.updateData(tick, value)
 
-  def showAvgSpeed(): Unit =
+  def getAvgSpeed(): Unit =
     avgSpeed.showData("Average speed")
 
-  def showMovingBalls(): Unit =
+  def getMovingBalls(): Unit =
     movingBalls.showData("Moving balls")
+
+  def getReport[X, Y]: List[(String, DataTracker[AnyVal, AnyVal])] =
+    List(
+      
+    )
+
 
