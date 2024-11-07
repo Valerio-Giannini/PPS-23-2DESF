@@ -1,28 +1,29 @@
-package view
+package view.init
 
 import com.raquo.laminar.api.L.*
+import org.scalajs.dom
 import scala.util.Try
 
-object RenderParameterConfig:
+object RenderInit:
 
-  // Funzione che renderizza la lista dei parametri
-  def renderParametersConfig(
-                              paramsList: List[ViewParameter],
-                              onSave: Map[String, AnyVal] => Unit
-                            ): Div =
+  // Funzione che renderizza l'iterable dei parametri
+  def renderInit(
+                  paramsList: Iterable[ViewParameter],  
+                  onSave: Map[String, AnyVal] => Unit
+                ): Div =
 
-    // Lista di coppie (parametro, campo di input) per riferimento diretto
-    val inputFields = paramsList.map : param =>
+    // Iterable di coppie (parametro, campo di input) per riferimento diretto
+    val inputFields = paramsList.map { param =>
       val inputBox = input(
         placeholder := param.value.toString
       )
       (param, inputBox)
-
+    }.toList  // Convertiamo a List per mantenere l'ordine nell'iterazione
 
     // Funzione per validare tutti i parametri e, se tutti sono validi, salvare i risultati
     def validateAll(): Unit =
       // Prova a costruire la mappa dei risultati solo se tutti i parametri sono validi
-      val maybeResults = inputFields.flatMap : (param, inputBox) =>
+      val maybeResults = inputFields.flatMap { (param, inputBox) =>
         val rawValue = inputBox.ref.value
 
         // Controlla se il valore è un numero
@@ -57,8 +58,9 @@ object RenderParameterConfig:
               borderWidth := "1px"
             )
             None // Indica che questo parametro non è valido
+      }
 
-
+      // Verifica se tutti i parametri sono validi (ossia, `maybeResults` ha lo stesso numero di elementi di `paramsList`)
       if maybeResults.size == paramsList.size then
         // Completa `onSave` con la mappa dei risultati solo se tutti sono validi
         onSave(maybeResults.toMap)
@@ -71,52 +73,18 @@ object RenderParameterConfig:
 
         div(
           cls := "parameter-row",
-          display := "flex",
-          alignItems := "center",
-          gap := "5px", // Spaziatura tra elementi
-
-          // Label con larghezza fissa di 50px
-          span(
-            cls := "parameter-label",
-            width := "200px",
-            display := "inline-block",
-            param.label.getOrElse("Unnamed")
-          ),
-
-          // Separatore " | "
-          span(
-            cls := "separator",
-            color := "black",
-            " | "
-          ),
-
-          // Campo "Min"
+          label(param.label.getOrElse("Unnamed")),
+          paddingRight := "20px",
           param.minValue.map(min => span(s"Min: $min")),
-
-          // Separatore " | "
-          span(
-            cls := "separator",
-            color := "black",
-            " | "
-          ),
-
-          // Campo di input per il valore del parametro
+          paddingRight := "20px",
           inputBox,
-
-          // Separatore " | "
-          span(
-            cls := "separator",
-            color := "black",
-            " | "
-          ),
-
-          // Campo "Max"
+          paddingRight := "20px",
           param.maxValue.map(max => span(s"Max: $max")),
-
           errorHandler
         )
-      } :+ button(
+      }.toSeq :+ button(
         "OK",
         onClick --> (_ => validateAll())
       )
     )
+
