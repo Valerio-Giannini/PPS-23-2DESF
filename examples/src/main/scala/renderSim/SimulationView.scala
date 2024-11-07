@@ -11,21 +11,19 @@ import view.sim.RenderEntity.renderEntity
 
 trait SimulationView:
   def renderSim(entities: Iterable[Entity]): Unit  //, Iterable[Stat] da aggiungere quando verranno considerate
-  def update(entities: Iterable[Entity]): Unit
-  
+
 object SimulationViewImpl extends SimulationView:
 
   override def renderSim(entities: Iterable[Entity]): Unit =  //, Iterable[Stat] da aggiungere quando verranno considerate
-    val worldDiv = renderWorld(entities)
-    val container = dom.document.getElementById("simulation-container")
-    view.ViewImpl.show(container, worldDiv)
 
-  override def update(entities: Iterable[Entity]): Unit =
     val container = dom.document.getElementById("simulation-container")
     if container != null then
       view.ViewImpl.close(container) // Svuota il contenuto esistente
-      val updatedContent = renderWorld(entities)
-      view.ViewImpl.show(container, updatedContent)
+      val worldDiv = renderWorld(entities)
+      view.ViewImpl.show(container, worldDiv)
+    else
+      val worldDiv = renderWorld(entities)
+      view.ViewImpl.show(container, worldDiv)
 
   private def renderWorld(entities: Iterable[Entity]): Div =
     div(
