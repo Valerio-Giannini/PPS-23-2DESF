@@ -4,7 +4,7 @@ import bouncing_ball.Simulation
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
 import view.init.ViewParameter
-import view.utils.StartStopSimulation
+import view.utils.StartStopButton
 
 object Main:
 
@@ -15,11 +15,11 @@ object Main:
 object InitSimulationView:
   val app = div(
     h1("Simulation App"),
-    StartStopSimulation.startStopButton // Usa il pulsante Start/Stop da StartStopSimulation
+    StartStopButton.startStopButton // Usa il pulsante Start/Stop da StartStopSimulation
   )
 
   def start(): RootNode =
-    StartStopSimulation.isRunning.signal.foreach { running =>
+    StartStopButton.isRunning.signal.foreach { running =>
       if (running) {
         SimulationController().startSimulation()// Avvia la simulazione
       } else {
