@@ -1,6 +1,7 @@
 package view
 
 import init.*
+import report.*
 import core.Entity
 import scala.concurrent.{Future, Promise}
 import com.raquo.laminar.api.L.*
@@ -13,9 +14,9 @@ trait View:
 trait ParamsView:
   def init(params: Iterable[ViewParameter]): Future[Iterable[(String, AnyVal)]]
 
+trait ReportView:
+  def report(infos: List[(String, List[(AnyVal, AnyVal)])]): Unit
 
-//trait ReportView extends View:
-//  def render(Iterable[Plot]): Unit
 
 object ViewImpl extends View:
   def show(container: org.scalajs.dom.Element, content: Div): Unit =
@@ -45,4 +46,11 @@ object ParamsViewImpl extends ParamsView:
     // Restituisce il Future che verrà completato quando tutti i parametri saranno configurati
     promise.future
 
+object ReportViewImpl extends ReportView:
+  
+
+  def report(infos: List[(String, List[(AnyVal, AnyVal)])]): Unit =
+    val container = dom.document.getElementById("report-container")
+    val renderInfos = renderReport(infos)
+    ViewImpl.show(container, renderInfos)
 

@@ -73,15 +73,39 @@ object RenderInit:
 
         div(
           cls := "parameter-row",
-          label(param.label.getOrElse("Unnamed")),
-          paddingRight := "20px",
-          param.minValue.map(min => span(s"Min: $min")),
-          paddingRight := "20px",
-          inputBox,
-          paddingRight := "20px",
-          param.maxValue.map(max => span(s"Max: $max")),
+          label(
+            param.label.getOrElse("Unnamed"),
+            width := "100px", // Imposta una larghezza fissa per la label
+            display := "inline-block", // Assicura che la label occupi lo spazio specificato
+            textAlign := "right" // Allinea il testo a destra
+          ),
+          span(" | "), // Separatore tra label e il primo elemento
+          param.minValue.map(min =>
+            span(
+              s"Min: $min",
+              width := "80px",
+              display := "inline-block",
+              textAlign := "center"
+            )
+          ),
+          span(" | "), // Separatore tra min e inputBox
+          inputBox.amend(
+            width := "150px",
+            display := "inline-block"
+          ),
+          span(" | "), // Separatore tra inputBox e max
+          param.maxValue.map(max =>
+            span(
+              s"Max: $max",
+              width := "80px",
+              display := "inline-block",
+              textAlign := "center"
+            )
+          ),
+          span(" | "), // Separatore tra max e errorHandler
           errorHandler
         )
+
       }.toSeq :+ button(
         "OK",
         onClick --> (_ => validateAll())
