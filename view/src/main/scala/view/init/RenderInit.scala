@@ -8,7 +8,7 @@ object RenderInit:
 
   // Funzione che renderizza l'iterable dei parametri
   def renderInit(
-                  paramsList: Iterable[ViewParameter],  
+                  paramsList: Iterable[ViewParameter],
                   onSave: Map[String, AnyVal] => Unit
                 ): Div =
 
@@ -18,7 +18,7 @@ object RenderInit:
         placeholder := param.value.toString
       )
       (param, inputBox)
-    }.toList  // Convertiamo a List per mantenere l'ordine nell'iterazione
+    }.toList // Convertiamo a List per mantenere l'ordine nell'iterazione
 
     // Funzione per validare tutti i parametri e, se tutti sono validi, salvare i risultati
     def validateAll(): Unit =
@@ -42,7 +42,7 @@ object RenderInit:
                 borderWidth := "1px"
               )
               // Restituisci una Some con la coppia chiave-valore se valido
-              Some(param.label.getOrElse("Unnamed") -> value.asInstanceOf[AnyVal])
+              Some(param.label -> value.asInstanceOf[AnyVal])
             else
               // Imposta il bordo rosso in caso di errore
               inputBox.amend(
@@ -74,7 +74,7 @@ object RenderInit:
         div(
           cls := "parameter-row",
           label(
-            param.label.getOrElse("Unnamed"),
+            param.label,
             width := "100px", // Imposta una larghezza fissa per la label
             display := "inline-block", // Assicura che la label occupi lo spazio specificato
             textAlign := "right" // Allinea il testo a destra
@@ -111,4 +111,3 @@ object RenderInit:
         onClick --> (_ => validateAll())
       )
     )
-
