@@ -5,36 +5,57 @@ import view.{ReportViewImpl, View}
 import core.Entity
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
-import view.sim.RenderEntity.renderEntity
 import view.SimulationView
-
+import view.sim.RenderEntity.*
 import scala.collection.mutable
 
 object SimulationViewImpl extends SimulationView:
 
-  // Mappa per tenere traccia delle posizioni di ciascuna entità tramite Var
-  private val entityPositions: mutable.Map[Int, Var[(Double, Double)]] = mutable.Map()
+  // Var per le posizioni delle entità
+  private val entitiesVar = Var[Iterable[(Int, (Double, Double))]](List.empty)
+  // Applica distinct per evitare aggiornamenti ridondanti
+  def entitiesSignal: Signal[Iterable[(Int, (Double, Double))]] = entitiesVar.signal.distinct
 
-  override def renderSim(entities: Iterable[Entity], statsInfos: List[(String, AnyVal)]): Unit =
-    // Aggiorna o crea Var per le posizioni delle entità
-    entities.foreach { entity =>
-      entity.get[Position] match
-        case Some(position) =>
-          val positionVar = entityPositions.getOrElseUpdate(entity.id, Var((position.x, position.y)))
-          positionVar.set((position.x, position.y)) // Aggiorna la posizione
-        case None =>
-      // Ignora l'entità se la posizione non è presente
+  // Var per le statistiche
+  private val statsVar = Var[List[(String, AnyVal)]](List.empty)
+  // Applica distinct per evitare aggiornamenti ridondanti
+  def statsSignal: Signal[List[(String, AnyVal)]] = statsVar.signal.distinct
+
+  // Chiamato una sola volta per renderizzare il container
+  override def renderSim(entities: Iterable[Entity], initialStatsInfos: List[(String, AnyVal)]): Unit =
+    // Imposta le posizioni iniziali delle entità
+    val initialPositions = entities.flatMap { entity =>
+      entity.get[Position].map { position =>
+        (entity.id, (position.x, position.y))
+      }
     }
+    entitiesVar.set(initialPositions)
+    statsVar.set(initialStatsInfos) // Imposta le statistiche iniziali
 
     val container = dom.document.getElementById("simulation-container")
-    if container == null then
-      val worldDiv = renderWorld(entities.map(e => e.id -> entityPositions(e.id).signal), statsInfos)
-      view.ViewImpl.show(container, worldDiv)
-    else
-      renderWorld(entities.map(e => e.id -> entityPositions(e.id).signal), statsInfos)
+    val worldDiv = renderWorld(entitiesSignal, statsSignal)
+    view.ViewImpl.show(container, worldDiv)
 
+  // Chiamato per aggiornare i signal con le nuove posizioni e statistiche
+  override def renderNext(entities: Iterable[Entity], newStatsInfos: List[(String, AnyVal)]): Unit =
+    val updatedPositions = entities.flatMap { entity =>
+      entity.get[Position].map { position =>
+        (entity.id, (position.x, position.y))
+      }
+    }
 
-  private def renderWorld(entitySignals: Iterable[(Int, Signal[(Double, Double)])], statsInfos: List[(String, AnyVal)]): Div =
+    // Aggiorna solo se ci sono cambiamenti nelle posizioni
+    if (updatedPositions != entitiesVar.now()) then
+      println(s"Updating positions: $updatedPositions")
+      entitiesVar.set(updatedPositions)
+
+    // Aggiorna solo se ci sono cambiamenti nelle statistiche
+    if (newStatsInfos != statsVar.now()) then
+      println(s"Updating stats: $newStatsInfos")
+      statsVar.set(newStatsInfos)
+  
+
+  private def renderWorld(entitySignals: Signal[Iterable[(Int, (Double, Double))]], statsSignal: Signal[List[(String, AnyVal)]]): Div =
     div(
       cls("world"),
       width := "510px", // Dimensione del mondo
@@ -43,13 +64,13 @@ object SimulationViewImpl extends SimulationView:
       backgroundColor := "grey", // Posizionamento relativo
       border := "5px solid black",
       // Effettua il rendering dinamico di tutte le entità presenti nel mondo
-      children <-- Signal.combineSeq(entitySignals.map { case (entityId, positionSignal) =>
-        positionSignal.map { position =>
+      children <-- entitySignals.map { entities =>
+        entities.toSeq.map { case (entityId, position) =>
           renderEntity(entityId, position)
         }
-      }.toSeq),
-      // Richiama la funzione `stats` per visualizzare le statistiche
-      stats(statsInfos)
+      },
+      // Richiama la funzione `stats` per visualizzare le statistiche come Signal
+      child <-- statsSignal.map(stats)
     )
 
   private def stats(infos: List[(String, AnyVal)]): Div =
@@ -71,6 +92,8 @@ object SimulationViewImpl extends SimulationView:
             s"$key = $value",
             marginBottom := "5px" // Spaziatura tra le righe
           )
-        }
+        }.toSeq
       )
     )
+
+

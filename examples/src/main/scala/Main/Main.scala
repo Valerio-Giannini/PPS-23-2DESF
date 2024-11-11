@@ -2,6 +2,7 @@ package Main
 
 import com.raquo.laminar.api.L.*
 import controller.SimulationController
+import bouncing_ball.*
 import org.scalajs.dom
 import renderSim.SimulationViewImpl
 import simulation.BounceSimulation
@@ -21,7 +22,7 @@ object Main:
 
    // Rileva cambiamenti nello stato di `isRunning` e avvia/ferma la simulazione di conseguenza
     StartStopButton.isRunning.signal.foreach { running =>
-      if running then controller.start()
+      if running then Simulation.runSimulation()
     }(unsafeWindowOwner)
 
     render(container, app)
