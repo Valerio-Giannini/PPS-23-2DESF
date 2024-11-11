@@ -42,7 +42,7 @@ object RenderInit:
                 borderWidth := "1px"
               )
               // Restituisci una Some con la coppia chiave-valore se valido
-              Some(param.label.getOrElse("Unnamed") -> value.asInstanceOf[AnyVal])
+              Some(param.label -> value.asInstanceOf[AnyVal])
             else
               // Imposta il bordo rosso in caso di errore
               inputBox.amend(
@@ -74,7 +74,7 @@ object RenderInit:
         div(
           cls := "parameter-row",
           label(
-            param.label.getOrElse("Unnamed"),
+            param.label,
             width := "100px", // Imposta una larghezza fissa per la label
             display := "inline-block", // Assicura che la label occupi lo spazio specificato
             textAlign := "right" // Allinea il testo a destra
