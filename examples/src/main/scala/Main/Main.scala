@@ -12,6 +12,7 @@ object Main:
   def main(args: Array[String]): Unit =
     val simView    = SimulationViewImpl
     val controller = SimulationController(BounceSimulation, simView)
+    val container = dom.document.getElementById("app")
 
     val app = div(
       h1("Simulation App"),
@@ -23,4 +24,4 @@ object Main:
       if running then controller.start()
     }(unsafeWindowOwner)
 
-    render(dom.document.body, app)
+    render(container, app)

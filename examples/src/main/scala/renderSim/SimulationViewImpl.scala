@@ -27,9 +27,12 @@ object SimulationViewImpl extends SimulationView:
     }
 
     val container = dom.document.getElementById("simulation-container")
-    if container != null then
+    if container == null then
       val worldDiv = renderWorld(entities.map(e => e.id -> entityPositions(e.id).signal), statsInfos)
       view.ViewImpl.show(container, worldDiv)
+    else
+      renderWorld(entities.map(e => e.id -> entityPositions(e.id).signal), statsInfos)
+
 
   private def renderWorld(entitySignals: Iterable[(Int, Signal[(Double, Double)])], statsInfos: List[(String, AnyVal)]): Div =
     div(
@@ -39,14 +42,12 @@ object SimulationViewImpl extends SimulationView:
       position := "relative",
       backgroundColor := "grey", // Posizionamento relativo
       border := "5px solid black",
-      // Effettua il rendering di tutte le entità presenti nel mondo
-      children <-- Val(
-        entitySignals.map { case (entityId, positionSignal) =>
-          positionSignal.map { position =>
-            renderEntity(entityId, position)
-          }
-        }.toSeq
-      ),
+      // Effettua il rendering dinamico di tutte le entità presenti nel mondo
+      children <-- Signal.combineSeq(entitySignals.map { case (entityId, positionSignal) =>
+        positionSignal.map { position =>
+          renderEntity(entityId, position)
+        }
+      }.toSeq),
       // Richiama la funzione `stats` per visualizzare le statistiche
       stats(statsInfos)
     )
@@ -73,4 +74,3 @@ object SimulationViewImpl extends SimulationView:
         }
       )
     )
-
