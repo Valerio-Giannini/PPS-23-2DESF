@@ -14,6 +14,9 @@ trait View:
 trait ParamsView:
   def init(params: Iterable[ViewParameter]): Future[Iterable[(String, AnyVal)]]
 
+trait SimulationView:
+  def renderSim(entities: Iterable[Entity], statsInfos: List[(String, AnyVal)]): Unit
+
 trait ReportView:
   def report(infos: List[(String, List[(AnyVal, AnyVal)])]): Unit
 

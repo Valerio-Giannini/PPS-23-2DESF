@@ -3,30 +3,35 @@ package renderSim
 import bouncing_ball.Position
 import view.{ReportViewImpl, View}
 import core.Entity
-
-import scala.concurrent.{Future, Promise}
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
 import view.sim.RenderEntity.renderEntity
+import view.SimulationView
 
-
-trait SimulationView:
-  def renderSim(entities: Iterable[Entity], statsInfos: List[(String, AnyVal)]): Unit  //, Iterable[Stat] da aggiungere quando verranno considerate
+import scala.collection.mutable
 
 object SimulationViewImpl extends SimulationView:
 
-  override def renderSim(entities: Iterable[Entity], statsInfos: List[(String, AnyVal)]): Unit =  //, Iterable[Stat] da aggiungere quando verranno considerate
+  // Mappa per tenere traccia delle posizioni di ciascuna entità tramite Var
+  private val entityPositions: mutable.Map[Int, Var[(Double, Double)]] = mutable.Map()
+
+  override def renderSim(entities: Iterable[Entity], statsInfos: List[(String, AnyVal)]): Unit =
+    // Aggiorna o crea Var per le posizioni delle entità
+    entities.foreach { entity =>
+      entity.get[Position] match
+        case Some(position) =>
+          val positionVar = entityPositions.getOrElseUpdate(entity.id, Var((position.x, position.y)))
+          positionVar.set((position.x, position.y)) // Aggiorna la posizione
+        case None =>
+      // Ignora l'entità se la posizione non è presente
+    }
 
     val container = dom.document.getElementById("simulation-container")
     if container != null then
-     // view.ViewImpl.close(container) // Svuota il contenuto esistente
-      val worldDiv = renderWorld(entities, statsInfos)
-      view.ViewImpl.show(container, worldDiv)
-    else
-      val worldDiv = renderWorld(entities, statsInfos)
+      val worldDiv = renderWorld(entities.map(e => e.id -> entityPositions(e.id).signal), statsInfos)
       view.ViewImpl.show(container, worldDiv)
 
-  private def renderWorld(entities: Iterable[Entity], statsInfos: List[(String, AnyVal)]): Div =
+  private def renderWorld(entitySignals: Iterable[(Int, Signal[(Double, Double)])], statsInfos: List[(String, AnyVal)]): Div =
     div(
       cls("world"),
       width := "510px", // Dimensione del mondo
@@ -36,18 +41,16 @@ object SimulationViewImpl extends SimulationView:
       border := "5px solid black",
       // Effettua il rendering di tutte le entità presenti nel mondo
       children <-- Val(
-        entities.flatMap { entity =>
-          entity.get[Position] match
-            case Some(position) =>
-              Some(renderEntity(entity.id, (position.x, position.y)))
-            case None =>
-              None // Ignora l'entità se la posizione non è presente
+        entitySignals.map { case (entityId, positionSignal) =>
+          positionSignal.map { position =>
+            renderEntity(entityId, position)
+          }
         }.toSeq
       ),
       // Richiama la funzione `stats` per visualizzare le statistiche
       stats(statsInfos)
     )
-    
+
   private def stats(infos: List[(String, AnyVal)]): Div =
     div(
       position := "absolute",

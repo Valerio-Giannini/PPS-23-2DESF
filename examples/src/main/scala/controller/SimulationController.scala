@@ -1,7 +1,7 @@
 package controller
 
 import controller.SimulationState.*
-import renderSim.SimulationView
+import view.SimulationView
 import simulation.{Simulation, Stats}
 import view.ParamsView
 
