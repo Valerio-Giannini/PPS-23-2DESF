@@ -19,7 +19,7 @@ object SimulationViewImpl extends SimulationView:
 
     val container = dom.document.getElementById("simulation-container")
     if container != null then
-      view.ViewImpl.close(container) // Svuota il contenuto esistente
+     // view.ViewImpl.close(container) // Svuota il contenuto esistente
       val worldDiv = renderWorld(entities, statsInfos)
       view.ViewImpl.show(container, worldDiv)
     else

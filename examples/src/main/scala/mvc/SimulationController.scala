@@ -2,7 +2,6 @@
 package mvc
 
 import bouncing_ball.Position
-import bouncing_ball.Simulation.{entitiesSignal, entitiesVar, updateEntities, world}
 import com.raquo.airstream.core.EventStream
 import com.raquo.laminar.api.L.*
 import core.ComponentTag
@@ -49,7 +48,7 @@ class SimulationController extends Controller:
     }
     Simulation.isRunning = true
     renderAndScheduleUpdates()
-    
+
 
   private def renderAndScheduleUpdates(): Unit =
     val worldDiv = RenderWorld.renderWorld(entitiesSignal)

@@ -1,6 +1,5 @@
 /*package mvc
 
-import bouncing_ball.Simulation
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
 import view.init.ViewParameter

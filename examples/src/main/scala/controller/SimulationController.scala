@@ -24,11 +24,11 @@ class SimulationController(simulation: Simulation, view: SimulationView):
     state = SimulationState.RUNNING
     @tailrec
     def _simulationLoop(current_tick: Int): Unit =
-      if simulation.condition && state != SimulationState.STOPPED then // case match su state
-        println(s"Tick: $current_tick")
+      if /* simulation.condition &&*/ state != SimulationState.STOPPED then // case match su state
+        //println(s"Tick: $current_tick")
         simulation.tick(current_tick)
         _updateView()
-        println("-------------------")
+       // println("-------------------")
         _simulationLoop(current_tick + 1)
 
     _simulationLoop(initial_tick)
