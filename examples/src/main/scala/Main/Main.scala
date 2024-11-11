@@ -10,17 +10,17 @@ import view.utils.StartStopButton
 object Main:
 
   def main(args: Array[String]): Unit =
-//    val simView    = SimulationViewImpl
-//    val controller = SimulationController(BounceSimulation, simView)
+    val simView    = SimulationViewImpl
+    val controller = SimulationController(BounceSimulation, simView)
 
     val app = div(
       h1("Simulation App"),
-      StartStopButton.startStopButton // Usa il pulsante Start/Stop da StartStopSimulation
+      StartStopButton.startStopButton
     )
 
-   /* // Rileva cambiamenti nello stato di `isRunning` e avvia/ferma la simulazione di conseguenza
+   // Rileva cambiamenti nello stato di `isRunning` e avvia/ferma la simulazione di conseguenza
     StartStopButton.isRunning.signal.foreach { running =>
-      if running then controller.start() // Avvia la simulazione
+      if running then controller.start()
     }(unsafeWindowOwner)
-*/
+
     render(dom.document.body, app)
