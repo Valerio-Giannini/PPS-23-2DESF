@@ -5,6 +5,7 @@ import controller.SimulationState.*
 import view.SimulationView
 import simulation.{Simulation, Stats}
 import view.ParamsView
+import view.ViewImpl.*
 
 import scala.annotation.tailrec
 
@@ -53,6 +54,8 @@ class SimulationController(simulation: Simulation, view: SimulationView):
 
   private def _handleEndSimulation(): Unit =
     state = ENDED
+    
+    
     //showReport// view
 
   private def _updateView(): Unit =

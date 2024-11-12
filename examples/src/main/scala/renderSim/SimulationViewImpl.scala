@@ -6,6 +6,7 @@ import core.Entity
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
 import view.SimulationView
+import simulation.SimulationParameters.*
 
 import scala.collection.mutable
 import scala.reflect.ClassTag
@@ -64,8 +65,8 @@ object SimulationViewImpl extends SimulationView:
 
     div(
       cls("world"),
-      width := "500px", // Dimensione del mondo
-      height := "500px",
+      width := s"${borderSize*2}px", // Dimensione del mondo
+      height := s"${borderSize*2}px",
       position := "relative",
       backgroundColor := "grey", // Posizionamento relativo
       border := "5px solid black",
@@ -88,20 +89,19 @@ object SimulationViewImpl extends SimulationView:
   private def renderEntity(
                             id: Int,
                             pos: (Double, Double),
-                            dimension: Int = 20,         // Dimensione predefinita
                             entityColor: String = "blue" // Colore predefinito
                           ): Div =
     val (x, y) = pos
     println("New renderEntity!")
     div(
       cls("entity"),
-      left := s"${x}px",
-      top := s"${y}px",
-      width := s"${dimension}px",
-      height := s"${dimension}px",
+      position := "absolute",
+      left := s"${x+borderSize}px",
+      bottom := s"${y+borderSize}px",
+      width := s"${ballRadius}px",
+      height := s"${ballRadius}px",
       backgroundColor := entityColor,
       borderRadius := "50%",
-      position := "absolute",
       display := "flex",
       justifyContent := "center",
       alignItems := "center",
@@ -113,7 +113,7 @@ object SimulationViewImpl extends SimulationView:
   private def stats(infos: List[(String, AnyVal)]): Div =
     div(
       position := "absolute",
-      bottom := "0px", // Posiziona il riquadro in basso
+      top := "0px", // Posiziona il riquadro in basso
       right := "0px", // Posiziona il riquadro a destra
       width := "200px",
       padding := "10px",
