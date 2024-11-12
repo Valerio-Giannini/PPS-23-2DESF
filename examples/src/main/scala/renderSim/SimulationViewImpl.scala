@@ -1,13 +1,14 @@
 package renderSim
 
-import bouncing_ball.Position
+import simulation.Position
 import view.{ReportViewImpl, View}
 import core.Entity
 import com.raquo.laminar.api.L.*
 import org.scalajs.dom
 import view.SimulationView
-import view.sim.RenderEntity.*
+
 import scala.collection.mutable
+import scala.reflect.ClassTag
 
 object SimulationViewImpl extends SimulationView:
 
@@ -38,10 +39,10 @@ object SimulationViewImpl extends SimulationView:
 
   // Chiamato per aggiornare i signal con le nuove posizioni e statistiche
   override def renderNext(entities: Iterable[Entity], newStatsInfos: List[(String, AnyVal)]): Unit =
-    val updatedPositions = entities.flatMap { entity =>
-      entity.get[Position].map { position =>
-        (entity.id, (position.x, position.y))
-      }
+    val updatedPositions = entities.collect {
+      case entity if entity.get[Position].isDefined =>
+        val pos = entity.get[Position].get
+        (entity.id, (pos.x, pos.y))
     }
 
     // Aggiorna solo se ci sono cambiamenti nelle posizioni
@@ -53,25 +54,61 @@ object SimulationViewImpl extends SimulationView:
     if (newStatsInfos != statsVar.now()) then
       println(s"Updating stats: $newStatsInfos")
       statsVar.set(newStatsInfos)
-  
 
-  private def renderWorld(entitySignals: Signal[Iterable[(Int, (Double, Double))]], statsSignal: Signal[List[(String, AnyVal)]]): Div =
+
+  private def renderWorld(
+                           entitySignals: Signal[Iterable[(Int, (Double, Double))]],
+                           statsSignal: Signal[List[(String, AnyVal)]]
+                         ): Div = {
+    println("RenderWorld chiamato")
+
     div(
       cls("world"),
-      width := "510px", // Dimensione del mondo
-      height := "510px",
+      width := "500px", // Dimensione del mondo
+      height := "500px",
       position := "relative",
       backgroundColor := "grey", // Posizionamento relativo
       border := "5px solid black",
       // Effettua il rendering dinamico di tutte le entità presenti nel mondo
       children <-- entitySignals.map { entities =>
+        println(s"Entità da renderizzare: ${entities.mkString(", ")}") // Debug per vedere le entità ricevute
         entities.toSeq.map { case (entityId, position) =>
+          println(s"Rendering entità ID: $entityId, Posizione: $position") // Debug per ogni entità
           renderEntity(entityId, position)
         }
       },
       // Richiama la funzione `stats` per visualizzare le statistiche come Signal
-      child <-- statsSignal.map(stats)
+      child <-- statsSignal.map { statsList =>
+        println(s"Rendering statistiche: ${statsList.mkString(", ")}") // Debug per tracciare le statistiche
+        stats(statsList)
+      }
     )
+  }
+
+  private def renderEntity(
+                            id: Int,
+                            pos: (Double, Double),
+                            dimension: Int = 20,         // Dimensione predefinita
+                            entityColor: String = "blue" // Colore predefinito
+                          ): Div =
+    val (x, y) = pos
+    println("New renderEntity!")
+    div(
+      cls("entity"),
+      left := s"${x}px",
+      top := s"${y}px",
+      width := s"${dimension}px",
+      height := s"${dimension}px",
+      backgroundColor := entityColor,
+      borderRadius := "50%",
+      position := "absolute",
+      display := "flex",
+      justifyContent := "center",
+      alignItems := "center",
+      color := "white",
+      fontSize := "10px"
+    )
+
 
   private def stats(infos: List[(String, AnyVal)]): Div =
     div(

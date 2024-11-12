@@ -34,12 +34,12 @@ object Simulation:
 
   // Funzione per avviare la simulazione
   private def start(): Unit =
-    SimulationViewImpl.renderSim(world.entities, List.empty) // Rendering iniziale
+    SimulationViewImpl.renderSim(world.entities.toList, List.empty) // Rendering iniziale
     EventStream.periodic(50)
       .takeWhile(_ => running)
       .foreach { _ =>
         world.update() // Aggiorna lo stato del mondo
-        val newEntities = world.entities // Recupera le entità aggiornate
+        val newEntities = world.entities.toList // Recupera le entità aggiornate
         SimulationViewImpl.renderNext(newEntities, List.empty) // Rendering aggiornato
         println(s"New positions: ${newEntities.map(_.get[Position])}")
       }(unsafeWindowOwner)

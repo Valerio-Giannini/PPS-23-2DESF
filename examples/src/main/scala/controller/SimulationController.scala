@@ -1,5 +1,6 @@
 package controller
 
+import com.raquo.laminar.api.L.*
 import controller.SimulationState.*
 import view.SimulationView
 import simulation.{Simulation, Stats}
@@ -17,32 +18,52 @@ class SimulationController(simulation: Simulation, view: SimulationView):
 
   def start(): Unit =
     simulation.init
+    println("Init complete")
     _runSimulation
     _handleEndSimulation()
 
   private def _runSimulation(using initial_tick: Int = 0): Unit =
     state = SimulationState.RUNNING
-    @tailrec
-    def _simulationLoop(current_tick: Int): Unit =
-      if /* simulation.condition &&*/ state != SimulationState.STOPPED then // case match su state
-        //println(s"Tick: $current_tick")
-        simulation.tick(current_tick)
-        _updateView()
-       // println("-------------------")
-        _simulationLoop(current_tick + 1)
+    println("State set to RUNNING")
 
-    _simulationLoop(initial_tick)
+    val entities = world.entities
+    println(s"Entities acquired: ${entities}")
+    val statsInfos = Stats.statsSnapshot
+    println("Stats acquired!")
+
+    view.renderSim(entities, statsInfos)
+
+//    @tailrec
+//    def _simulationLoop(current_tick: Int): Unit =
+//      if /* simulation.condition &&*/ state == RUNNING then // case match su state
+//        //println(s"Tick: $current_tick")
+//        simulation.tick(current_tick)
+//        _updateView()
+//       // println("-------------------")
+//        _simulationLoop(current_tick + 1)
+//
+//    _simulationLoop(initial_tick)
+
+    EventStream.periodic(50)
+      .takeWhile(_ => state != STOPPED)
+      .foreach { _ =>
+        world.update()
+        _updateView()
+      }(unsafeWindowOwner)
 
   private def _handleEndSimulation(): Unit =
     state = ENDED
     //showReport// view
 
-
   private def _updateView(): Unit =
-    view.renderSim(simulation.entities, Stats.statsSnapshot)
+    val newEntities = world.entities
+    val newStats = Stats.statsSnapshot
+    println("New Data acquired!")
+    view.renderNext(newEntities, newStats)
 
   def stop(): Unit =
     state = STOPPED
+
 
 
 

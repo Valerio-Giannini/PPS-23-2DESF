@@ -33,6 +33,7 @@ object BounceSimulation extends Simulation:
 
     for ((pos, vel) <- positions.zip(velocities)) do
       into(world).spawnNewEntityWith(Position(pos._1, pos._2), Speed(vel._1, vel._2))
+      println("Entity with Pos and Speed Created")
 
     Report.updateAvgSpeed(Stats.calcAvgSpeed)
     Report.updateMovingBalls(Stats.numberOfMovingBalls)

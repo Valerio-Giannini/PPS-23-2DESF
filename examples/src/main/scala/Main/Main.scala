@@ -22,7 +22,7 @@ object Main:
 
    // Rileva cambiamenti nello stato di `isRunning` e avvia/ferma la simulazione di conseguenza
     StartStopButton.isRunning.signal.foreach { running =>
-      if running then Simulation.runSimulation()
+      if running then controller.start()
+      else controller.stop()
     }(unsafeWindowOwner)
-
     render(container, app)
