@@ -7,6 +7,7 @@ import org.scalajs.dom
 import renderSim.SimulationViewImpl
 import simulation.BounceSimulation
 import view.utils.StartStopButton
+import view.ViewImpl.*
 
 object Main:
 
@@ -25,4 +26,4 @@ object Main:
       if running then controller.start()
       else controller.stop()
     }(unsafeWindowOwner)
-    render(container, app)
+    show(container, app)
