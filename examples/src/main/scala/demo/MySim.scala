@@ -1,28 +1,43 @@
 package demo
 
+import dsl.coreDSL.CoreDSL.into
 import mvc.model.Simulation
+import simulation.BounceSimulation.world
 
 class MySim extends Simulation:
   override def condition: Boolean = true
   override def init(): Unit =
-    /*
-    Configurare i parametri e le entità qui?
-     */
-    notifyObservers("Simulation Initialized")
+    into(world).include(MovementSystem())
+    into(world).include(BoundaryBounceSystem())
+    into(world).include(CollisionSystem())
+
+    val positions = List(
+      (-200, 100), (-150, -150), (0, 0), (100, 150), (150, -100),
+      (-100, -50), (200, 0), (-50, 200), (50, -200), (0, 100)
+    )
+
+    val velocities = List(
+      (4, 15), (-3, -0), (0, -4), (-0, 10), (8, 5),
+      (5, -3), (-3, 5), (2, 2), (4, -5), (-5, -20)
+    )
+    // end block
+
+    for ((pos, vel) <- positions.zip(velocities)) do
+      into(world).spawnNewEntityWith(Position(pos._1, pos._2), Speed(vel._1, vel._2))
+      println("Entity with Pos and Speed Created")
 
   override def tick(currentTick: Int): Unit =
     world.update()
-    notifyObservers(s"Tick $currentTick completed")
 
   override def isRunning: Boolean =
     true
     //currentTick < 100 // esempio di limite
 
   override def endSimulation(): Unit =
-    notifyObservers("Simulation Ended")
+    println("Simulation Ended")
 
-  override def showStats(): Unit =
-    notifyObservers(s"Statistiche attuali: ${world.entities.size} entità attive.")
+  def showStats(): Unit =
+    println(s"Statistiche attuali: ${world.entities.size} entità attive.")
 
-  override def showReport(): Unit =
-    notifyObservers(s"Report finale: ${world.entities.size} entità rimanenti.")
+  def showReport(): Unit =
+    println(s"Report finale: ${world.entities.size} entità rimanenti.")

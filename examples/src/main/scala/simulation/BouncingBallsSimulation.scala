@@ -1,8 +1,8 @@
 package simulation
 
 import controller.SimulationController
+import demo.mvc.view.SimulationViewImpl
 import dsl.coreDSL.CoreDSL.into
-import renderSim.SimulationViewImpl
 import simulation.SimulationParameters.{ballRadius, borderSize, deceleration}
 
 object BounceSimulation extends Simulation:

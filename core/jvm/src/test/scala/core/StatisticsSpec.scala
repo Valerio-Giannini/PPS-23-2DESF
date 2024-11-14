@@ -1,7 +1,6 @@
 package core
 
 import dsl.DSL.*
-import mvc.model.Statistics
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

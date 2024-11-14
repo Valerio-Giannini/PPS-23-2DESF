@@ -1,4 +1,4 @@
-package mvc.model
+package demo.mvc.model
 
 case class StatisticEntry(label: String, value: AnyVal)
 

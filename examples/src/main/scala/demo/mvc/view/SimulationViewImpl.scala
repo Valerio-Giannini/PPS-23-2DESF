@@ -1,17 +1,16 @@
-package renderSim
+package demo.mvc.view
 
-import simulation.Position
-import view.{ReportViewImpl, View}
-import core.Entity
 import com.raquo.laminar.api.L.*
+import core.Entity
 import org.scalajs.dom
-import view.SimulationView
+import demo.Position
 import simulation.SimulationParameters.*
+import view.{ReportViewImpl, SimulationView, View}
 
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
-object SimulationViewImpl extends SimulationView:
+class SimulationViewImpl extends SimulationView:
 
   // Var per le posizioni delle entità
   private val entitiesVar = Var[Iterable[(Int, (Double, Double))]](List.empty)
@@ -23,20 +22,25 @@ object SimulationViewImpl extends SimulationView:
   // Applica distinct per evitare aggiornamenti ridondanti
   def statsSignal: Signal[List[(String, AnyVal)]] = statsVar.signal.distinct
 
-  // Chiamato una sola volta per renderizzare il container
-  override def renderSim(entities: Iterable[Entity], initialStatsInfos: List[(String, AnyVal)]): Unit =
-    // Imposta le posizioni iniziali delle entità
-    val initialPositions = entities.flatMap { entity =>
-      entity.get[Position].map { position =>
-        (entity.id, (position.x, position.y))
-      }
-    }
-    entitiesVar.set(initialPositions)
-    statsVar.set(initialStatsInfos) // Imposta le statistiche iniziali
-
+  override def show(): Unit =
     val container = dom.document.getElementById("simulation-container")
     val worldDiv = renderWorld(entitiesSignal, statsSignal)
-    view.ViewImpl.show(container, worldDiv)
+    render(container, worldDiv)
+
+  override def close(): Unit =
+    val container = dom.document.getElementById("simulation-container")
+    container.innerHTML = ""
+
+  //  // Chiamato una sola volta per renderizzare il container
+  //  override def viewSim(entities: Iterable[Entity], initialStatsInfos: List[(String, AnyVal)]): Unit =
+  //    // Imposta le posizioni iniziali delle entità
+  //    val initialPositions = entities.flatMap { entity =>
+  //      entity.get[Position].map { position =>
+  //        (entity.id, (position.x, position.y))
+  //      }
+  //    }
+  //    entitiesVar.set(initialPositions)
+  //    statsVar.set(initialStatsInfos) // Imposta le statistiche iniziali
 
   // Chiamato per aggiornare i signal con le nuove posizioni e statistiche
   override def renderNext(entities: Iterable[Entity], newStatsInfos: List[(String, AnyVal)]): Unit =
