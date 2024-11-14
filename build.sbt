@@ -8,7 +8,7 @@ ThisBuild / name         := "2DESF"
 // Progetto principale che aggrega i moduli core, examples, e view
 lazy val root = project
   .in(file("."))
-  .aggregate(coreJVM, coreJS, examples, view)
+  .aggregate(coreJVM, coreJS, simulations)
 
 // Modulo core con sottoprogetti specifici per JVM e JS
 lazy val core = project
@@ -39,10 +39,10 @@ lazy val coreJS = project
     )
   )
 
-// Modulo examples che dipende da coreJS e view
-lazy val examples = project
-  .in(file("examples"))
-  .dependsOn(coreJS, view)
+// Modulo simulations che dipende da coreJS e view
+lazy val simulations = project
+  .in(file("simulations"))
+  .dependsOn(coreJS)
   .enablePlugins(ScalaJSPlugin)
   .settings(
     libraryDependencies ++= Seq(
@@ -55,18 +55,6 @@ lazy val examples = project
   )
 
 // Modulo view che dipende da coreJS
-lazy val view = project
-  .in(file("view"))
-  .dependsOn(coreJS)
-  .enablePlugins(ScalaJSPlugin)
-  .settings(
-
-    libraryDependencies ++= Seq(
-      "com.raquo" %%% "laminar" % "17.0.0",
-      "com.raquo" %%% "airstream" % "17.0.0",
-      "org.scala-js" %%% "scalajs-dom" % "2.8.0"
-    )
-  )
 
 lazy val benchmarks = project
   .in(file("benchmarks"))
