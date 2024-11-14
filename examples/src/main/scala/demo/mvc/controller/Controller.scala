@@ -16,12 +16,12 @@ trait Controller:
   def start(): Unit
   def end(): Unit
   def setParamsView(paramsView: ParamsView): Unit
-  def setSimulationView(simulationView: SimulationViewImpl): Unit
+  def setSimulationView(simulationView: SimulationView): Unit
 
 
 class SimulationController(simulation: Simulation) extends Controller:
   private var paramView: ParamsView                 = ParamsViewImpl()
-  private var simulationView: SimulationViewImpl    = _
+  private var simulationView: SimulationView    = _
   private val tickInterval: Int                     = 18 // ms
   private var currentTick: Int                      = 0
   private var simulationRunning: Boolean            = false
