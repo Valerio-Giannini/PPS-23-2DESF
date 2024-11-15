@@ -1,6 +1,6 @@
 package BouncingBall.view
 
-import mvc.model.{ParameterID, ViewParameter}
+import mvc.model.{Parameter, Parameters, ViewParameter}
 import mvc.view.ParamsView
 import org.scalajs.dom
 import com.raquo.laminar.api.L.*
@@ -10,7 +10,7 @@ import scala.concurrent.{Future, Promise}
 
 class ParamsViewImpl extends ParamsView:
   var parameters: Iterable[ViewParameter]  = _
-  var results: Map[ParameterID, AnyVal] => Unit = _
+  var results: Iterable[Parameter] => Unit = _
 
   override def show(): Unit =
     val paramsConfig = _renderInit(parameters, results)
@@ -23,11 +23,11 @@ class ParamsViewImpl extends ParamsView:
     val container = dom.document.getElementById("init-container")
     container.innerHTML = ""
 
-  override def init(params: Iterable[ViewParameter]): Future[Iterable[(ParameterID, AnyVal)]] =
+  override def init(params: Iterable[ViewParameter]): Future[Iterable[Parameter]] =
     parameters = params
-    val promise = Promise[Iterable[(ParameterID, AnyVal)]]()
+    val promise = Promise[Iterable[Parameter]]()
     // Funzione `onSave` per completare la promise con i risultati configurati
-    val onSave: Iterable[(ParameterID, AnyVal)] => Unit = resultsParams => promise.success(resultsParams)
+    val onSave: Iterable[Parameter] => Unit = resultsParams => promise.success(resultsParams)
     results = onSave
 
     // Restituisce il Future che verrà completato quando tutti i parametri saranno configurati
@@ -35,7 +35,7 @@ class ParamsViewImpl extends ParamsView:
 
   def _renderInit(
                   paramsList: Iterable[ViewParameter],
-                  onSave: Map[ParameterID, AnyVal] => Unit
+                  onSave: Iterable[Parameter] => Unit
                 ): Div =
 
     // Iterable di coppie (parametro, campo di input) per riferimento diretto
@@ -84,7 +84,8 @@ class ParamsViewImpl extends ParamsView:
 
               // Restituisci una Some con la coppia chiave-valore se valido
 
-              Some(param.id -> value.asInstanceOf[param.value.type])
+              Some(Parameter(param.id, value.asInstanceOf[param.value.type]))
+//              Some(param.id -> value.asInstanceOf[param.value.type])
             else
 
               // Imposta il bordo rosso in caso di errore
@@ -114,7 +115,7 @@ class ParamsViewImpl extends ParamsView:
 
         // Completa `onSave` con la mappa dei risultati solo se tutti sono validi
 
-        onSave(maybeResults.toMap)
+        onSave(maybeResults)
 
     // Elemento Div che contiene la lista di parametri renderizzati e il pulsante OK
 
