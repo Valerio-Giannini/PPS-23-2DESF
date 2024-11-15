@@ -9,14 +9,13 @@ trait Simulation:
   var world: World = newWorld
   val report: Report = Report()
   val statistics: Statistics = Statistics
-  var parameters: Parameters = _
+  val parameters: Parameters = Parameters()
   val condition: Condition = Condition()
 
   private var controller: Controller = _
 
   def init(): Unit
   def runCondition: Boolean = condition.evaluate
-  def isRunning: Boolean
   def entities: Iterable[Entity] = world.entities
   def tick(currentTick: Int): Unit =
     world.update() // Aggiorna ogni sistema
@@ -25,5 +24,5 @@ trait Simulation:
     world.addSystem(system)
   def showStats(): Unit
   def showReport(): Unit
-  def setParameters(parma: Parameters): Unit =
-    parameters = parma
+//  def setParameters(parma: Parameters): Unit =
+//    parameters = parma

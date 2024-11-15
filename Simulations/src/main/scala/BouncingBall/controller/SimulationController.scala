@@ -39,10 +39,10 @@ class SimulationController(simulation: Simulation) extends Controller:
     scheduleNextTick()
 
   private def scheduleNextTick(): Unit =
-    if simulation.runCondition && currentTick < 200 then
+    if simulation.runCondition && currentTick < 20000 then
       setTimeout(tickInterval) {
         simulation.tick(currentTick)
-        simulationView.update(simulation.entities, List.empty)
+        simulationView.update(simulation.entities, simulation.statistics.snapshot)
         currentTick += 1
         scheduleNextTick()
       }

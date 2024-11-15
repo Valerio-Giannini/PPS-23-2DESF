@@ -5,9 +5,8 @@ import mvc.model.{ParameterID, Parameters}
 
 case object Deceleration extends ParameterID
 
-object Dece
-
-object Parameters:
-  def apply(): Parameters = new ParametersImpl
-  private class ParametersImpl extends Parameters:
-    def deceleration: Double = retrieveParamValue(Deceleration)
+//
+//object accessPAram:
+//  import Parameters.given
+//  extension (parameters: Parameters)
+//    def deceleration: Double = parameters.retrieveParamValue[Double](Deceleration)

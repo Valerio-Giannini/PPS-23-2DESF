@@ -30,10 +30,6 @@ class BouncingBallSim extends Simulation:
   override def tick(currentTick: Int): Unit =
     world.update()
 
-  override def isRunning: Boolean =
-    true
-  //currentTick < 100 // esempio di limite
-
   override def endSimulation(): Unit =
     println("Simulation Ended")
 

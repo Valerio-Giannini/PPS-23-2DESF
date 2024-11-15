@@ -1,28 +1,31 @@
 package BouncingBall.view
 
 //import BouncingBall.model.Position
+
 import BouncingBall.model.Position
-import mvc.view.SimulationView
 import com.raquo.airstream.core.Signal
 import com.raquo.airstream.state.Var
 import com.raquo.laminar.api.L.*
 import core.Entity
+import mvc.model.StatisticEntry
+import mvc.view.SimulationView
 import org.scalajs.dom
 
-import scala.collection.mutable
 import scala.reflect.ClassTag
 
 
 class SimulationViewImpl extends SimulationView:
   // Var per le posizioni delle entità
   private val entitiesVar = Var[Iterable[(Int, (Double, Double))]](List.empty)
+
   // Applica distinct per evitare aggiornamenti ridondanti
   def entitiesSignal: Signal[Iterable[(Int, (Double, Double))]] = entitiesVar.signal.distinct
 
   // Var per le statistiche
-  private val statsVar = Var[List[(String, AnyVal)]](List.empty)
+  private val statsVar = Var[List[StatisticEntry]](List.empty)
+
   // Applica distinct per evitare aggiornamenti ridondanti
-  def statsSignal: Signal[List[(String, AnyVal)]] = statsVar.signal.distinct
+  def statsSignal: Signal[List[StatisticEntry]] = statsVar.signal.distinct
 
   override def show(): Unit =
     val container = dom.document.getElementById("simulation-container")
@@ -45,7 +48,7 @@ class SimulationViewImpl extends SimulationView:
   //    statsVar.set(initialStatsInfos) // Imposta le statistiche iniziali
 
   // Chiamato per aggiornare i signal con le nuove posizioni e statistiche
-  override def update(entities: Iterable[Entity], newStatsInfos: List[(String, AnyVal)]): Unit =
+  override def update(entities: Iterable[Entity], newStatsInfos: List[StatisticEntry]): Unit =
     val updatedPositions = entities.collect {
       case entity if entity.get[Position].isDefined =>
         val pos = entity.get[Position].get
@@ -67,17 +70,17 @@ class SimulationViewImpl extends SimulationView:
 
   private def renderWorld(
                            entitySignals: Signal[Iterable[(Int, (Double, Double))]],
-                           statsSignal: Signal[List[(String, AnyVal)]]
+                           statsSignal: Signal[List[StatisticEntry]]
                          ): Div = {
     val borderSize: Int = 290
     println("RenderWorld chiamato")
 
     div(
       cls("world"),
-      width := s"${borderSize*2}px", // Dimensione del mondo
-      height := s"${borderSize*2}px",
+      width := s"${borderSize * 2}px", // Dimensione del mondo
+      height := s"${borderSize * 2}px",
       position := "relative",
-      backgroundColor := "grey", // Posizionamento relativo
+      backgroundColor := "#ccc", // Posizionamento relativo
       border := "5px solid black",
       // Effettua il rendering dinamico di tutte le entità presenti nel mondo
       children <-- entitySignals.map { entities =>
@@ -105,12 +108,12 @@ class SimulationViewImpl extends SimulationView:
     val (x, y) = pos
     println("New renderEntity!")
     val borderSize: Int = 290
-    val ballRadius: Int = 5
+    val ballRadius: Int = 12
     div(
       cls("entity"),
       position := "absolute",
-      left := s"${x+borderSize}px",
-      bottom := s"${y+borderSize}px",
+      left := s"${x + borderSize}px",
+      bottom := s"${y + borderSize}px",
       width := s"${ballRadius}px",
       height := s"${ballRadius}px",
       backgroundColor := entityColor,
@@ -123,25 +126,25 @@ class SimulationViewImpl extends SimulationView:
     )
 
 
-  private def stats(infos: List[(String, AnyVal)]): Div =
+  private def stats(s: List[StatisticEntry]): Div =
     div(
       position := "absolute",
       top := "0px", // Posiziona il riquadro in basso
       right := "0px", // Posiziona il riquadro a destra
       width := "200px",
       padding := "10px",
-      backgroundColor := "rgba(0, 0, 0, 0.7)", // Sfondo semi-trasparente per leggibilità
+      backgroundColor := "rgba(0, 0, 0, 0.4)", // Sfondo semi-trasparente per leggibilità
       color := "white", // Colore del testo per contrastare lo sfondo
       borderRadius := "8px",
       border := "1px solid #ccc",
       fontSize := "12px",
       overflowY := "auto", // Permette lo scrolling verticale se necessario
       children <-- Val(
-        infos.map { case (key, value) =>
+        s.map(stat =>
           div(
-            s"$key = $value",
+            s"${stat.label} = ${stat.value}",
             marginBottom := "5px" // Spaziatura tra le righe
           )
-        }.toSeq
+        )
       )
     )

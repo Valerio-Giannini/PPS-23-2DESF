@@ -34,3 +34,8 @@ trait Parameters:
 
   given ParameterResolver[Int] with
     override def resolve(varName: ParameterID): Int = searchForParameter[Int](varName)
+
+object Parameters:
+  def apply(): Parameters = new ParametersImpl
+  private class ParametersImpl extends Parameters:
+    
