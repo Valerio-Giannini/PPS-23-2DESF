@@ -1,63 +1,68 @@
 package BouncingBall.view
 
 import mvc.view.ReportView
+import mvc.model.{Point, ReportEntry}
 import com.raquo.laminar.api.L.*
-import mvc.model.{DataTrackerEntry, Point, ReportEntry}
+import com.raquo.laminar.api.L.{Div, Val, backgroundColor, border, borderRadius, children, div, padding, position, render, right, span, top, display as htmlDisplay, height as htmlHeight, width as htmlWidth}
+import com.raquo.laminar.api.L.svg.{fill, points, polyline, stroke, strokeWidth, svg, viewBox, height as svgHeight, width as svgWidth}
 import org.scalajs.dom
 
 class ReportViewImpl extends ReportView:
-  var reportInfos: List[ReportEntry] = _
+  private var reportEntries: List[ReportEntry] = _
+
+  override def init(infos: List[ReportEntry]): Unit =
+    reportEntries = infos
 
   override def show(): Unit =
     val container = dom.document.getElementById("report-container")
-    val renderInfos = _renderReport(reportInfos)
+    val renderInfos = _renderReport(reportEntries)
     render(container, renderInfos)
 
   override def close(): Unit =
     val container = dom.document.getElementById("report-container")
     container.innerHTML = ""
 
-  override def init(infos: List[ReportEntry]): Unit =
-    reportInfos = infos
-
-  def _renderReport(infos: List[ReportEntry]): Div =
+  private def _renderReport(entries: List[ReportEntry]): Div = {
     val colors = List("red", "blue", "green", "purple", "orange", "brown", "pink", "cyan", "magenta", "yellow")
 
-    // Genera un colore diverso per ogni elemento fino a esaurimento della lista di colori
-    val coloredInfos = infos.zipWithIndex.map { (entry, index) =>
+    // Estrai tutti i punti e calcola min e max per scalare i valori
+    val allPoints = entries.flatMap(_.data.points)
+    val minX = allPoints.map(_.x.toString.toDouble).min
+    val maxX = allPoints.map(_.x.toString.toDouble).max
+    val minY = allPoints.map(_.y.toString.toDouble).min
+    val maxY = allPoints.map(_.y.toString.toDouble).max
+
+    // Funzioni per scalare i valori x e y
+    def scaleX(x: Double): Double = ((x - minX) / (maxX - minX)) * 500
+    def scaleY(y: Double): Double = 400 - ((y - minY) / (maxY - minY)) * 400 // Inverti Y per posizionare l'asse in basso
+
+    // Aggiunge un colore unico per ogni serie
+    val coloredEntries = entries.zipWithIndex.map { case (entry, index) =>
       val color = colors(index % colors.length)
-      (entry.label, entry.data, color)
+      (entry, color)
     }
 
-    // Funzione per creare una serie di punti rappresentati da `div`
-    def createGraphLine(data: List[Point], color: String): List[Div] =
-      data.map { point =>
-        div(
-          position := "absolute",
-          bottom := s"${point.y.toString.toDouble}px", // Posiziona il punto in base alla coordinata y
-          left := s"${point.x.toString.toDouble}px", // Posiziona il punto in base alla coordinata x
-          width := "5px",
-          height := "5px",
-          backgroundColor := color,
-          borderRadius := "50%" // Rende il punto circolare
-        )
-      }
+    // Crea una linea SVG per ogni serie di dati
+    val graphLines = coloredEntries.map { case (entry, color) =>
+      polyline(
+        points := entry.data.points.map { point =>
+          s"${scaleX(point.x.toString.toDouble)},${scaleY(point.y.toString.toDouble)}"
+        }.mkString(" "),
+        stroke := color,
+        fill := "none",
+        strokeWidth := "2"
+      )
+    }
 
-    // Creazione del contenitore principale del grafico con i punti
-//    val graphContent = coloredInfos.flatMap { reportEntry =>  createGraphLine(reportEntry., color)}
-    val graphContent = coloredInfos.flatMap { case (_, data, color) => createGraphLine(data.points, color) }
-
-    // Creazione del contenitore principale con i punti aggiunti dinamicamente
-    val graph = div(
-      position := "relative",
-      width := "500px",
-      height := "400px",
-      backgroundColor := "white",
-      border := "1px solid black",
-      children <-- Val(graphContent)
+    // Crea l'elemento SVG con le linee del grafico
+    val svgGraph = svg(
+      svgWidth := "500px",
+      svgHeight := "400px",
+      viewBox := "0 0 500 400",
+      graphLines
     )
 
-    // Creazione della legenda in alto a destra
+    // Creazione della legenda
     val legend = div(
       position := "absolute",
       top := "10px",
@@ -67,27 +72,28 @@ class ReportViewImpl extends ReportView:
       border := "1px solid #ccc",
       borderRadius := "5px",
       children <-- Val(
-        coloredInfos.map { case (label, _, color) =>
+        coloredEntries.map { case (entry, color) =>
           div(
             span(
-              width := "10px",
-              height := "10px",
+              htmlWidth := "10px",
+              htmlHeight := "10px",
               backgroundColor := color,
-              display := "inline-block",
+              htmlDisplay := "inline-block",
               marginRight := "5px"
             ),
-            span(label)
+            span(entry.label)
           )
         }
       )
     )
 
-    // Container principale che combina il grafico e la legenda
+    // Container principale con il grafico SVG e la legenda
     div(
       position := "relative",
-      width := "500px",
-      height := "400px",
+      htmlWidth := "500px",
+      htmlHeight := "400px",
       border := "1px solid #ccc",
-      graph,
+      svgGraph,
       legend
     )
+  }
