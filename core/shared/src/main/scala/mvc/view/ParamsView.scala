@@ -1,6 +1,6 @@
 package mvc.view
 
-import mvc.model.{ParameterID, ViewParameter}
+import mvc.model.{Parameter, ViewParameter}
 
 import scala.concurrent.Future
 
@@ -9,5 +9,5 @@ trait ParamsView extends View:
    * @param params
    * @return
    */
-  def init(params: Iterable[ViewParameter]): Future[Iterable[(ParameterID, AnyVal)]]
+  def init(params: Iterable[ViewParameter]): Future[Iterable[Parameter]]
 
