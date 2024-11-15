@@ -1,7 +1,7 @@
 package BouncingBall.view
 
 //import BouncingBall.model.Position
-import BouncingBall.modelz.Position
+import BouncingBall.model.Position
 import mvc.view.SimulationView
 import com.raquo.airstream.core.Signal
 import com.raquo.airstream.state.Var

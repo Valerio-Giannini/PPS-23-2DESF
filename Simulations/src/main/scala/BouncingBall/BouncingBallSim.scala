@@ -1,12 +1,12 @@
 package BouncingBall
 
 import BouncingBall.controller.SimulationController
-import BouncingBall.modelz.*
+import BouncingBall.model.*
 import BouncingBall.view.SimulationViewImpl
 import mvc.model.Simulation
 import dsl.DSL.*
 
-class BouncingBallSim extends Simulation:  
+class BouncingBallSim extends Simulation:
   override def init(): Unit =
     into(world).include(MovementSystem())
     into(world).include(BoundaryBounceSystem())
@@ -44,9 +44,4 @@ class BouncingBallSim extends Simulation:
     println(s"Report finale: ${world.entities.size} entità rimanenti.")
 
 
-object Launch:
-  def main(args: Array[String]): Unit =
-    val simulation = BouncingBallSim()
-    val controller = SimulationController(simulation)
-    controller.setSimulationView(SimulationViewImpl())
-    controller.start()
+

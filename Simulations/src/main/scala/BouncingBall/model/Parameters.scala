@@ -1,4 +1,4 @@
-package BouncingBall.modelz
+package BouncingBall.model
 
 import mvc.model.{ParameterID, Parameters}
 

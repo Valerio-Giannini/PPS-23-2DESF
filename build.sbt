@@ -41,7 +41,7 @@ lazy val coreJS = project
 
 // Modulo simulations che dipende da coreJS e view
 lazy val simulations = project
-  .in(file("simulations"))
+  .in(file("Simulations"))
   .dependsOn(coreJS)
   .enablePlugins(ScalaJSPlugin)
   .settings(

@@ -1,4 +1,4 @@
-package BouncingBall.modelz
+package BouncingBall.model
 
 object SimulationParameters:
   var deceleration: Double = 0
