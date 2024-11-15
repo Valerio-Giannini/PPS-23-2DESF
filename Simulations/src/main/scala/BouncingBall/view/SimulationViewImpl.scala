@@ -2,7 +2,7 @@ package BouncingBall.view
 
 //import BouncingBall.model.Position
 
-import BouncingBall.model.Position
+import BouncingBall.model.{BallRadius, Position}
 import com.raquo.airstream.core.Signal
 import com.raquo.airstream.state.Var
 import com.raquo.laminar.api.L.*
@@ -107,14 +107,13 @@ class SimulationViewImpl extends SimulationView:
     val (x, y) = pos
     println("New renderEntity!")
     val borderSize: Int = 290
-    val ballRadius: Int = 12
     div(
       cls("entity"),
       position := "absolute",
       left := s"${x + borderSize}px",
       bottom := s"${y + borderSize}px",
-      width := s"${ballRadius}px",
-      height := s"${ballRadius}px",
+      width := s"${BallRadius()}px",
+      height := s"${BallRadius()}px",
       backgroundColor := entityColor,
       borderRadius := "50%",
       display := "flex",

@@ -43,7 +43,8 @@ class ParamsViewImpl extends ParamsView:
     val inputFields = paramsList.map { param =>
 
       val inputBox = input(
-        placeholder := param.value.toString
+        placeholder := param.value.toString,
+        value := param.value.toString
       )
 
       (param, inputBox)

@@ -8,6 +8,14 @@ import dsl.DSL.*
 
 class BouncingBallSim extends Simulation:
   override def init(): Unit =
+    import parameters.given
+
+    Deceleration.value = parameters.searchForParameter(Deceleration.id)
+    BallRadius.value = parameters.searchForParameter(BallRadius.id)
+    BorderSize.value = parameters.searchForParameter(BorderSize.id)
+//    id.value = parameters.retrieveParamValue(id)
+
+
     into(world).include(MovementSystem())
     into(world).include(BoundaryBounceSystem())
     into(world).include(CollisionSystem())

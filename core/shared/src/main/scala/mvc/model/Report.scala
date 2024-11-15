@@ -1,6 +1,7 @@
 package mvc.model
 
 case class Point(x: AnyVal, y: AnyVal)
+
 case class DataTrackerEntry(labelX: String, labelY: String, points: List[Point])
 
 trait DataTracker:

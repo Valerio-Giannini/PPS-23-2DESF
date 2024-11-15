@@ -15,6 +15,10 @@ object Stats:
 
   def numberOfStoppedBalls(world: World): Int = from(world).entitiesHaving(SPEED).size - _movingBalls(world).size
 
+  def dec: Double = Deceleration()
+  def dec2: Double = BorderSize()
+  def dec3: Double = BallRadius()
+
   def calcAvgSpeed(world: World): Double =
     val speeds = for
       entity <- _movingBalls(world)

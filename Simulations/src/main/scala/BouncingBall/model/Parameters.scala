@@ -1,12 +1,13 @@
 package BouncingBall.model
 
-import mvc.model.{ParameterID, Parameters}
+import mvc.model.Simulation
 
+class GlobalParameter[T <: AnyVal](var value: T, val id: String):
+  def apply(): T = value
 
-case object Deceleration extends ParameterID
+object Deceleration extends GlobalParameter[Double](0, "deceleration")
 
-//
-//object accessPAram:
-//  import Parameters.given
-//  extension (parameters: Parameters)
-//    def deceleration: Double = parameters.retrieveParamValue[Double](Deceleration)
+object BallRadius extends GlobalParameter[Double](12, "ballRadius")
+
+object BorderSize extends GlobalParameter[Double](290, "borderSize")
+

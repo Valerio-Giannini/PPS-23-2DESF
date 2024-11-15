@@ -2,11 +2,10 @@ package BouncingBall.model
 
 import core.{System, World}
 import dsl.DSL.*
-import SimulationParameters.*
 
 // Movement system: updates position using speed
 class MovementSystem extends System:
-  override def update(using world: World): Unit =
+  override def update(world: World): Unit =
     for
       entity <- from(world).entitiesHaving(POSITION, SPEED)
       pos    <- from(world).componentsOf(entity).get[Position]
@@ -16,17 +15,17 @@ class MovementSystem extends System:
       val newY = pos.y + speed.vy
 
       val newVx = speed.vx match
-        case vx if vx > 0  => math.max(0.0, vx - deceleration)
-        case vx if vx < 0  => math.min(0.0, vx + deceleration)
+        case vx if vx > 0  => math.max(0.0, vx - Deceleration())
+        case vx if vx < 0  => math.min(0.0, vx + Deceleration())
         case _             => 0.0
 
       val newVy = speed.vy match
-        case vy if vy > 0  => math.max(0.0, vy - deceleration)
-        case vy if vy < 0  => math.min(0.0, vy + deceleration)
+        case vy if vy > 0  => math.max(0.0, vy - Deceleration())
+        case vy if vy < 0  => math.min(0.0, vy + Deceleration())
         case _             => 0.0
 
-      val finalVx = if math.abs(newVx) < deceleration then 0.0 else newVx
-      val finalVy = if math.abs(newVy) < deceleration then 0.0 else newVy
+      val finalVx = if math.abs(newVx) < Deceleration() then 0.0 else newVx
+      val finalVy = if math.abs(newVy) < Deceleration() then 0.0 else newVy
 
       into(world)
         .componentsOf(entity)
@@ -38,7 +37,7 @@ class MovementSystem extends System:
 
 
 class BoundaryBounceSystem extends System:
-  override def update(using world: World): Unit =
+  override def update(world: World): Unit =
     for
       entity <- from(world).entitiesHaving(POSITION, SPEED)
       pos <- from(world).componentsOf(entity).get[Position]
@@ -49,23 +48,23 @@ class BoundaryBounceSystem extends System:
       var newX = pos.x
       var newY = pos.y
 
-      if pos.x > borderSize - ballRadius then
-        newX = borderSize - ballRadius - 1
+      if pos.x > BorderSize() - BallRadius() then
+        newX = BorderSize.value - BallRadius() - 1
         newVx = -newVx
         println(s"* Entity ${entity.id} collision on x >")
 
-      else if pos.x < -borderSize + ballRadius then
-        newX = -borderSize + ballRadius + 1
+      else if pos.x < -BorderSize() + BallRadius() then
+        newX = -BorderSize() + BallRadius() + 1
         newVx = -newVx
         println(s"* Entity ${entity.id} collision on x <")
 
-      if pos.y > borderSize - ballRadius then
-        newY = borderSize - ballRadius - 1
+      if pos.y > BorderSize() - BallRadius() then
+        newY = BorderSize() - BallRadius() - 1
         newVy = -newVy
         println(s"* Entity ${entity.id} collision on y >")
 
-      else if pos.y < -borderSize + ballRadius then
-        newY = -borderSize + ballRadius + 1
+      else if pos.y < -BorderSize() + BallRadius() then
+        newY = -BorderSize() + BallRadius() + 1
         newVy = -newVy
         println(s"* Entity ${entity.id} collision on y <")
 
@@ -73,7 +72,7 @@ class BoundaryBounceSystem extends System:
       into(world).componentsOf(entity2).add(Speed(newVx, newVy))
 
 class CollisionSystem extends System:
-  override def update(using world: World): Unit =
+  override def update(world: World): Unit =
     val entities = from(world).entitiesHaving(POSITION, SPEED).toSeq
     for
       i <- entities.indices
@@ -88,7 +87,7 @@ class CollisionSystem extends System:
 
       if isCollision(posA, posB)
     do
-      val factor = 0.5
+      val factor = 1
       val newSpeedA = Speed(-speedA.vx * factor, -speedA.vy * factor)
       val newSpeedB = Speed(-speedB.vx * factor, -speedB.vy * factor)
 
@@ -104,11 +103,11 @@ class CollisionSystem extends System:
 
   private def isCollision(posA: Position, posB: Position): Boolean =
     val distance = math.sqrt(math.pow(posA.x - posB.x, 2) + math.pow(posA.y - posB.y, 2))
-    val threshold = 2 * ballRadius
+    val threshold = 2 * BallRadius()
     distance < threshold
 
 class PrintPositionAndSpeedOfEntitiesSystem extends System:
-  override def update(using world: World): Unit =
+  override def update(world: World): Unit =
     for
       entity <- from(world).entitiesHaving(POSITION, SPEED)
       pos = from(world)
