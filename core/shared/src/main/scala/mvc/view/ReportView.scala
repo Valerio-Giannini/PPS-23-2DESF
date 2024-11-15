@@ -1,4 +1,6 @@
 package mvc.view
 
+import mvc.model.ReportEntry
+
 trait ReportView extends View:
-  def report(infos: List[(String, List[(AnyVal, AnyVal)])]): Unit
+  def init(infos: List[ReportEntry]): Unit

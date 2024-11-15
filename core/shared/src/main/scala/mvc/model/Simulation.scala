@@ -18,11 +18,11 @@ trait Simulation:
   def runCondition: Boolean = condition.evaluate
   def entities: Iterable[Entity] = world.entities
   def tick(currentTick: Int): Unit =
-    world.update() // Aggiorna ogni sistema
+    world.update()
   def endSimulation(): Unit
   def include(system: System): Unit =
     world.addSystem(system)
-  def showStats(): Unit
+
   def showReport(): Unit
 //  def setParameters(parma: Parameters): Unit =
 //    parameters = parma

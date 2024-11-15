@@ -2,10 +2,11 @@ package BouncingBall.view
 
 import mvc.view.ReportView
 import com.raquo.laminar.api.L.*
+import mvc.model.{DataTrackerEntry, Point, ReportEntry}
 import org.scalajs.dom
 
 class ReportViewImpl extends ReportView:
-  var reportInfos: List[(String, List[(AnyVal, AnyVal)])] = _
+  var reportInfos: List[ReportEntry] = _
 
   override def show(): Unit =
     val container = dom.document.getElementById("report-container")
@@ -16,25 +17,25 @@ class ReportViewImpl extends ReportView:
     val container = dom.document.getElementById("report-container")
     container.innerHTML = ""
 
-  def report(infos: List[(String, List[(AnyVal, AnyVal)])]): Unit =
+  override def init(infos: List[ReportEntry]): Unit =
     reportInfos = infos
 
-  def _renderReport(infos: List[(String, List[(AnyVal, AnyVal)])]): Div =
+  def _renderReport(infos: List[ReportEntry]): Div =
     val colors = List("red", "blue", "green", "purple", "orange", "brown", "pink", "cyan", "magenta", "yellow")
 
     // Genera un colore diverso per ogni elemento fino a esaurimento della lista di colori
-    val coloredInfos = infos.zipWithIndex.map { case ((label, data), index) =>
+    val coloredInfos = infos.zipWithIndex.map { (entry, index) =>
       val color = colors(index % colors.length)
-      (label, data, color)
+      (entry.label, entry.data, color)
     }
 
     // Funzione per creare una serie di punti rappresentati da `div`
-    def createGraphLine(data: List[(AnyVal, AnyVal)], color: String): List[Div] =
-      data.map { case (x, y) =>
+    def createGraphLine(data: List[Point], color: String): List[Div] =
+      data.map { point =>
         div(
           position := "absolute",
-          bottom := s"${y.toString.toDouble}px", // Posiziona il punto in base alla coordinata y
-          left := s"${x.toString.toDouble}px", // Posiziona il punto in base alla coordinata x
+          bottom := s"${point.y.toString.toDouble}px", // Posiziona il punto in base alla coordinata y
+          left := s"${point.x.toString.toDouble}px", // Posiziona il punto in base alla coordinata x
           width := "5px",
           height := "5px",
           backgroundColor := color,
@@ -43,7 +44,8 @@ class ReportViewImpl extends ReportView:
       }
 
     // Creazione del contenitore principale del grafico con i punti
-    val graphContent = coloredInfos.flatMap { case (_, data, color) => createGraphLine(data, color) }
+//    val graphContent = coloredInfos.flatMap { reportEntry =>  createGraphLine(reportEntry., color)}
+    val graphContent = coloredInfos.flatMap { case (_, data, color) => createGraphLine(data.points, color) }
 
     // Creazione del contenitore principale con i punti aggiunti dinamicamente
     val graph = div(

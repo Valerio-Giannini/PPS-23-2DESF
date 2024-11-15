@@ -13,7 +13,6 @@ import org.scalajs.dom
 
 import scala.reflect.ClassTag
 
-
 class SimulationViewImpl extends SimulationView:
   // Var per le posizioni delle entità
   private val entitiesVar = Var[Iterable[(Int, (Double, Double))]](List.empty)

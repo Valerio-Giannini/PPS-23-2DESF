@@ -28,13 +28,17 @@ class BouncingBallSim extends Simulation:
       println("Entity with Pos and Speed Created")
 
   override def tick(currentTick: Int): Unit =
+    given tick: Int = currentTick
     world.update()
+
+    AvgSpeed.add(Stats.calcAvgSpeed(world))
+    MovingBalls.add(Stats.numberOfMovingBalls(world))
+    print(report.data)
 
   override def endSimulation(): Unit =
     println("Simulation Ended")
+    print(report.data)
 
-  def showStats(): Unit =
-    println(s"Statistiche attuali: ${world.entities.size} entità attive.")
 
   def showReport(): Unit =
     println(s"Report finale: ${world.entities.size} entità rimanenti.")
