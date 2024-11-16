@@ -59,7 +59,7 @@ class ParamsViewImpl extends ParamsView:
 
       val maybeResults = inputFields.flatMap { (param, inputBox) =>
 
-        val rawValue = inputBox.ref.value
+        val rawValue = if (inputBox.ref.value.isEmpty) inputBox.ref.placeholder else inputBox.ref.value
 
         // Controlla se il valore è un numero
 
