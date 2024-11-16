@@ -1,6 +1,7 @@
 package dsl
 
 import dsl.coreDSL.CoreDSL
+import dsl.simulationDSL.SimulationDSL
 
 /**
  * Entry point of the DSL keywords.
@@ -8,3 +9,4 @@ import dsl.coreDSL.CoreDSL
  */
 object DSL:
   export CoreDSL.*
+  export SimulationDSL.*
