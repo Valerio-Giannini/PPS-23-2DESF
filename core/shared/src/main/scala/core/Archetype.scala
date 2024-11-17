@@ -61,9 +61,6 @@ sealed trait Archetype:
  */
 object Archetype:
 
-  def apply(componentTags: ComponentTag[_]*): Archetype =
-    ArchetypeImpl(componentTags.toSet)
-
   def apply(componentTags: Set[ComponentTag[_]]): Archetype =
     ArchetypeImpl(componentTags)
 
@@ -80,7 +77,7 @@ object Archetype:
       this
 
     def get(entity: Entity): Option[Entity] =
-      Some(entity).filter(entityContainer.contains)
+      Some(entity).find(entityContainer.contains)
 
     def remove(entity: Entity): Archetype =
       entityContainer -= entity
