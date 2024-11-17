@@ -79,6 +79,8 @@ trait From:
     */
   def componentsOf(entity: Entity): FromComponentBuilder
 
+  // TODO
+
   /** Retrieves entities that have exactly the specified set of components.
     *
     * @param componentClass
@@ -89,7 +91,10 @@ trait From:
     *   An iterable collection of [[Entity]] containing exactly the specified components.
     */
 
-  def entitiesHavingOnly(componentClass: ComponentTag[?], componentClasses: ComponentTag[?]*): Iterable[Entity]
+  def entitiesHavingOnly[C <: ComponentChain : ComponentChainTag]: Iterable[Entity]
+  def entitiesHavingOnly[C <: Component: ComponentTag]: Iterable[Entity]
+  def entitiesHaving[C <: Component : ComponentTag]: Iterable[Entity]
+  def entitiesHaving[C <: ComponentChain : ComponentChainTag]: Iterable[Entity]
 
   /** Retrieves entities that have at least the specified set of components.
     *
@@ -100,7 +105,7 @@ trait From:
     * @return
     *   An iterable collection of [[Entity]] instances containing at least the specified components.
     */
-  def entitiesHaving(componentClass: ComponentTag[?], componentClasses: ComponentTag[?]*): Iterable[Entity]
+
 
 object From:
   def apply(world: World): From = new FromImpl(world)
@@ -112,14 +117,18 @@ object From:
     override def kill(entity: Entity): World                        = world.removeEntity(entity)
     override def componentsOf(entity: Entity): FromComponentBuilder = FromComponentBuilder(world, entity)
 
-    override def entitiesHavingOnly(
-        componentClass: ComponentTag[?],
-        componentTags: ComponentTag[?]*
-    ): Iterable[Entity] =
-      world.entitiesWithComponents(componentClass +: componentTags*).toSeq.sortBy(_.id)
+    override def entitiesHavingOnly[C <: ComponentChain : ComponentChainTag]: Iterable[Entity] =
+      world.entitiesWithComponents[C]
 
-    override def entitiesHaving(componentClass: ComponentTag[?], componentClasses: ComponentTag[?]*): Iterable[Entity] =
-      world.entitiesWithAtLeastComponents(componentClass +: componentClasses*).toSeq.sortBy(_.id)
+    override def entitiesHavingOnly[C <: Component: ComponentTag]: Iterable[Entity] =
+      world.entitiesWithComponents[C]
+
+    override def entitiesHaving[C <: Component : ComponentTag]: Iterable[Entity] =
+      world.entitiesWithAtLeastComponents[C]
+
+    override def entitiesHaving[C <: ComponentChain : ComponentChainTag]: Iterable[Entity] =
+      world.entitiesWithAtLeastComponents[C]
+
 
 /** The [[FromComponentBuilder]] trait provides methods to access and modify components of a specific entity. It enables
   * retrieving or removing components by their type.

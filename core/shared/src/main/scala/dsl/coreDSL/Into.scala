@@ -2,6 +2,7 @@ package dsl.coreDSL
 
 import core.*
 
+
 /** The `Into` trait provides methods to create, add, and manage entities and systems within a `World`. It enables
   * spawning entities with optional components, adding components to entities, and including systems in the `World`.
   *
@@ -40,16 +41,13 @@ trait Into:
     */
   def spawnNewEntity: Entity
 
-  /** Spawns a new entity, with the specified initial components, within the world .
-    *
-    * @param component
-    *   the first component to add to the entity
-    * @param components
-    *   additional components to add to the entity
-    * @return
-    *   The newly created [[Entity]] instance
-    */
-  def spawnNewEntityWith(component: Component, components: Component*): Entity
+
+  // TODO
+
+
+  def spawnNewEntityWith[C <: ComponentChain : ComponentChainTag](components: C): Entity
+
+  def spawnNewEntityWith[C <: Component : ComponentTag](component: C): Entity
 
   /** Adds an existing entity to the world.
     *
@@ -80,12 +78,15 @@ trait Into:
 
 object Into:
   def apply(world: World): Into = IntoImpl(world)
-
   private class IntoImpl(world: World) extends Into:
+
     override def spawnNewEntity: Entity = world.createEntity()
 
-    override def spawnNewEntityWith(component: Component, components: Component*): Entity =
-      world.createEntity(component +: components*)
+    override def spawnNewEntityWith[C <: ComponentChain : ComponentChainTag](components: C): Entity =
+      world.createEntity(components)
+
+    override def spawnNewEntityWith[C <: Component : ComponentTag](component: C): Entity =
+      world.createEntity(component)
 
     override def spawnEntity(entity: Entity): Entity =
       world.addEntity(entity)

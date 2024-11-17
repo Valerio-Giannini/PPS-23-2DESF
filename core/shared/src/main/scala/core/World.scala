@@ -1,5 +1,7 @@
 package core
 
+import core.ComponentChain.given
+
 /** This trait represents the central context in an Entity-Component-System (ECS) framework.
   *
   * A World manages all entities, components, and systems.
@@ -24,15 +26,15 @@ trait World:
   def entity(entity: Entity): Option[Entity]
 
   /** Creates a new entity with the specified components and adds it to the world.
-    *
-    * @param components
-    *   A variable number of components.
-    * @return
-    *   The newly created [[Entity]] instance.
-    */
-  def createEntity[C <: ComponentChain](components: C = CNil)(using clt: ComponentChainTag[C]): Entity
-  def createEntity[C <: Component](component: C)(using clt: ComponentChainTag[C :: CNil]): Entity
-
+   *
+   * @param components
+   *   A variable number of components.
+   * @return
+   *   The newly created [[Entity]] instance.
+   */
+  def createEntity[C <: ComponentChain : ComponentChainTag](components: C): Entity
+  def createEntity[C <: Component : ComponentTag](component: C): Entity
+  def createEntity(): Entity
   /** Adds an existing entity to the world.
     *
     * @param entity
@@ -105,7 +107,7 @@ trait World:
    * @return
    * An iterable collection of [[Entity]] containing exactly the specified component.
    */
-  def entitiesWithComponents[C <: Component: ComponentTag](using ComponentChainTag[C :: CNil]): Iterable[Entity]
+  def entitiesWithComponents[C <: Component: ComponentTag]: Iterable[Entity]
 
   /** Retrieves entities that have at least the specified set of components.
     *
@@ -119,7 +121,7 @@ trait World:
    * @return
    * An iterable collection of [[Entity]] instances containing at least the specified component.
    */
-  def entitiesWithAtLeastComponents[C <: Component: ComponentTag](using ComponentChainTag[C :: CNil]): Iterable[Entity]
+  def entitiesWithAtLeastComponents[C <: Component: ComponentTag]: Iterable[Entity]
 
   /** Adds a system to the world.
     *
@@ -155,13 +157,20 @@ object World:
     def update(): Unit =
       systems.foreach(_.update(this))
 
-    def createEntity[C <: ComponentChain](components: C = CNil)(using clt: ComponentChainTag[C]): Entity =
-      val newEntity = Entity(components)(using clt)
+    def createEntity[C <: ComponentChain : ComponentChainTag](components: C): Entity =
+      val newEntity = Entity(components)
       addEntity(newEntity)
       newEntity
 
-    def createEntity[C <: Component](component: C)(using clt: ComponentChainTag[C :: CNil]): Entity =
-      createEntity(component :: CNil)(using clt)
+    def createEntity[C <: Component : ComponentTag](component: C): Entity =
+      val newEntity = Entity(component)
+      addEntity(newEntity)
+      newEntity
+
+    def createEntity(): Entity =
+      val newEntity = Entity()
+      addEntity(newEntity)
+      newEntity
 
     def addEntity(entity: Entity): World =
       getArchetype(entity) match
@@ -222,11 +231,12 @@ object World:
     def entitiesWithComponents[C <: ComponentChain : ComponentChainTag]: Iterable[Entity] =
       entitiesByFilter(summon[ComponentChainTag[C]].tags == _)
 
-    def entitiesWithComponents[C <: Component : ComponentTag](using ComponentChainTag[C :: CNil]): Iterable[Entity] =
-      entitiesWithComponents[C :: CNil]
+    def entitiesWithComponents[C <: Component : ComponentTag]: Iterable[Entity] =
+      entitiesByFilter(Set(summon[ComponentTag[C]]) == _)
 
     def entitiesWithAtLeastComponents[C <: ComponentChain : ComponentChainTag]: Iterable[Entity] =
       entitiesByFilter(summon[ComponentChainTag[C]].tags.subsetOf(_))
 
-    def entitiesWithAtLeastComponents[C <: Component : ComponentTag](using ComponentChainTag[C :: CNil]): Iterable[Entity] =
-      entitiesWithAtLeastComponents[C :: CNil]
+    def entitiesWithAtLeastComponents[C <: Component : ComponentTag]: Iterable[Entity] =
+      entitiesByFilter(Set(summon[ComponentTag[C]]).subsetOf(_))
+
