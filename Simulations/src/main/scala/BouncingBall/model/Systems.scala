@@ -50,22 +50,22 @@ class BoundaryBounceSystem extends System:
       var newY = pos.y
 
       if pos.x > borderSize() - ballRadius() then
-        newX = borderSize() - ballRadius() - 1
+        //newX = borderSize() - ballRadius() - 1
         newVx = -newVx
         println(s"* Entity ${entity.id} collision on x >")
 
       else if pos.x < -borderSize() + ballRadius() then
-        newX = -borderSize() + ballRadius() + 1
+        //newX = -borderSize() + ballRadius() + 1
         newVx = -newVx
         println(s"* Entity ${entity.id} collision on x <")
 
       if pos.y > borderSize() - ballRadius() then
-        newY = borderSize() - ballRadius() - 1
+        //newY = borderSize() - ballRadius() - 1
         newVy = -newVy
         println(s"* Entity ${entity.id} collision on y >")
 
       else if pos.y < -borderSize() + ballRadius() then
-        newY = -borderSize() + ballRadius() + 1
+        //newY = -borderSize() + ballRadius() + 1
         newVy = -newVy
         println(s"* Entity ${entity.id} collision on y <")
 
@@ -88,23 +88,45 @@ class CollisionSystem extends System:
 
       if isCollision(posA, posB)
     do
-      val factor = 0.9
-      val newSpeedA = Speed(-speedA.vx * factor, -speedA.vy * factor)
-      val newSpeedB = Speed(-speedB.vx * factor, -speedB.vy * factor)
+      // Calcola il vettore normale della collisione
+      val dx = posB.x - posA.x
+      val dy = posB.y - posA.y
+      val distance = Math.sqrt(dx * dx + dy * dy)
+      val nx = dx / distance
+      val ny = dy / distance
+
+      // Proietta le velocità lungo la normale
+      val vA = speedA.vx * nx + speedA.vy * ny
+      val vB = speedB.vx * nx + speedB.vy * ny
+
+      // Calcola le velocità tangenziali
+      val tAx = speedA.vx - vA * nx
+      val tAy = speedA.vy - vA * ny
+      val tBx = speedB.vx - vB * nx
+      val tBy = speedB.vy - vB * ny
+
+      // Inverti la componente normale per lo scambio (collisione elastica)
+      val factor = 0.9 // coefficiente di restituzione
+      val newVA = -vA * factor
+      val newVB = -vB * factor
+
+      // Ricostruisci le nuove velocità
+      val newSpeedA = Speed(
+        newVA * nx + tAx,
+        newVA * ny + tAy
+      )
+      val newSpeedB = Speed(
+        newVB * nx + tBx,
+        newVB * ny + tBy
+      )
 
       into(world).componentsOf(entityA).add(newSpeedA)
       into(world).componentsOf(entityB).add(newSpeedB)
 
-      val displacement = 0.5
-      val newPosA = Position(posA.x + speedA.vx * displacement, posA.y + speedA.vy * displacement)
-      val newPosB = Position(posB.x + speedB.vx * displacement, posB.y + speedB.vy * displacement)
-
-      into(world).componentsOf(entityA).add(newPosA)
-      into(world).componentsOf(entityB).add(newPosB)
 
   private def isCollision(posA: Position, posB: Position): Boolean =
     val distance = math.sqrt(math.pow(posA.x - posB.x, 2) + math.pow(posA.y - posB.y, 2))
-    val threshold = 2 * ballRadius()
+    val threshold = 2* ballRadius()
     distance < threshold
 
 class PrintPositionAndSpeedOfEntitiesSystem extends System:

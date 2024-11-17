@@ -35,18 +35,7 @@ class SimulationViewImpl extends SimulationView:
   override def close(): Unit =
     val container = dom.document.getElementById("simulation-container")
     container.innerHTML = ""
-
-  //  // Chiamato una sola volta per renderizzare il container
-  //  override def viewSim(entities: Iterable[Entity], initialStatsInfos: List[(String, AnyVal)]): Unit =
-  //    // Imposta le posizioni iniziali delle entità
-  //    val initialPositions = entities.flatMap { entity =>
-  //      entity.get[Position].map { position =>
-  //        (entity.id, (position.x, position.y))
-  //      }
-  //    }
-  //    entitiesVar.set(initialPositions)
-  //    statsVar.set(initialStatsInfos) // Imposta le statistiche iniziali
-
+  
   // Chiamato per aggiornare i signal con le nuove posizioni e statistiche
   override def update(entities: Iterable[Entity], newStatsInfos: List[StatisticEntry]): Unit =
     val updatedPositions = entities.collect {
