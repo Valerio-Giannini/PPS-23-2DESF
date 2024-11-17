@@ -1,5 +1,6 @@
 package BouncingBall.model
 
+import BouncingBall.model.GlobalParameters.{ballRadius, borderSize, deceleration}
 import core.{Entity, World}
 import dsl.DSL.*
 
@@ -11,15 +12,11 @@ object Stats:
       if speed.vx != 0 || speed.vy != 0
     yield entity
 
-  def numberOfMovingBalls(world: World): Int = _movingBalls(world).size
+  def numberOfMovingBalls(using world: World): Int = _movingBalls(world).size
 
-  def numberOfStoppedBalls(world: World): Int = from(world).entitiesHaving(SPEED).size - _movingBalls(world).size
+  def numberOfStoppedBalls(using world: World): Int = from(world).entitiesHaving(SPEED).size - _movingBalls(world).size
 
-  def dec: Double = Deceleration()
-  def dec2: Double = BorderSize()
-  def dec3: Double = BallRadius()
-
-  def calcAvgSpeed(world: World): Double =
+  def calcAvgSpeed(using world: World): Double =
     val speeds = for
       entity <- _movingBalls(world)
       speed <- from(world).componentsOf(entity).get[Speed]

@@ -1,6 +1,5 @@
 package mvc.model
 
-
 /**
  * A `Condition` class that encapsulates a predicate function, which can be evaluated
  * to return a boolean value.

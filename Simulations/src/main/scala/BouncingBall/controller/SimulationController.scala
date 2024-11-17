@@ -9,20 +9,24 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.timers.setTimeout
 import scala.util.{Failure, Success}
 
-class SimulationController(simulation: Simulation) extends Controller:
+import dsl.DSL.*
+
+class SimulationController(sim: Simulation) extends Controller:
   private var paramView: ParamsView = ParamsViewImpl()
-  private var reportView: ReportView = ReportViewImpl()
+  private val reportView: ReportView = ReportViewImpl()
   private var simulationView: SimulationView = _
   private val tickInterval: Int = 18 // ms
   private var currentTick: Int = 0
 
+  given Simulation = sim
+  
   def start(): Unit =
-    simulation.parameters.getRequestedParams match
+    simulation.askedParameters match
       case p if p.nonEmpty =>
         paramView.init(p).onComplete {
           case Success(paramValues) =>
             paramView.close()
-            simulation.parameters.parsedParam(paramValues.toList)
+            simulation.updateParameters(paramValues)
             initializeAndRun()
           case Failure(exception) =>
             println(s"Errore nel caricamento dei parametri: ${exception.getMessage}")
@@ -32,17 +36,15 @@ class SimulationController(simulation: Simulation) extends Controller:
         initializeAndRun()
 
   private def initializeAndRun(): Unit =
-    simulation.init()
     simulationView.show()
-//    simulationRunning = true
-    currentTick = 0
+    currentTick = 1
     scheduleNextTick()
 
   private def scheduleNextTick(): Unit =
-    if simulation.runCondition && currentTick < 300 then
+    if simulation.shouldRun then
       setTimeout(tickInterval) {
-        simulation.tick(currentTick)
-        simulationView.update(simulation.entities, simulation.statistics.snapshot)
+        simulation.update(currentTick)
+        simulationView.update(from(sim.world).allEntities, simulation.stats)
         currentTick += 1
         scheduleNextTick()
       }
@@ -50,18 +52,17 @@ class SimulationController(simulation: Simulation) extends Controller:
       end()
 
   def end(): Unit =
-    simulation.report.data match
+    simulationView.close()
+
+    simulation.report match
       case r if r.nonEmpty =>
         reportView.init(r)
+
         reportView.show()
-        simulationView.close()
       case _ =>
-        simulation.endSimulation()
-        simulationView.close()
-    println("Simulazione terminata")
 
   def setParamsView(paramsView: ParamsView): Unit =
     this.paramView = paramsView
-//
+
   def setSimulationView(simulationView: SimulationView): Unit =
     this.simulationView = simulationView

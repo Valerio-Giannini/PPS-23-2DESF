@@ -156,7 +156,7 @@ trait FromComponentBuilder:
   def remove[C <: Component: ComponentTag]: Entity
 
 object FromComponentBuilder:
-  def apply(world: World, entity: Entity): FromComponentBuilder = FromComponentOfImpl(world, entity)
+  def apply(world: World, entity: Entity): FromComponentBuilder = new FromComponentOfImpl(world, entity)
 
   private class FromComponentOfImpl(world: World, entity: Entity) extends FromComponentBuilder:
     override def get[C <: Component: ComponentTag]: Option[C] = world.getComponent[C](entity)

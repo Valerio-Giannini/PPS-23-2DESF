@@ -9,5 +9,5 @@ trait ParamsView extends View:
    * @param params
    * @return
    */
-  def init(params: Iterable[ViewParameter]): Future[Iterable[Parameter]]
+  def init(params: Iterable[ViewParameter]): Future[Iterable[Parameter[_]]]
 

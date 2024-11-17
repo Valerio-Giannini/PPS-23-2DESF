@@ -1,36 +1,30 @@
 package mvc.model
 
+class Parameter[T](var value: T, var id: Option[Int] = None):
+  def apply(): T = value
 
-case class ViewParameter(id: String, label: String, value: AnyVal, minValue: Option[AnyVal] = None, maxValue: Option[AnyVal] = None)
-case class Parameter(id: String, value: AnyVal)
+class IntParameter(value: Int, id: Option[Int] = None) extends Parameter[Int](value, id)
 
-trait ParameterResolver[A]:
-  def resolve(varName: String): A
+class DoubleParameter(value: Double, id: Option[Int] = None) extends Parameter[Double](value, id)
+
+class IntegerParameter(var value: Double, var id: Option[Int] = None)
+
+case class ViewParameter(parameter: Parameter[_], label: String, minValue: Option[AnyVal] = None, maxValue: Option[AnyVal] = None)
 
 trait Parameters:
   private var requestedParameters: List[ViewParameter] = List.empty
-  private var params: List[Parameter] = List.empty
 
   def askParam(param: ViewParameter): Unit =
+    param.parameter.id = Some(requestedParameters.size)
     requestedParameters :+= param
   
-  def getRequestedParams: List[ViewParameter] = requestedParameters
+  def getRequestedParams: List[ViewParameter] =
+    requestedParameters
 
-  def parsedParam(parsedParams: List[Parameter]): Unit =
-    params = parsedParams
-
-  def searchForParameter[T](param: String): T = params.find(_.id == param) match
-    case Some(parameter) => parameter.value.asInstanceOf[T]
-    case None => throw new NoSuchElementException(s"Parameter $param not found")
-
-  def retrieveParamValue[T](varName: String)(using parameterResolver: ParameterResolver[T]): T
-  = parameterResolver.resolve(varName)
-
-  given ParameterResolver[Double] with
-    override def resolve(varName: String): Double = searchForParameter[Double](varName)
-
-  given ParameterResolver[Int] with
-    override def resolve(varName: String): Int = searchForParameter[Int](varName)
+  def parseParams(viewParameters: List[Parameter[_]]): Unit =
+    requestedParameters.foreach(
+      rp => rp.parameter.value = viewParameters.find(vp => vp.id == rp.parameter.id).get.value.asInstanceOf
+    )
 
 object Parameters:
   def apply(): Parameters = new ParametersImpl

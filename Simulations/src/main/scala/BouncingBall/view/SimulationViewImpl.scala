@@ -2,7 +2,8 @@ package BouncingBall.view
 
 //import BouncingBall.model.Position
 
-import BouncingBall.model.{BallRadius, Position}
+import BouncingBall.model.GlobalParameters.{ballRadius, borderSize}
+import BouncingBall.model.Position
 import com.raquo.airstream.core.Signal
 import com.raquo.airstream.state.Var
 import com.raquo.laminar.api.L.*
@@ -64,20 +65,16 @@ class SimulationViewImpl extends SimulationView:
       println(s"Updating stats: $newStatsInfos")
       statsVar.set(newStatsInfos)
 
-
-  // TODO : val borderSize: Int = 290
-
   private def renderWorld(
                            entitySignals: Signal[Iterable[(Int, (Double, Double))]],
                            statsSignal: Signal[List[StatisticEntry]]
                          ): Div = {
-    val borderSize: Int = 290
     println("RenderWorld chiamato")
 
     div(
       cls("world"),
-      width := s"${borderSize * 2}px", // Dimensione del mondo
-      height := s"${borderSize * 2}px",
+      width := s"${borderSize() * 2}px", // Dimensione del mondo
+      height := s"${borderSize() * 2}px",
       position := "relative",
       backgroundColor := "#ccc", // Posizionamento relativo
       border := "5px solid black",
@@ -97,7 +94,6 @@ class SimulationViewImpl extends SimulationView:
     )
   }
 
-  // TODO: Anche qui
 
   private def renderEntity(
                             id: Int,
@@ -105,15 +101,13 @@ class SimulationViewImpl extends SimulationView:
                             entityColor: String = "blue" // Colore predefinito
                           ): Div =
     val (x, y) = pos
-    println("New renderEntity!")
-    val borderSize: Int = 290
     div(
       cls("entity"),
       position := "absolute",
-      left := s"${x + borderSize}px",
-      bottom := s"${y + borderSize}px",
-      width := s"${BallRadius()}px",
-      height := s"${BallRadius()}px",
+      left := s"${x + borderSize()}px",
+      bottom := s"${y + borderSize()}px",
+      width := s"${ballRadius()}px",
+      height := s"${ballRadius()}px",
       backgroundColor := entityColor,
       borderRadius := "50%",
       display := "flex",
