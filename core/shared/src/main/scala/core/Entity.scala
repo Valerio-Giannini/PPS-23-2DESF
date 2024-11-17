@@ -1,8 +1,5 @@
 package core
 
-import scala.collection.immutable.HashMap
-import scala.reflect.ClassTag
-
 /** This trait represents a generic Entity in an Entity Component System (ECS).
   *
   * An Entity contains components.
@@ -56,14 +53,17 @@ sealed trait Entity:
  * A Factory for [[Entity]].
  */
 object Entity:
-  
-  def apply(components: Component*): Entity =
-    val initialMap = HashMap.empty[ComponentTag[_], Component]
-    val map: HashMap[ComponentTag[_], Component] = components.foldLeft(initialMap) { (acc, component) =>
-      val tag = ClassTag(component.getClass)
-      acc.updated(tag, component)
-    }
-    SimpleEntity(IdGenerator.nextId(), map)
+
+  def apply[C <: ComponentChain](components: C)(using clt: ComponentChainTag[C]): Entity =
+    val componentsMap: Map[ComponentTag[_], Component] =
+      clt.tags.zip(components).toMap
+    SimpleEntity(IdGenerator.nextId(), componentsMap)
+
+  def apply[C <: Component](component: C)(using clt: ComponentChainTag[C :: CNil]): Entity =
+    apply(component :: CNil)(using clt)
+
+  def apply(): Entity =
+    SimpleEntity(IdGenerator.nextId(), Map.empty)
 
   private case class SimpleEntity(ID: Int, private val componentsMap: Map[ComponentTag[_], Component])
       extends Entity:

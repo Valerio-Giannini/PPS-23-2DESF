@@ -7,3 +7,5 @@ case class Speed(vx: Double, vy: Double)  extends Component
 
 val POSITION = ComponentTag[Position]
 val SPEED = ComponentTag[Speed]
+
+case class Ball(p: Position, s: Speed)
