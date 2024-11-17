@@ -25,11 +25,11 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         val entity = world.createEntity()
         world.entities should contain(entity)
       "allow creation of an entity with multiple components" in:
-        val entity = world.createEntity(C1(1), C2(2))
+        val entity = world.createEntity(C1(1) :: C2(2))
         world.entities should contain(entity)
         entity.componentTags should have size 2
       "allow creation of an entity without duplicate components" in:
-        val entity = world.createEntity(C1(1), C1(2))
+        val entity = world.createEntity(C1(1) :: C1(2))
         world.entities should contain(entity)
         entity.componentTags should have size 1
       "allow the removal of an entity" in:
@@ -38,7 +38,7 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         world.removeEntity(entityB)
         world.entities should have size 1
       "allow the removal and reinsertion of an entity with its components" in:
-        val entity = world.createEntity(C1(1), C2(2))
+        val entity = world.createEntity(C1(1) :: C1(2))
         world.entities should contain(entity)
         world.removeEntity(entity)
         world.entities shouldBe empty
@@ -58,12 +58,12 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         (1 to numEntities).foreach { _ =>
           world.createEntity(C1(1))
           world.createEntity(C2(2))
-          world.createEntity(C1(1), C2(2))
+          world.createEntity(C1(1) :: C2(2))
         }
-        val entitiesWithC1 = world.entitiesWithComponents(ComponentTag[C1])
+        val entitiesWithC1 = world.entitiesWithComponents[C1]
         all(entitiesWithC1.map(_.get[C1])) should not be empty
         entitiesWithC1 should have size numEntities
-        val entitiesWithAtLeastC1 = world.entitiesWithAtLeastComponents(ComponentTag[C1])
+        val entitiesWithAtLeastC1 = world.entitiesWithAtLeastComponents[C1]
         all(entitiesWithAtLeastC1.map(_.get[C1])) should not be empty
         entitiesWithAtLeastC1 should have size numEntities*2
 
@@ -92,7 +92,7 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         val entity = world.createEntity(C1(1))
         world.getComponent[C2](entity) shouldBe None
       "allow remove an existing component" in:
-        val entity = world.createEntity(C1(1), C2(2))
+        val entity = world.createEntity(C1(1) :: C2(2))
         world.removeComponent[C2](entity)
         inside(world.entities.find(_.id == entity.id)) {
           case Some(e) =>
