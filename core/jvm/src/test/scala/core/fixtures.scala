@@ -12,5 +12,5 @@ class IncrementC1System extends System:
       case None => entity
 
   def update(world: World): Unit =
-    world.entitiesWithAtLeastComponents(ComponentTag[C1])
+    world.entitiesWithAtLeastComponents[C1 :: CNil]
       .foreach(e => world.addComponent(e, incrementC1(e).get[C1].get))
