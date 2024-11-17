@@ -29,8 +29,15 @@ class ReportViewImpl extends ReportView:
   private def _renderSingleReport(entry: ReportEntry): Div =
     val colors = List("red", "blue", "green", "purple", "orange", "brown", "pink", "cyan", "magenta", "yellow")
 
+    println(entry.points)
+    println(entry.label)
+    println(entry.labelX)
+    println(entry.labelY)
+
+
     // Estrai i punti e calcola min e max per scalare i valori
-    val pointsList = entry.data.points
+    val pointsList = entry.points
+    println(pointsList.map(_.x.toString.toDouble).max)
     val minX = pointsList.map(_.x.toString.toDouble).min
     val maxX = pointsList.map(_.x.toString.toDouble).max
     val minY = pointsList.map(_.y.toString.toDouble).min
