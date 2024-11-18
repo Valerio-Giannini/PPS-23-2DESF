@@ -21,92 +21,44 @@ import scala.reflect.ClassTag
  * for reactivity and efficient DOM updates.
  */
 class SimulationViewImpl extends SimulationView:
-
-  /**
-   * Reactive variable for tracking the positions of entities.
-   */
+  
   private val entitiesVar = Var[Iterable[(Int, (Double, Double))]](List.empty)
-
   /**
    * Signal that emits updates to entity positions, ensuring distinct values to
    * avoid redundant updates.
    *
    * @return a `Signal` of the current entity positions.
    */
-  def entitiesSignal: Signal[Iterable[(Int, (Double, Double))]] = entitiesVar.signal.distinct
-
-  /**
-   * Reactive variable for tracking the simulation statistics.
-   */
+  private def entitiesSignal: Signal[Iterable[(Int, (Double, Double))]] = entitiesVar.signal.distinct
+  
   private val statsVar = Var[List[StatisticEntry]](List.empty)
-
   /**
    * Signal that emits updates to the simulation statistics, ensuring distinct values.
    *
    * @return a `Signal` of the current statistics.
    */
-  def statsSignal: Signal[List[StatisticEntry]] = statsVar.signal.distinct
-
-  /**
-   * Displays the simulation view.
-   *
-   * Renders the simulation world and statistics inside the "simulation-container" DOM element.
-   */
+  private def statsSignal: Signal[List[StatisticEntry]] = statsVar.signal.distinct
+  
   override def show(): Unit =
     val container = dom.document.getElementById("simulation-container")
     val worldDiv = renderWorld(entitiesSignal, statsSignal)
     render(container, worldDiv)
-
-  /**
-   * Closes the simulation view.
-   *
-   * Clears the content of the "simulation-container" DOM element, resetting the view state.
-   */
+  
   override def close(): Unit =
     val container = dom.document.getElementById("simulation-container")
     container.innerHTML = ""
-
-  /**
-   * Updates the simulation view with the latest entity positions and statistics.
-   *
-   * This method updates the reactive variables to trigger re-rendering of the
-   * simulation world and statistics. It only applies updates if changes are detected.
-   *
-   * @param entities      an iterable collection of entities to update their positions.
-   * @param newStatsInfos a list of updated statistics to display in the view.
-   */
+  
   override def update(entities: Iterable[Entity], newStatsInfos: List[StatisticEntry]): Unit =
 
-    /**
-     * Extracts the positions of entities that define the `Position` component.
-     *
-     * This collection maps each entity ID to its current (x, y) coordinates.
-     *
-     * @return a collection of tuples, where each tuple contains an entity ID and its position as `(Double, Double)`.
-     */
     val updatedPositions = entities.collect:
       case entity if entity.get[Position].isDefined =>
         val pos = entity.get[Position].get
         (entity.id, (pos.x, pos.y))
 
-    /**
-     * Updates the `entitiesVar` reactive variable if the new positions differ from the current state.
-     *
-     * - Compares `updatedPositions` to the current state of `entitiesVar` using `.now()`.
-     * - Logs a message indicating the update when a change is detected.
-     * - Updates the `entitiesVar` variable with the new positions.
-     */
     if (updatedPositions != entitiesVar.now()) then
       println(s"Updating positions: $updatedPositions")
       entitiesVar.set(updatedPositions)
 
-    /**
-     * Updates the `statsVar` reactive variable if the new statistics differ from the current state.
-     *
-     * - Compares `newStatsInfos` to the current state of `statsVar` using `.now()`.
-     * - Logs a message indicating the update when a change is detected.
-     * - Updates the `statsVar` variable with the new statistics.
-     */
     if (newStatsInfos != statsVar.now()) then
       println(s"Updating stats: $newStatsInfos")
       statsVar.set(newStatsInfos)
