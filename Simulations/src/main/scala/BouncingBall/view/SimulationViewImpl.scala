@@ -1,6 +1,5 @@
 package BouncingBall.view
 
-//import BouncingBall.model.Position
 
 import BouncingBall.model.GlobalParameters.{ballRadius, borderSize}
 import BouncingBall.model.Position
@@ -14,29 +13,68 @@ import org.scalajs.dom
 
 import scala.reflect.ClassTag
 
+/**
+ * Implementation of the `SimulationView` trait for rendering the simulation state.
+ *
+ * This class provides a graphical representation of the simulation, including
+ * dynamic updates to entity positions and simulation statistics. It uses Laminar
+ * for reactivity and efficient DOM updates.
+ */
 class SimulationViewImpl extends SimulationView:
-  // Var per le posizioni delle entità
+
+  /**
+   * Reactive variable for tracking the positions of entities.
+   */
   private val entitiesVar = Var[Iterable[(Int, (Double, Double))]](List.empty)
 
-  // Applica distinct per evitare aggiornamenti ridondanti
+  /**
+   * Signal that emits updates to entity positions, ensuring distinct values to
+   * avoid redundant updates.
+   *
+   * @return a `Signal` of the current entity positions.
+   */
   def entitiesSignal: Signal[Iterable[(Int, (Double, Double))]] = entitiesVar.signal.distinct
 
-  // Var per le statistiche
+  /**
+   * Reactive variable for tracking the simulation statistics.
+   */
   private val statsVar = Var[List[StatisticEntry]](List.empty)
 
-  // Applica distinct per evitare aggiornamenti ridondanti
+  /**
+   * Signal that emits updates to the simulation statistics, ensuring distinct values.
+   *
+   * @return a `Signal` of the current statistics.
+   */
   def statsSignal: Signal[List[StatisticEntry]] = statsVar.signal.distinct
 
+  /**
+   * Displays the simulation view.
+   *
+   * Renders the simulation world and statistics inside the "simulation-container" DOM element.
+   */
   override def show(): Unit =
     val container = dom.document.getElementById("simulation-container")
     val worldDiv = renderWorld(entitiesSignal, statsSignal)
     render(container, worldDiv)
 
+  /**
+   * Closes the simulation view.
+   *
+   * Clears the content of the "simulation-container" DOM element, resetting the view state.
+   */
   override def close(): Unit =
     val container = dom.document.getElementById("simulation-container")
     container.innerHTML = ""
-  
-  // Chiamato per aggiornare i signal con le nuove posizioni e statistiche
+
+  /**
+   * Updates the simulation view with the latest entity positions and statistics.
+   *
+   * This method updates the reactive variables to trigger re-rendering of the
+   * simulation world and statistics. It only applies updates if changes are detected.
+   *
+   * @param entities      an iterable collection of entities to update their positions.
+   * @param newStatsInfos a list of updated statistics to display in the view.
+   */
   override def update(entities: Iterable[Entity], newStatsInfos: List[StatisticEntry]): Unit =
     val updatedPositions = entities.collect {
       case entity if entity.get[Position].isDefined =>
@@ -44,50 +82,65 @@ class SimulationViewImpl extends SimulationView:
         (entity.id, (pos.x, pos.y))
     }
 
-    // Aggiorna solo se ci sono cambiamenti nelle posizioni
+
     if (updatedPositions != entitiesVar.now()) then
       println(s"Updating positions: $updatedPositions")
       entitiesVar.set(updatedPositions)
 
-    // Aggiorna solo se ci sono cambiamenti nelle statistiche
+
     if (newStatsInfos != statsVar.now()) then
       println(s"Updating stats: $newStatsInfos")
       statsVar.set(newStatsInfos)
 
+  /**
+   * Renders the simulation world, including all entities and statistics.
+   *
+   * This method dynamically generates the world layout based on the current entity
+   * positions and statistics, ensuring an up-to-date graphical representation.
+   *
+   * @param entitySignals a signal representing the positions of entities.
+   * @param statsSignal   a signal representing the simulation statistics.
+   * @return a Laminar `Div` element containing the rendered world and statistics.
+   */
   private def renderWorld(
                            entitySignals: Signal[Iterable[(Int, (Double, Double))]],
                            statsSignal: Signal[List[StatisticEntry]]
-                         ): Div = {
+                         ): Div =
     println("RenderWorld chiamato")
 
     div(
       cls("world"),
-      width := s"${borderSize() * 2}px", // Dimensione del mondo
+      width := s"${borderSize() * 2}px",
       height := s"${borderSize() * 2}px",
       position := "relative",
-      backgroundColor := "#ccc", // Posizionamento relativo
+      backgroundColor := "#ccc",
       border := "5px solid black",
-      // Effettua il rendering dinamico di tutte le entità presenti nel mondo
       children <-- entitySignals.map { entities =>
-        println(s"Entità da renderizzare: ${entities.mkString(", ")}") // Debug per vedere le entità ricevute
+        println(s"Entità da renderizzare: ${entities.mkString(", ")}")
         entities.toSeq.map { case (entityId, position) =>
-          println(s"Rendering entità ID: $entityId, Posizione: $position") // Debug per ogni entità
+          println(s"Rendering entità ID: $entityId, Posizione: $position")
           renderEntity(entityId, position)
         }
       },
-      // Richiama la funzione `stats` per visualizzare le statistiche come Signal
+
       child <-- statsSignal.map { statsList =>
-        println(s"Rendering statistiche: ${statsList.mkString(", ")}") // Debug per tracciare le statistiche
+        println(s"Rendering statistiche: ${statsList.mkString(", ")}")
         stats(statsList)
       }
     )
-  }
 
-
+  /**
+   * Renders a single entity in the simulation world.
+   *
+   * @param id          the unique identifier of the entity.
+   * @param pos         the position of the entity as a tuple (x, y).
+   * @param entityColor the color of the entity, defaulting to blue.
+   * @return a Laminar `Div` element representing the rendered entity.
+   */
   private def renderEntity(
                             id: Int,
                             pos: (Double, Double),
-                            entityColor: String = "blue" // Colore predefinito
+                            entityColor: String = "blue"
                           ): Div =
     val (x, y) = pos
     div(
@@ -106,25 +159,30 @@ class SimulationViewImpl extends SimulationView:
       fontSize := "10px"
     )
 
-
+  /**
+   * Renders the simulation statistics in a dedicated section of the view.
+   *
+   * @param s a list of `StatisticEntry` objects representing the current statistics.
+   * @return a Laminar `Div` element containing the rendered statistics.
+   */
   private def stats(s: List[StatisticEntry]): Div =
     div(
       position := "absolute",
-      top := "0px", // Posiziona il riquadro in basso
-      right := "0px", // Posiziona il riquadro a destra
+      top := "0px",
+      right := "0px",
       width := "200px",
       padding := "10px",
-      backgroundColor := "rgba(0, 0, 0, 0.4)", // Sfondo semi-trasparente per leggibilità
-      color := "white", // Colore del testo per contrastare lo sfondo
+      backgroundColor := "rgba(0, 0, 0, 0.4)",
+      color := "white",
       borderRadius := "8px",
       border := "1px solid #ccc",
       fontSize := "12px",
-      overflowY := "auto", // Permette lo scrolling verticale se necessario
+      overflowY := "auto",
       children <-- Val(
         s.map(stat =>
           div(
             s"${stat.label} = ${stat.value}",
-            marginBottom := "5px" // Spaziatura tra le righe
+            marginBottom := "5px"
           )
         )
       )

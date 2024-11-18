@@ -8,37 +8,78 @@ import com.raquo.laminar.api.L.*
 import scala.util.Try
 import scala.concurrent.{Future, Promise}
 
+/**
+ * Implementation of the `ParamsView` trait for configuring simulation parameters.
+ *
+ * This class provides a user interface for inputting and validating parameters
+ * dynamically with real-time feedback. It leverages Laminar for reactive updates
+ * and supports asynchronous interactions through Futures and Promises.
+ */
 class ParamsViewImpl extends ParamsView:
-  var parameters: Iterable[ViewParameter]  = _
+  /**
+   * Stores the parameters to be configured in this view.
+   */
+  var parameters: Iterable[ViewParameter] = _
+
+  /**
+   * Callback function to handle the configured parameters.
+   */
   var results: Iterable[Parameter[_]] => Unit = _
 
+  /**
+   * Displays the parameter configuration view.
+   *
+   * Renders the configuration UI inside the "init-container" DOM element, allowing
+   * users to input and validate simulation parameters interactively.
+   */
   override def show(): Unit =
     val paramsConfig = _renderInit(parameters, results)
-    // Setta Il container dove visualizzare il render
     val container = dom.document.getElementById("init-container")
-    // Renderizza l'elemento di configurazione nel contenitore della simulazione
     render(container, paramsConfig)
 
+  /**
+   * Closes the parameter configuration view.
+   *
+   * Clears the content of the "init-container" DOM element, resetting the UI state
+   * and preparing it for potential reuse.
+   */
   override def close(): Unit =
     val container = dom.document.getElementById("init-container")
     container.innerHTML = ""
 
+  /**
+   * Initializes the parameter view with the specified parameters.
+   *
+   * Sets up the view to display input fields for the given parameters and returns
+   * a `Future` that resolves with the user-configured values upon completion.
+   *
+   * @param params an iterable collection of `ViewParameter` objects, each describing
+   *               a parameter to be configured, including metadata like default values,
+   *               minimum and maximum constraints, and labels.
+   * @return a `Future` containing an iterable collection of configured `Parameter` objects.
+   */
   override def init(params: Iterable[ViewParameter]): Future[Iterable[Parameter[_]]] =
     parameters = params
     val promise = Promise[Iterable[Parameter[_]]]()
-    // Funzione `onSave` per completare la promise con i risultati configurati
     val onSave: Iterable[Parameter[_]] => Unit = resultsParams => promise.success(resultsParams)
     results = onSave
-
-    // Restituisce il Future che verrà completato quando tutti i parametri saranno configurati
     promise.future
 
-  def _renderInit(
-                  paramsList: Iterable[ViewParameter],
-                  onSave: Iterable[Parameter[_]] => Unit
-                ): Div =
-
-    // Iterable di coppie (parametro, campo di input) per riferimento diretto
+  /**
+   * Renders the input fields for parameter configuration.
+   *
+   * This method dynamically generates input fields for the specified parameters,
+   * including real-time validation and visual feedback. It provides an "OK" button
+   * to trigger the validation and save the results if all inputs are valid.
+   *
+   * @param paramsList the list of parameters to render.
+   * @param onSave     a callback function to handle the validated parameter values.
+   * @return a Laminar `Div` element containing the rendered input fields and a submission button.
+   */
+  private def _renderInit(
+                   paramsList: Iterable[ViewParameter],
+                   onSave: Iterable[Parameter[_]] => Unit
+                 ): Div =
 
     val inputFields = paramsList.map { param =>
 
@@ -49,84 +90,62 @@ class ParamsViewImpl extends ParamsView:
 
       (param, inputBox)
 
-    }.toList // Convertiamo a List per mantenere l'ordine nell'iterazione
+    }.toList
 
-    // Funzione per validare tutti i parametri e, se tutti sono validi, salvare i risultati
-
+    /**
+     * Validates all user inputs and triggers the onSave callback if all values are valid.
+     *
+     * For each input field:
+     * - Ensures the value satisfies the type, minimum, and maximum constraints.
+     * - Provides real-time visual feedback by updating the border color (green for valid, red for invalid).
+     * - Collects and returns the validated results through the callback.
+     */
     def validateAll(): Unit =
 
-      // Prova a costruire la mappa dei risultati solo se tutti i parametri sono validi
-
       val maybeResults = inputFields.flatMap { (viewParam, inputBox) =>
-//        println(viewParam.parameter.value.getClass)
         val rawValue = if (inputBox.ref.value.isEmpty) inputBox.ref.placeholder else inputBox.ref.value
-
-
-        // Controlla se il valore è un numero
-
         val parsedValue = Try(rawValue.toDouble).toOption
 
         parsedValue match
 
           case Some(value) =>
-            // Verifica i limiti, se presenti
-
             val minCheck = viewParam.minValue.forall(min => value >= min.asInstanceOf[Double])
-
             val maxCheck = viewParam.maxValue.forall(max => value <= max.asInstanceOf[Double])
-
             val correctType: Boolean = viewParam.parameter match
               case _: IntParameter => parsedValue.get == parsedValue.get.toInt
               case _ => true
 
             if minCheck && maxCheck && correctType then
 
-              // Imposta il bordo verde per indicare successo
-
               inputBox.amend(
                 borderColor := "green",
                 borderWidth := "1px"
               )
 
-              // Restituisci una Some con la coppia chiave-valore se valido
-
               Some(Parameter(value, viewParam.parameter.id).asInstanceOf[viewParam.parameter.type])
             else
-
-              // Imposta il bordo rosso in caso di errore
 
               inputBox.amend(
                 borderColor := "red",
                 borderWidth := "1px"
               )
 
-              None // Indica che questo parametro non è valido
+              None
 
           case None =>
-            // Imposta il bordo rosso in caso di errore
-
             inputBox.amend(
               borderColor := "red",
               borderWidth := "1px"
             )
 
-            None // Indica che questo parametro non è valido
+            None
 
       }
 
-      // Verifica se tutti i parametri sono validi (ossia, `maybeResults` ha lo stesso numero di elementi di `paramsList`)
-
       if maybeResults.size == paramsList.size then
-
-        // Completa `onSave` con la mappa dei risultati solo se tutti sono validi
-
         onSave(maybeResults)
 
-    // Elemento Div che contiene la lista di parametri renderizzati e il pulsante OK
-
     div(
-      // Inseriamo ogni elemento come parte della lista `Seq`
-
       inputFields.map { (param, inputBox) =>
 
         val errorHandler = span()
@@ -135,15 +154,11 @@ class ParamsViewImpl extends ParamsView:
           cls := "parameter-row",
           label(
             param.label,
-            width := "100px", // Imposta una larghezza fissa per la label
-
-            display := "inline-block", // Assicura che la label occupi lo spazio specificato
-
-            textAlign := "right" // Allinea il testo a destra
-
+            width := "100px",
+            display := "inline-block",
+            textAlign := "right"
           ),
-          span(" | "), // Separatore tra label e il primo elemento
-
+          span(" | "),
           param.minValue.map(min =>
             span(
               s"Min: $min",
@@ -152,14 +167,12 @@ class ParamsViewImpl extends ParamsView:
               textAlign := "center"
             )
           ),
-          span(" | "), // Separatore tra min e inputBox
-
+          span(" | "),
           inputBox.amend(
             width := "150px",
             display := "inline-block"
           ),
-          span(" | "), // Separatore tra inputBox e max
-
+          span(" | "),
           param.maxValue.map(max =>
             span(
               s"Max: $max",
@@ -168,8 +181,7 @@ class ParamsViewImpl extends ParamsView:
               textAlign := "center"
             )
           ),
-          span(" | "), // Separatore tra max e errorHandler
-
+          span(" | "),
           errorHandler
         )
 
