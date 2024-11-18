@@ -27,6 +27,7 @@ class EntityTest extends AnyWordSpec with Matchers:
       "allow adding a new component" in:
         val entity        = Entity()
         val updatedEntity = entity.add(C1(1))
+        updatedEntity.get[C1] shouldBe Some(C1(1))
 
       "allow retrieving an existing component" in:
         val entity = Entity(C1(1))

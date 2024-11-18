@@ -15,9 +15,10 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
     world = World()
 
   "A World" when:
-    "initialized" should:
+    "created" should:
       "be empty" in:
         world.entities shouldBe empty
+        
     "managing entity" should:
       "allow adding an already existing entity" in:
         val entity = Entity()
