@@ -14,7 +14,7 @@ import core.*
   *
   * Spawn a new entity with specified components
   * {{{
-  * into(world).spawnNewEntityWith(componentA, componentB)
+  * into(world).spawnNewEntityWith(componentA :: componentB)
   * }}}
   *
   * Add an existing entity to the world
@@ -33,6 +33,7 @@ import core.*
   * }}}
   */
 trait Into:
+
   /** Spawns a new entity, without components, within the world.
     *
     * @return
@@ -40,16 +41,25 @@ trait Into:
     */
   def spawnNewEntity: Entity
 
-  /** Spawns a new entity, with the specified initial components, within the world .
+  /** Spawns a new entity, without components, within the world.
     *
-    * @param component
-    *   the first component to add to the entity
-    * @param components
-    *   additional components to add to the entity
+    * @tparam C
+    *   The type of the [[ComponentChain]], which defines the required components.
     * @return
     *   The newly created [[Entity]] instance
     */
-  def spawnNewEntityWith(component: Component, components: Component*): Entity
+  def spawnNewEntityWith[C <: ComponentChain: ComponentChainTag](components: C): Entity
+
+  /** Spawns a new entity, without components, within the world.
+    *
+    * @tparam C
+    *   The type of the component, constrained to [[Component]].
+    * @param component
+    *   an instance of [[Component]] subtype.
+    * @return
+    *   The newly created [[Entity]] instance
+    */
+  def spawnNewEntityWith[C <: Component: ComponentTag](component: C): Entity
 
   /** Adds an existing entity to the world.
     *
@@ -82,10 +92,14 @@ object Into:
   def apply(world: World): Into = IntoImpl(world)
 
   private class IntoImpl(world: World) extends Into:
+
     override def spawnNewEntity: Entity = world.createEntity()
 
-    override def spawnNewEntityWith(component: Component, components: Component*): Entity =
-      world.createEntity(component +: components*)
+    override def spawnNewEntityWith[C <: ComponentChain: ComponentChainTag](components: C): Entity =
+      world.createEntity(components)
+
+    override def spawnNewEntityWith[C <: Component: ComponentTag](component: C): Entity =
+      world.createEntity(component)
 
     override def spawnEntity(entity: Entity): Entity =
       world.addEntity(entity)
@@ -106,13 +120,13 @@ object Into:
   */
 trait IntoComponentBuilder:
   /** Adds a component to a specified entity in the world.
-   * @param component
-   * The [[Component]] to add.
-   * @tparam C
-   * The type of the component, constrained to [[Component]].
-   * @return
-   * The updated entity with the new component
-   */
+    * @param component
+    *   The [[Component]] to add.
+    * @tparam C
+    *   The type of the component, constrained to [[Component]].
+    * @return
+    *   The updated entity with the new component
+    */
   def add[C <: Component: ComponentTag](component: C): Entity
 
 object IntoComponentBuilder:

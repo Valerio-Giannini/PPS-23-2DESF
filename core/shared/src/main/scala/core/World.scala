@@ -14,23 +14,42 @@ trait World:
   def entities: Iterable[Entity]
 
   /** Retrieves an entity within the world that match the provided entity.
-   *
-   * @param entity
-   *   The entity to look for
-   * @return
-   *   An option containing the [[Entity]] present in the world if exists, None otherwise
-   */
-
+    *
+    * @param entity
+    *   The entity to look for
+    * @return
+    *   An option containing the [[Entity]] present in the world if exists, None otherwise
+    */
   def entity(entity: Entity): Option[Entity]
 
   /** Creates a new entity with the specified components and adds it to the world.
     *
+    * @tparam C
+    *   The type of the [[ComponentChain]], which defines the required components.
     * @param components
     *   A variable number of components.
     * @return
     *   The newly created [[Entity]] instance.
     */
-  def createEntity(components: Component*): Entity
+  def createEntity[C <: ComponentChain: ComponentChainTag](components: C): Entity
+
+  /** Creates a new entity with the specified component and adds it to the world.
+    *
+    * @tparam C
+    *   The type of the component, constrained to [[Component]].
+    * @param component
+    *   an instance of [[Component]] subtype.
+    * @return
+    *   The newly created [[Entity]] instance.
+    */
+  def createEntity[C <: Component: ComponentTag](component: C): Entity
+
+  /** Creates a new empty entity adds it to the world.
+    *
+    * @return
+    *   The newly created [[Entity]] instance.
+    */
+  def createEntity(): Entity
 
   /** Adds an existing entity to the world.
     *
@@ -94,63 +113,90 @@ trait World:
 
   /** Retrieves entities that have exactly the specified set of components.
     *
-    * @param componentClasses
-    *   A variable number of component tags defining the required components.
+    * @tparam C
+    *   The type of the [[ComponentChain]], which defines the required components.
     * @return
     *   An iterable collection of [[Entity]] containing exactly the specified components.
     */
-  def entitiesWithComponents(componentClasses: ComponentTag[?]*): Iterable[Entity]
+  def entitiesWithComponents[C <: ComponentChain: ComponentChainTag]: Iterable[Entity]
+
+  /** Retrieves entities that have exactly the specified component.
+    *
+    * @tparam C
+    *   The type of the component, constrained to [[Component]].
+    * @return
+    *   An iterable collection of [[Entity]] containing exactly the specified component.
+    */
+  def entitiesWithComponents[C <: Component: ComponentTag]: Iterable[Entity]
 
   /** Retrieves entities that have at least the specified set of components.
     *
-    * @param componentClasses
-    *   A variable number of component tags defining the minimum required components.
+    * @tparam C
+    *   The type of the [[ComponentChain]], which defines the required components.
     * @return
     *   An iterable collection of [[Entity]] instances containing at least the specified components.
     */
-  def entitiesWithAtLeastComponents(componentClasses: ComponentTag[?]*): Iterable[Entity]
+  def entitiesWithAtLeastComponents[C <: ComponentChain: ComponentChainTag]: Iterable[Entity]
+
+  /** Retrieves entities that have at least the specified component.
+    *
+    * @tparam C
+    *   The type of the component, constrained to [[Component]].
+    * @return
+    *   An iterable collection of [[Entity]] instances containing at least the specified component.
+    */
+  def entitiesWithAtLeastComponents[C <: Component: ComponentTag]: Iterable[Entity]
 
   /** Adds a system to the world.
-   *
-   * @param system
-   * The [[System]] to add
-   * @return
-   * The current World instance with the added system
-   */
+    *
+    * @param system
+    *   The [[System]] to add
+    * @return
+    *   The current World instance with the added system
+    */
   def addSystem(system: System): World
 
   /** Executes an update on all systems in the world.
-   */
+    */
   def update(): Unit
 
-/**
- * A Factory for [[World]].
- */
+/** A Factory for [[World]].
+  */
 object World:
   def apply(): World = new WorldImpl
 
   private class WorldImpl extends World:
-    private var archetypes: Vector[Archetype] = Vector.empty
-    private var systems: List[System]         = List.empty
+    private var archetypes: Seq[Archetype] = Seq.empty
+    private var systems: List[System]      = List.empty
 
-    def entities: Iterable[Entity] =
+    override def entities: Iterable[Entity] =
       archetypes.flatMap(_.entities)
 
-    def entity(entity: Entity): Option[Entity] = entities.find(_.id == entity.id)
+    override def entity(entity: Entity): Option[Entity] = entities.find(_.id == entity.id)
 
-    def addSystem(system: System): World =
+    override def addSystem(system: System): World =
       systems :+= system
       this
 
-    def update(): Unit =
+    override def update(): Unit =
       systems.foreach(_.update(this))
 
-    def createEntity(components: Component*): Entity =
-      val newEntity = Entity(components*)
+    override def createEntity[C <: ComponentChain: ComponentChainTag](components: C): Entity =
+      val newEntity = Entity(components)
       addEntity(newEntity)
       newEntity
 
-    def addEntity(entity: Entity): World =
+    override def createEntity[C <: Component: ComponentTag](component: C): Entity =
+      val newEntity = Entity(component)
+      addEntity(newEntity)
+      newEntity
+
+    override def createEntity(): Entity =
+      val newEntity = Entity()
+      addEntity(newEntity)
+      newEntity
+
+    override def addEntity(entity: Entity): World =
       getArchetype(entity) match
       case Some(archetype) =>
         archetype.add(entity)
@@ -164,50 +210,56 @@ object World:
       val componentTags = entity.componentTags
       archetypes.find(_.componentTags == componentTags)
 
-    def removeEntity(entity: Entity): World =
+    override def removeEntity(entity: Entity): World =
       getArchetype(entity) match
       case Some(archetype) =>
         archetype.remove(entity)
-      case None =>
+      case _ =>
       this
 
-    def clearEntities(): World =
+    override def clearEntities(): World =
       archetypes.foreach(_.clearEntities())
       this
 
-    def addComponent[C <: Component: ComponentTag](entity: Entity, component: C): World =
+    override def addComponent[C <: Component: ComponentTag](entity: Entity, component: C): World =
       getArchetype(entity) match
       case Some(archetype) =>
         archetype.remove(entity)
         val updatedEntity = entity.add(component)
         addEntity(updatedEntity)
       case None =>
-      this
+        this
 
-    def getComponent[C <: Component: ComponentTag](entity: Entity): Option[C] =
+    override def getComponent[C <: Component: ComponentTag](entity: Entity): Option[C] =
       getArchetype(entity) match
       case Some(archetype) =>
-        archetype.get(entity) match
+        archetype.get(entity.id) match
         case Some(e) => e.get[C]
         case _       => None
       case _ => None
 
-    def removeComponent[C <: Component: ComponentTag](entity: Entity): World =
+    override def removeComponent[C <: Component: ComponentTag](entity: Entity): World =
       getArchetype(entity) match
       case Some(archetype) =>
         archetype.remove(entity)
         val updatedEntity = entity.remove[C]
         addEntity(updatedEntity)
       case None =>
-      this
+        this
 
     private def entitiesByFilter(filter: Set[ComponentTag[_]] => Boolean): Iterable[Entity] =
       archetypes
         .filter(archetype => filter(archetype.componentTags))
         .flatMap(_.entities)
 
-    def entitiesWithAtLeastComponents(componentClasses: ComponentTag[?]*): Iterable[Entity] =
-      entitiesByFilter(componentClasses.toSet.subsetOf(_))
+    override def entitiesWithComponents[C <: ComponentChain: ComponentChainTag]: Iterable[Entity] =
+      entitiesByFilter(summon[ComponentChainTag[C]].tags == _)
 
-    def entitiesWithComponents(componentClasses: ComponentTag[?]*): Iterable[Entity] =
-      entitiesByFilter(_ == componentClasses.toSet)
+    override def entitiesWithComponents[C <: Component: ComponentTag]: Iterable[Entity] =
+      entitiesByFilter(Set(summon[ComponentTag[C]]) == _)
+
+    override def entitiesWithAtLeastComponents[C <: ComponentChain: ComponentChainTag]: Iterable[Entity] =
+      entitiesByFilter(summon[ComponentChainTag[C]].tags.subsetOf(_))
+
+    override def entitiesWithAtLeastComponents[C <: Component: ComponentTag]: Iterable[Entity] =
+      entitiesByFilter(Set(summon[ComponentTag[C]]).subsetOf(_))

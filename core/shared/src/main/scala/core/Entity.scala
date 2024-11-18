@@ -1,8 +1,5 @@
 package core
 
-import scala.collection.immutable.HashMap
-import scala.reflect.ClassTag
-
 /** This trait represents a generic Entity in an Entity Component System (ECS).
   *
   * An Entity contains components.
@@ -45,49 +42,51 @@ sealed trait Entity:
     */
   def remove[C <: Component: ComponentTag]: Entity
 
-  /**
-   * Provides the set of [[ComponentTag]] corresponding to the components associated with this entity.
-   *
-   * @return A set containing the tags of each component within the entity.
-   */
+  /** Provides the set of [[ComponentTag]] corresponding to the components associated with this entity.
+    *
+    * @return
+    *   A set containing the tags of each component within the entity.
+    */
   def componentTags: Set[ComponentTag[_]]
 
-/**
- * A Factory for [[Entity]].
- */
+/** A Factory for [[Entity]].
+  */
 object Entity:
-  
-  def apply(components: Component*): Entity =
-    val initialMap = HashMap.empty[ComponentTag[_], Component]
-    val map: HashMap[ComponentTag[_], Component] = components.foldLeft(initialMap) { (acc, component) =>
-      val tag = ClassTag(component.getClass)
-      acc.updated(tag, component)
-    }
-    SimpleEntity(IdGenerator.nextId(), map)
 
-  private case class SimpleEntity(ID: Int, private val componentsMap: Map[ComponentTag[_], Component])
-      extends Entity:
+  def apply[C <: ComponentChain: ComponentChainTag](components: C): Entity =
+    val componentsMap: Map[ComponentTag[_], Component] =
+      summon[ComponentChainTag[C]].tags.zip(components).toMap
+    SimpleEntity(IdGenerator.nextId(), componentsMap)
 
-    def id: Int = this.ID
+  def apply[C <: Component: ComponentTag](component: C): Entity =
+    val componentsMap: Map[ComponentTag[_], Component] =
+      Map(summon[ComponentTag[C]] -> component)
+    SimpleEntity(IdGenerator.nextId(), componentsMap)
 
-    def add[C <: Component: ComponentTag](component: C): Entity =
+  def apply(): Entity =
+    SimpleEntity(IdGenerator.nextId(), Map.empty)
+
+  private case class SimpleEntity(ID: Int, private val componentsMap: Map[ComponentTag[_], Component]) extends Entity:
+
+    override def id: Int = this.ID
+
+    override def add[C <: Component: ComponentTag](component: C): Entity =
       val newComponentsMap = componentsMap + (summon[ComponentTag[C]] -> component)
       SimpleEntity(id, newComponentsMap)
 
-    def get[C <: Component: ComponentTag]: Option[C] =
+    override def get[C <: Component: ComponentTag]: Option[C] =
       componentsMap.get(summon[ComponentTag[C]]).map(_.asInstanceOf[C])
 
-    def remove[C <: Component: ComponentTag]: Entity =
+    override def remove[C <: Component: ComponentTag]: Entity =
       val newComponentsMap = componentsMap - summon[ComponentTag[C]]
       SimpleEntity(id, newComponentsMap)
 
-    def componentTags: Set[ComponentTag[_]] = componentsMap.keySet
+    override def componentTags: Set[ComponentTag[_]] = componentsMap.keySet
 
-  /**
-   * Internal object dedicated to generating unique identifiers for each entity.
-   */
+  /** Internal object dedicated to generating unique identifiers for each entity.
+    */
   private object IdGenerator:
-    private var currentId: Int = 0 
+    private var currentId: Int = 0
 
     def nextId(): Int =
       currentId = currentId + 1

@@ -8,6 +8,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
 
+  import core.given
   var world: World = _
 
   override def beforeEach(): Unit =
@@ -32,34 +33,38 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         (1 to numEntities).foreach { _ =>
           into(world).spawnNewEntityWith(C1(1))
           into(world).spawnNewEntityWith(C2(2))
-          into(world).spawnNewEntityWith(C1(1), C2(2))
+          into(world).spawnNewEntityWith(C1(1) :: C2(2))
         }
-        val entitiesWithC1      = from(world).entitiesHavingOnly(ComponentTag[C1])
-        val entitiesWithC1AndC2 = from(world).entitiesHavingOnly(ComponentTag[C1], ComponentTag[C2])
+
+        val entitiesWithC1      = from(world).entitiesHavingOnly[C1]
+        val entitiesWithC1AndC2 = from(world).entitiesHavingOnly[C1 :: C2 :: CNil]
+        println(world.entitiesWithComponents[C1 :: C2 :: CNil].size)
         entitiesWithC1 should have size numEntities
         entitiesWithC1AndC2 should have size numEntities
-      "allow to get entities with the minimum required set of components with entitiesHaving " in:
+      "allow to get entities with the minimum required set of components with entitiesHaving" in:
         val numEntities = 10
         (1 to numEntities).foreach { _ =>
           into(world).spawnNewEntityWith(C1(1))
           into(world).spawnNewEntityWith(C2(2))
-          into(world).spawnNewEntityWith(C1(1), C2(2))
+          into(world).spawnNewEntityWith(C1(1) :: C2(2))
         }
-        val entitiesWithAtLeastC1 = from(world).entitiesHaving(ComponentTag[C1])
+        val entitiesWithAtLeastC1 = from(world).entitiesHaving[C1]
         entitiesWithAtLeastC1 should have size numEntities * 2
 
       "allows to retrieve an existing component with componentOf and get" in:
         val c1         = C1(1)
-        val entity     = into(world).spawnNewEntityWith(c1, C2(2))
+        val entity     = into(world).spawnNewEntityWith(c1:: C2(2))
         val c1OfEntity = from(world).componentsOf(entity).get[C1]
         c1OfEntity shouldBe Some(c1)
         entity.componentTags should have size 2
       "allows to remove an existing component with componentOf and remove" in:
         val c2     = C2(2)
-        var entity = into(world).spawnNewEntityWith(C1(1), c2)
+        var entity = into(world).spawnNewEntityWith(C1(1) :: c2)
+        println(from(world).componentsOf(entity))
         entity = from(world).componentsOf(entity).remove[C1]
+
         entity.componentTags should have size 1
-        entity.componentTags should not contain ComponentTag[C1]
+        entity.componentTags should not contain summon[ComponentTag[C1]]
     "provide an into operator" which:
       "allows to spawn new entities into the world" that:
         "have no components with spawnNewEntity" in:
@@ -67,7 +72,7 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
           List.fill(numEntities)(into(world).spawnNewEntity)
           from(world).numberOfEntities shouldBe numEntities
         "have components with spawnNewEntityWith" in:
-          val entity = into(world).spawnNewEntityWith(C1(1), C2(2), C3(3))
+          val entity = into(world).spawnNewEntityWith(C1(1):: C2(2):: C3(3))
           from(world).allEntities should contain(entity)
           entity.componentTags should have size 3
       "allows to spawn an existing entity into the world" that:
@@ -76,7 +81,7 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
           into(world).spawnEntity(outerWorldEntity)
           from(world).numberOfEntities shouldBe 1
         "have components with spawnNewEntityWith" in:
-          val outerWorldEntity = outerWorld.spawnEntityWith(C1(1), C2(2), C3(1))
+          val outerWorldEntity = outerWorld.spawnEntityWith(C1(1) :: C2(2) :: C3(1))
           val entity           = into(world).spawnEntity(outerWorldEntity)
           from(world).numberOfEntities shouldBe 1
           entity.componentTags should have size 3
@@ -88,8 +93,8 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         entity = into(world).componentsOf(entity).add(c3)
 
         entity.componentTags should have size 3
-        entity.componentTags should contain(ComponentTag[C2])
-        entity.componentTags should contain(ComponentTag[C3])
+        entity.componentTags should contain(summon[ComponentTag[C2]])
+        entity.componentTags should contain(summon[ComponentTag[C3]])
 
       "allows to include systems with include" in:
         into(world).include(IncrementC1System())

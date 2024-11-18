@@ -1,7 +1,6 @@
 package core
 
 import org.openjdk.jmh.annotations.*
-import core.ComponentTag
 
 import java.util.concurrent.TimeUnit
 
@@ -23,13 +22,14 @@ class ComponentsUpdate:
   @Setup(Level.Iteration)
   def setup(): Unit =
     world = World()
-    for _ <- 1 to numEntities do world.createEntity(C1(1), C2(1))
+    (1 to numEntities).foreach(_ => world.createEntity(C1(1) :: C2(1)))
 
   @Benchmark
   def componentsUpdate(): Unit =
-    world.entitiesWithAtLeastComponents(ComponentTag[C1],ComponentTag[C2])
-      .foreach { entity =>
-        val c1 = entity.get[C1].get
-        val c2 = entity.get[C2].get
-        world.addComponent(entity, C1(c1.value + c2.value))
-      }
+    for
+      entity <- world.entitiesWithAtLeastComponents[C1 :: C2 :: CNil]
+      c1 <- entity.get[C1]
+      c2 <- entity.get[C2]
+    do
+      world.addComponent(entity, C1(c1.value + c2.value))
+
