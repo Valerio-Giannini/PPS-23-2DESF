@@ -8,7 +8,7 @@ import mvc.controller.Controller
 trait Simulation:
   val world: World = newWorld
   val report: Report = Report()
-  val statistics: Statistics = Statistics()
+  val statistics: Statistic = Statistic()
   val parameters: Parameters = Parameters()
   val runCondition: Condition = Condition()
 

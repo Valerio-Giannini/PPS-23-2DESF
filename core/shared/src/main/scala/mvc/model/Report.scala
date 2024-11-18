@@ -31,35 +31,3 @@ object Report:
         entry.points = data.points
         entry
       )
-
-
-//    override def addReportEntry(label: String, data: DataTracker, labelX: Option[String] = None, labelY: Option[String] = None): Unit =
-//      report = report :+ (label, data)
-//      axisLabels= (labelX, labelY)
-
-
-
-/*
-case class DataTrackerEntry(labelX: Option[String] = None, labelY: Option[String] = None, points: List[Point])
-
-case class ReportEntry(label: String, data: DataTrackerEntry)
-
-trait Report:
-  def data: List[ReportEntry]
-
-  def addReportEntry(label: String, data: DataTracker, labelX: Option[String] = None, labelY: Option[String] = None): Unit
-
-object Report:
-  def apply(): Report = new ReportImpl
-
-  private class ReportImpl extends Report:
-    private var report: List[(String, DataTracker)] = List.empty
-    private var axisLabels: (Option[String], Option[String]) = _
-    override def data: List[ReportEntry] = report.map((label, dataTracker) => ReportEntry(label, DataTrackerEntry(axisLabels._1, axisLabels._2, dataTracker.get)))
-
-    override def addReportEntry(label: String, data: DataTracker, labelX: Option[String] = None, labelY: Option[String] = None): Unit =
-      report = report :+ (label, data)
-      axisLabels= (labelX, labelY)
- */
-
-

@@ -1,6 +1,6 @@
 package dsl.simulationDSL
 
-import mvc.model.{DataTracker, Report, Simulation, Statistics}
+import mvc.model.{DataTracker, Report, Simulation, Statistic}
 
 trait SimulationDSL:
   def simulation(using sim: Simulation): SimulationWord

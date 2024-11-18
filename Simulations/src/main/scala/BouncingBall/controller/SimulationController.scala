@@ -14,7 +14,7 @@ import dsl.DSL.*
 class SimulationController(sim: Simulation) extends Controller:
   private var paramView: ParamsView = ParamsViewImpl()
   private val reportView: ReportView = ReportViewImpl()
-  private var simulationView: SimulationView = _
+  private var simulationView: SimulationView = SimulationViewImpl()
   private val tickInterval: Int = 18 // ms
   private var currentTick: Int = 0
 
@@ -61,8 +61,4 @@ class SimulationController(sim: Simulation) extends Controller:
         reportView.show()
       case _ =>
 
-  def setParamsView(paramsView: ParamsView): Unit =
-    this.paramView = paramsView
 
-  def setSimulationView(simulationView: SimulationView): Unit =
-    this.simulationView = simulationView

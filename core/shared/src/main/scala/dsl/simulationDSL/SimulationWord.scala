@@ -2,6 +2,11 @@ package dsl.simulationDSL
 
 import mvc.model.{DataTracker, Parameter, ReportEntry, Simulation, StatisticEntry, ViewParameter}
 
+//
+//def askParam(param: Parameter[_]): ParamBuilder
+//def askedParameters: List[ViewParameter]
+//def updateParameters(viewParameters: Iterable[Parameter[_]]): Unit
+
 
 trait SimulationWord:
   def askParam(param: Parameter[_]): ParamBuilder
@@ -10,8 +15,8 @@ trait SimulationWord:
   def runTill(condition: () => Boolean): Unit
   def shouldRun: Boolean
   def update(tick: Int): Unit
-  def show(value: => AnyVal): StatBuilder
-  def show(data: DataTracker): ReportBuilder
+  def track(value: => AnyVal): StatBuilder
+  def chart(data: DataTracker): ReportBuilder
   def stats: List[StatisticEntry]
   def report: List[ReportEntry]
 
@@ -27,8 +32,8 @@ object SimulationWord:
     override def runTill(condition: () => Boolean): Unit = sim.runCondition.setPredicate(condition)
     override def shouldRun: Boolean = sim.runCondition.evaluate
     override def update(tick: Int): Unit = sim.tick(tick)
-    override def show(value: => AnyVal): StatBuilder = StatBuilder(value)
-    override def show(data: DataTracker): ReportBuilder = ReportBuilder(data)
+    override def track(value: => AnyVal): StatBuilder = StatBuilder(value)
+    override def chart(data: DataTracker): ReportBuilder = ReportBuilder(data)
 
     override def stats: List[StatisticEntry] = sim.statistics.snapshot
     override def report: List[ReportEntry] = sim.report.data

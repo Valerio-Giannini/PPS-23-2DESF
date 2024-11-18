@@ -7,8 +7,6 @@ class IntParameter(value: Int, id: Option[Int] = None) extends Parameter[Int](va
 
 class DoubleParameter(value: Double, id: Option[Int] = None) extends Parameter[Double](value, id)
 
-class IntegerParameter(var value: Double, var id: Option[Int] = None)
-
 case class ViewParameter(parameter: Parameter[_], label: String, minValue: Option[AnyVal] = None, maxValue: Option[AnyVal] = None)
 
 trait Parameters:
