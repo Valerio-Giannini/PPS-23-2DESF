@@ -30,11 +30,11 @@ import core.*
   * }}}
   * Retrieves entities that have exactly the specified set of components.
   * {{{
-  * from(world).entitiesHavingOnly(componentTagA, componentTagB)
+  * from(world).entitiesHavingOnly[ComponentA :: ComponentB]
   * }}}
   * Retrieves entities that have at least the specified set of components.
   * {{{
-  * from(world).entitiesHaving(componentTagA, componentTagB)
+  * from(world).entitiesHaving(ComponentA :: ComponentB)
   * }}}
   */
 trait From:

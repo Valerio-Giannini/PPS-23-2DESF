@@ -14,7 +14,7 @@ import core.*
  *
  * Spawn a new entity with specified components
  * {{{
- * outerWorld.spawnEntityWith(componentA, componentB)
+ * outerWorld.spawnEntityWith(componentA :: componentB)
  * }}}
  */
 trait OuterWorld:
