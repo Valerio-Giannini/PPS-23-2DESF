@@ -9,10 +9,12 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import core.given 
+
 object Stats:
   def meanC1(using world: World): Int =
     val c1s = for
-      entity <- from(world).entitiesHaving(ComponentTag[C1])
+      entity <- from(world).entitiesHaving[C1]
       c1 <- from(world).componentsOf(entity).get[C1]
     yield c1.x
 

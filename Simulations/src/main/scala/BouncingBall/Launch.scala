@@ -8,6 +8,7 @@ import BouncingBall.model.{AvgSpeed, MovingBalls, Stats}
 import core.World
 import mvc.model.Simulation
 
+import core.given
 
 import dsl.DSL.*
 
@@ -48,7 +49,7 @@ object Launch:
     )
 
     for ((pos, vel) <- positions.zip(velocities)) do
-      into(sim.world).spawnNewEntityWith(Position(pos._1, pos._2), Speed(vel._1, vel._2), Dimension(ballRadius()))
+      into(sim.world).spawnNewEntityWith(Position(pos._1, pos._2) :: Speed(vel._1, vel._2) :: Dimension(ballRadius()))
 
     AvgSpeed.add(0, Stats.calcAvgSpeed)
     MovingBalls.add(0, Stats.numberOfMovingBalls)

@@ -4,6 +4,8 @@ import BouncingBall.model.GlobalParameters.{ballRadius, borderSize, deceleration
 import core.{System, World}
 import dsl.DSL.*
 
+import core.given
+
 /**
  * A system responsible for updating the positions and velocities of entities
  * based on their current speed. It applies deceleration to simulate friction
@@ -21,7 +23,7 @@ class MovementSystem extends System:
    */
   override def update(world: World): Unit =
     for
-      entity <- from(world).entitiesHaving(POSITION, SPEED)
+      entity <- from(world).entitiesHaving[Position :: Speed :: CNil]
       pos    <- from(world).componentsOf(entity).get[Position]
       speed  <- from(world).componentsOf(entity).get[Speed]
     do
@@ -63,7 +65,8 @@ class BoundaryBounceSystem extends System:
    */
   override def update(world: World): Unit =
     for
-      entity <- from(world).entitiesHaving(POSITION, SPEED, DIMENSION)
+      e <- world.entitiesWithComponents[Position :: Speed :: Dimension :: CNil]
+      entity <- from(world).entitiesHaving[Position :: Speed :: Dimension :: CNil]
       pos <- from(world).componentsOf(entity).get[Position]
       speed <- from(world).componentsOf(entity).get[Speed]
       dim <- from(world).componentsOf(entity).get[Dimension]
@@ -109,7 +112,7 @@ class CollisionSystem extends System:
    * @param world the simulation world containing entities and components.
    */
   override def update(world: World): Unit =
-    val entities = from(world).entitiesHaving(POSITION, SPEED, DIMENSION).toSeq
+    val entities = from(world).entitiesHaving[Position :: Speed :: Dimension :: CNil].toSeq
     for
       i <- entities.indices
       j <- (i + 1) until entities.size
@@ -176,31 +179,6 @@ class CollisionSystem extends System:
     val threshold = dimA.x + dimB.x
     distance < threshold
 
-/**
- * A system that prints the position and speed of all entities.
- */
-class PrintPositionAndSpeedOfEntitiesSystem extends System:
-
-  /**
-   * Prints the `Position` and `Speed` components of all entities that have them.
-   *
-   * @param world the simulation world containing entities and components.
-   */
-  override def update(world: World): Unit =
-    for
-      entity <- from(world).entitiesHaving(POSITION, SPEED)
-      pos = from(world)
-        .componentsOf(entity)
-        .get[Position]
-        .map(pos => s"Position(${pos.x}, ${pos.y})")
-        .getOrElse("No Position")
-      speed = from(world)
-        .componentsOf(entity)
-        .get[Speed]
-        .map(speed => s"Speed(${speed.vx}, ${speed.vy})")
-        .getOrElse("No Speed")
-    do
-      println(s"Entity ${entity.id}: $pos, $speed")
 
 
 

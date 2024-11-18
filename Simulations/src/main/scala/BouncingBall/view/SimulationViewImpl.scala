@@ -11,7 +11,8 @@ import mvc.model.StatisticEntry
 import mvc.view.SimulationView
 import org.scalajs.dom
 
-import scala.reflect.ClassTag
+
+import core.given
 
 /**
  * Implementation of the `SimulationView` trait for rendering the simulation state.
