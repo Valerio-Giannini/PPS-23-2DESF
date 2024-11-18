@@ -23,6 +23,6 @@ private def deriveComponentTagImpl[C: Type](using quotes: Quotes): Expr[Componen
       override def toString: String = ${ Expr(computedString) }
       override def hashCode: Int    = ${ Expr(computedHashCode) }
       override def equals(obj: Any): Boolean = obj match
-        case that: ComponentTag[?] => (this eq that) || (this.hashCode == that.hashCode)
-        case _                     => false
+      case that: ComponentTag[?] => (this eq that) || (this.hashCode == that.hashCode)
+      case _                     => false
   }

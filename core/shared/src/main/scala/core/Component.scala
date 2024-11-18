@@ -1,7 +1,6 @@
 package core
 
 import scala.compiletime.summonFrom
-import scala.quoted.{Expr, Quotes, Type}
 
 /** This trait represents a generic Component in an Entity Component System (ECS).
   *

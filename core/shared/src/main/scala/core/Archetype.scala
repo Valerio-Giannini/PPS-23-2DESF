@@ -33,8 +33,8 @@ sealed trait Archetype:
 
   /** Retrieves an [[Entity]] from this archetype if present.
     *
-    * @param entity
-    *   The entity to retrieve.
+    * @param entityId
+    *   The Id of the entity to get.
     * @return
     *   An Option of the entity.
     */
@@ -63,16 +63,16 @@ object Archetype:
   private class ArchetypeImpl(val componentTags: Set[ComponentTag[_]]) extends Archetype:
     private val entityContainer = mutable.HashMap.empty[Int, Entity]
 
-    def entities: Iterable[Entity] = entityContainer.values
+    override def entities: Iterable[Entity] = entityContainer.values
 
-    def add(entity: Entity): Boolean =
+    override def add(entity: Entity): Boolean =
       entity.componentTags == componentTags && entityContainer.put(entity.id, entity).isEmpty
 
-    def get(entityId: Int): Option[Entity] =
+    override def get(entityId: Int): Option[Entity] =
       entityContainer get entityId
 
-    def remove(entity: Entity): Boolean =
+    override def remove(entity: Entity): Boolean =
       entityContainer.remove(entity.id).isDefined
 
-    def clearEntities(): Unit =
+    override def clearEntities(): Unit =
       entityContainer.clear()

@@ -169,34 +169,34 @@ object World:
     private var archetypes: Seq[Archetype] = Seq.empty
     private var systems: List[System]      = List.empty
 
-    def entities: Iterable[Entity] =
+    override def entities: Iterable[Entity] =
       archetypes.flatMap(_.entities)
 
-    def entity(entity: Entity): Option[Entity] = entities.find(_.id == entity.id)
+    override def entity(entity: Entity): Option[Entity] = entities.find(_.id == entity.id)
 
-    def addSystem(system: System): World =
+    override def addSystem(system: System): World =
       systems :+= system
       this
 
-    def update(): Unit =
+    override def update(): Unit =
       systems.foreach(_.update(this))
 
-    def createEntity[C <: ComponentChain: ComponentChainTag](components: C): Entity =
+    override def createEntity[C <: ComponentChain: ComponentChainTag](components: C): Entity =
       val newEntity = Entity(components)
       addEntity(newEntity)
       newEntity
 
-    def createEntity[C <: Component: ComponentTag](component: C): Entity =
+    override def createEntity[C <: Component: ComponentTag](component: C): Entity =
       val newEntity = Entity(component)
       addEntity(newEntity)
       newEntity
 
-    def createEntity(): Entity =
+    override def createEntity(): Entity =
       val newEntity = Entity()
       addEntity(newEntity)
       newEntity
 
-    def addEntity(entity: Entity): World =
+    override def addEntity(entity: Entity): World =
       getArchetype(entity) match
       case Some(archetype) =>
         archetype.add(entity)
@@ -210,18 +210,18 @@ object World:
       val componentTags = entity.componentTags
       archetypes.find(_.componentTags == componentTags)
 
-    def removeEntity(entity: Entity): World =
+    override def removeEntity(entity: Entity): World =
       getArchetype(entity) match
       case Some(archetype) =>
         archetype.remove(entity)
       case _ =>
       this
 
-    def clearEntities(): World =
+    override def clearEntities(): World =
       archetypes.foreach(_.clearEntities())
       this
 
-    def addComponent[C <: Component: ComponentTag](entity: Entity, component: C): World =
+    override def addComponent[C <: Component: ComponentTag](entity: Entity, component: C): World =
       getArchetype(entity) match
       case Some(archetype) =>
         archetype.remove(entity)
@@ -230,7 +230,7 @@ object World:
       case None =>
         this
 
-    def getComponent[C <: Component: ComponentTag](entity: Entity): Option[C] =
+    override def getComponent[C <: Component: ComponentTag](entity: Entity): Option[C] =
       getArchetype(entity) match
       case Some(archetype) =>
         archetype.get(entity.id) match
@@ -238,7 +238,7 @@ object World:
         case _       => None
       case _ => None
 
-    def removeComponent[C <: Component: ComponentTag](entity: Entity): World =
+    override def removeComponent[C <: Component: ComponentTag](entity: Entity): World =
       getArchetype(entity) match
       case Some(archetype) =>
         archetype.remove(entity)
@@ -252,14 +252,14 @@ object World:
         .filter(archetype => filter(archetype.componentTags))
         .flatMap(_.entities)
 
-    def entitiesWithComponents[C <: ComponentChain: ComponentChainTag]: Iterable[Entity] =
+    override def entitiesWithComponents[C <: ComponentChain: ComponentChainTag]: Iterable[Entity] =
       entitiesByFilter(summon[ComponentChainTag[C]].tags == _)
 
-    def entitiesWithComponents[C <: Component: ComponentTag]: Iterable[Entity] =
+    override def entitiesWithComponents[C <: Component: ComponentTag]: Iterable[Entity] =
       entitiesByFilter(Set(summon[ComponentTag[C]]) == _)
 
-    def entitiesWithAtLeastComponents[C <: ComponentChain: ComponentChainTag]: Iterable[Entity] =
+    override def entitiesWithAtLeastComponents[C <: ComponentChain: ComponentChainTag]: Iterable[Entity] =
       entitiesByFilter(summon[ComponentChainTag[C]].tags.subsetOf(_))
 
-    def entitiesWithAtLeastComponents[C <: Component: ComponentTag]: Iterable[Entity] =
+    override def entitiesWithAtLeastComponents[C <: Component: ComponentTag]: Iterable[Entity] =
       entitiesByFilter(Set(summon[ComponentTag[C]]).subsetOf(_))

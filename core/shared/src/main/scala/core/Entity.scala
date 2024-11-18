@@ -68,20 +68,20 @@ object Entity:
 
   private case class SimpleEntity(ID: Int, private val componentsMap: Map[ComponentTag[_], Component]) extends Entity:
 
-    def id: Int = this.ID
+    override def id: Int = this.ID
 
-    def add[C <: Component: ComponentTag](component: C): Entity =
+    override def add[C <: Component: ComponentTag](component: C): Entity =
       val newComponentsMap = componentsMap + (summon[ComponentTag[C]] -> component)
       SimpleEntity(id, newComponentsMap)
 
-    def get[C <: Component: ComponentTag]: Option[C] =
+    override def get[C <: Component: ComponentTag]: Option[C] =
       componentsMap.get(summon[ComponentTag[C]]).map(_.asInstanceOf[C])
 
-    def remove[C <: Component: ComponentTag]: Entity =
+    override def remove[C <: Component: ComponentTag]: Entity =
       val newComponentsMap = componentsMap - summon[ComponentTag[C]]
       SimpleEntity(id, newComponentsMap)
 
-    def componentTags: Set[ComponentTag[_]] = componentsMap.keySet
+    override def componentTags: Set[ComponentTag[_]] = componentsMap.keySet
 
   /** Internal object dedicated to generating unique identifiers for each entity.
     */
