@@ -1,8 +1,9 @@
 package dsl.coreDSL
 
 import core.*
+import core.given
 
-/** The `From` trait provides a set of methods to query and manipulate entities within a `World`. It enables entity
+  /** The `From` trait provides a set of methods to query and manipulate entities within a `World`. It enables entity
   * retrieval, component filtering, entity counting, and targeted entity modifications.
   *
   * Operators:
@@ -14,7 +15,7 @@ import core.*
   *
   * Retrieves a specific entity
   * {{{
-  * from(world).entity(entity)
+  * from(world) entity (entity)
   * }}}
   * Get the number of entities in the world
   * {{{
@@ -22,22 +23,22 @@ import core.*
   * }}}
   * Remove an entity
   * {{{
-  * from(world).kill(entity)
+  * from(world) kill (entity)
   * }}}
   * Access components of an entity
   * {{{
-  * from(world).componentsOf(entity)
+  * from(world) componentsOf(entity)
   * }}}
   * Retrieves entities that have exactly the specified set of components.
   * {{{
-  * from(world).entitiesHavingOnly[ComponentA :: ComponentB]
+  * from(world).entitiesHavingOnly[ComponentA ::: ComponentB]
   * }}}
   * Retrieves entities that have at least the specified set of components.
   * {{{
-  * from(world).entitiesHaving(ComponentA :: ComponentB)
+  * from(world).entitiesHaving(ComponentA ::: ComponentB)
   * }}}
   */
-trait From:
+trait FromWord:
   /** Retrieves all entities within the world.
     *
     * @return
@@ -52,7 +53,7 @@ trait From:
     * @return
     *   An option containing the [[Entity]] present in the world if exists, None otherwise
     */
-  def entity(entity: Entity): Option[Entity]
+  infix def entity(entity: Entity): Option[Entity]
 
   /** Provides the total count of entities in the world.
     *
@@ -68,7 +69,7 @@ trait From:
     * @return
     *   The current World instance with the entity removed.
     */
-  def kill(entity: Entity): World
+  infix def kill(entity: Entity): World
 
   /** Creates a [[FromComponentBuilder]] to access or modify components associated with a specific entity.
     *
@@ -116,14 +117,14 @@ trait From:
   def entitiesHaving[C <: ComponentChain : ComponentChainTag]: Iterable[Entity]
 
 
-object From:
-  def apply(world: World): From = new FromImpl(world)
+object FromWord:
+  def apply(world: World): FromWord = new FromWordImpl(world)
 
-  private class FromImpl(world: World) extends From:
+  private class FromWordImpl(world: World) extends FromWord:
     override def allEntities: Iterable[Entity]                      = world.entities.toSeq.sortBy(_.id)
-    override def entity(entity: Entity): Option[Entity]             = world.entity(entity)
+    infix override def entity(entity: Entity): Option[Entity]             = world.entity(entity)
     override def numberOfEntities: Int                              = world.entities.size
-    override def kill(entity: Entity): World                        = world.removeEntity(entity)
+    infix override def kill(entity: Entity): World                        = world.removeEntity(entity)
     override def componentsOf(entity: Entity): FromComponentBuilder = FromComponentBuilder(world, entity)
 
     override def entitiesHavingOnly[C <: ComponentChain : ComponentChainTag]: Iterable[Entity] =
@@ -154,7 +155,7 @@ object From:
  * }}}
   */
 trait FromComponentBuilder:
-  
+
   /** Retrieves a specific component from an entity by type.
     *
     * @tparam C
@@ -174,7 +175,7 @@ trait FromComponentBuilder:
   def remove[C <: Component: ComponentTag]: Entity
 
 object FromComponentBuilder:
-  def apply(world: World, entity: Entity): FromComponentBuilder = FromComponentOfImpl(world, entity)
+  def apply(world: World, entity: Entity): FromComponentBuilder = new FromComponentOfImpl(world, entity)
 
   private class FromComponentOfImpl(world: World, entity: Entity) extends FromComponentBuilder:
     override def get[C <: Component: ComponentTag]: Option[C] = world.getComponent[C](entity)

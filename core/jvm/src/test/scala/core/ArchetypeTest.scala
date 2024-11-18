@@ -4,14 +4,14 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class ArchetypeTest extends AnyWordSpec with Matchers:
-  val setC1: Set[ComponentTag[_]] = summon[ComponentChainTag[C1 :: CNil]].tags
+  val setC1: Set[ComponentTag[_]] = summon[ComponentChainTag[C1 ::: CNil]].tags
 
   "An Archetype" when:
     "created" should:
       "have the same set of ComponentTags regardless of their order" in:
-        val setC1C2 = summon[ComponentChainTag[C1 :: C2 :: CNil]].tags
-        val setC2C1 = summon[ComponentChainTag[C2 :: C1 :: CNil]].tags
-        val setC1C2C3 = summon[ComponentChainTag[C1 :: C2 :: C3 :: CNil]].tags
+        val setC1C2 = summon[ComponentChainTag[C1 ::: C2 ::: CNil]].tags
+        val setC2C1 = summon[ComponentChainTag[C2 ::: C1 ::: CNil]].tags
+        val setC1C2C3 = summon[ComponentChainTag[C1 ::: C2 ::: C3 ::: CNil]].tags
 
         val archetype1 = Archetype(setC1C2)
         val archetype2 = Archetype(setC2C1)
