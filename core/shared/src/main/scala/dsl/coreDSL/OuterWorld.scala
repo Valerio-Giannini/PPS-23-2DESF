@@ -14,7 +14,7 @@ import core.*
  *
  * Spawn a new entity with specified components
  * {{{
- * outerWorld.spawnEntityWith(componentA, componentB)
+ * outerWorld.spawnEntityWith(componentA :: componentB)
  * }}}
  */
 trait OuterWorld:
@@ -32,11 +32,13 @@ trait OuterWorld:
    * @param components additional components to add to the entity
    * @return the newly created [[Entity]] instance with the specified components
    */
-  def spawnEntityWith(component: Component, components: Component*): Entity
+  def spawnEntityWith[C <: Component : ComponentTag](component: C): Entity
+  def spawnEntityWith[C <: ComponentChain : ComponentChainTag](components: C): Entity
 
 object OuterWorld:
   def apply(): OuterWorld = new OuterWorldImpl()
 
   private class OuterWorldImpl extends OuterWorld:
     override def spawnEntity: Entity                             = Entity()
-    override def spawnEntityWith(component: Component, components: Component*): Entity = Entity(component+:components*)
+    override def spawnEntityWith[C <: Component : ComponentTag](component: C): Entity = Entity(component)
+    override def spawnEntityWith[C <: ComponentChain : ComponentChainTag](components: C): Entity = Entity(components)

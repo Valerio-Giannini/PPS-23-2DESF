@@ -1,6 +1,6 @@
 package core
 
-import scala.reflect.ClassTag
+import scala.compiletime.summonFrom
 
 /** This trait represents a generic Component in an Entity Component System (ECS).
   *
@@ -8,9 +8,13 @@ import scala.reflect.ClassTag
   */
 trait Component
 
-/** Type alias for [[ComponentTag]], a specialized ClassTag for [[Component]] types.
-  */
-type ComponentTag[C <: Component] = ClassTag[C]
+object Component:
 
-object ComponentTag:
-  def apply[C <: Component: ClassTag]: ComponentTag[C] = summon[ClassTag[C]]
+  extension [A <: Component: ComponentTag, B <: Component: ComponentTag](head: A)
+    def ::(other: B): A :: B :: CNil = core.::(head, core.::(other, CNil))
+
+  extension [A <: Component : ComponentTag](head: A)
+    def ::(nil: CNil): A :: CNil = core.::(head, CNil)
+
+
+

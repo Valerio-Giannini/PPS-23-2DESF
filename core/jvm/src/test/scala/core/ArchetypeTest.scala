@@ -1,57 +1,62 @@
 package core
 
-import org.scalatest.Inside.inside
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class ArchetypeTest extends AnyWordSpec with Matchers:
+  val setC1: Set[ComponentTag[_]] = summon[ComponentChainTag[C1 :: CNil]].tags
 
   "An Archetype" when:
     "created" should:
-      "have a unique set of ComponentTag independent from order" in:
-        val archetype1 = Archetype(ComponentTag[C1], ComponentTag[C2])
-        val archetype2 = Archetype(ComponentTag[C2], ComponentTag[C1])
-        val archetype3 = Archetype(ComponentTag[C1], ComponentTag[C2], ComponentTag[C3])
+      "have the same set of ComponentTags regardless of their order" in:
+        val setC1C2 = summon[ComponentChainTag[C1 :: C2 :: CNil]].tags
+        val setC2C1 = summon[ComponentChainTag[C2 :: C1 :: CNil]].tags
+        val setC1C2C3 = summon[ComponentChainTag[C1 :: C2 :: C3 :: CNil]].tags
+
+        val archetype1 = Archetype(setC1C2)
+        val archetype2 = Archetype(setC2C1)
+        val archetype3 = Archetype(setC1C2C3)
 
         archetype1.componentTags shouldEqual archetype2.componentTags
         archetype1.componentTags should not equal archetype3.componentTags
+
     "managing entities" should:
-      "allow to add only a matching entity" in:
-        val archetype = Archetype(ComponentTag[C1])
-        val entity    = Entity(C1(1))
+      "allow adding an entity if it matches the required components" in:
+        val archetype = Archetype(setC1)
+        val entity = Entity(C1(1))
         archetype.add(entity)
         archetype.entities should contain(entity)
 
-      "do nothing when trying to add a non matching entity" in:
-        val archetype = Archetype(ComponentTag[C1])
+      "do nothing when attempting to add an entity with non-matching components" in:
+        val archetype = Archetype(setC1)
         val entity = Entity(C2(2))
         archetype.add(entity)
         archetype.entities shouldNot contain(entity)
 
-      "do nothing when trying to add the same entity twice" in :
-        val archetype = Archetype(ComponentTag[C1])
-        val entityA    = Entity(C1(1))
-        archetype.add(entityA)
-        val archetypeWithEntityA = archetype.entities
-        archetype.add(entityA)
-        archetype.entities shouldBe archetypeWithEntityA
+      "allow to update an entity" in:
+        val archetype = Archetype(setC1)
+        val entity = Entity(C1(1))
+        archetype.add(entity)
+        archetype.add(entity.add(C1(2)))
 
-      "allow to get an entity" in:
-        val archetype = Archetype(ComponentTag[C1])
-        val entity    = Entity(C1(1))
+        archetype.entities should have size 1
+        archetype.get(entity.id).get.get[C1] shouldBe Some(C1(2))
+
+      "allow retrieving an entity if it exists in the archetype" in:
+        val archetype = Archetype(setC1)
+        val entity = Entity(C1(1))
 
         archetype.add(entity)
-        val retrievedEntity = archetype.get(entity)
-        inside(retrievedEntity) { case Some(e) =>
-          e.id shouldEqual entity.id
-        }
+        val retrievedEntity = archetype.get(entity.id)
+        retrievedEntity.get.id shouldEqual entity.id
 
-        val entity2          = Entity(C2(2))
-        val retrievedEntity2 = archetype.get(entity2)
+        val entity2 = Entity(C2(2))
+        val retrievedEntity2 = archetype.get(entity2.id)
         retrievedEntity2 shouldBe None
-      "allow to remove an entity" in:
-        val archetype = Archetype(ComponentTag[C1])
-        val entity    = Entity(C1(1))
+
+      "allow removing an entity if it exists" in:
+        val archetype = Archetype(setC1)
+        val entity = Entity(C1(1))
 
         archetype.add(entity)
         archetype.remove(entity)
@@ -60,10 +65,11 @@ class ArchetypeTest extends AnyWordSpec with Matchers:
         val entity2 = Entity(C2(2))
         archetype.remove(entity2)
         archetype.entities should not contain entity2
-      "allow to clear all entities" in:
-        val archetype = Archetype(ComponentTag[C1])
-        val entity1   = Entity(C1(1))
-        val entity2   = Entity(C1(2))
+
+      "allow clearing all entities in the archetype" in:
+        val archetype = Archetype(setC1)
+        val entity1 = Entity(C1(1))
+        val entity2 = Entity(C1(2))
 
         archetype.add(entity1)
         archetype.add(entity2)

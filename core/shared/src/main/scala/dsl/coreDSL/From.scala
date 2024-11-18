@@ -30,11 +30,11 @@ import core.*
   * }}}
   * Retrieves entities that have exactly the specified set of components.
   * {{{
-  * from(world).entitiesHavingOnly(componentTagA, componentTagB)
+  * from(world).entitiesHavingOnly[ComponentA :: ComponentB]
   * }}}
   * Retrieves entities that have at least the specified set of components.
   * {{{
-  * from(world).entitiesHaving(componentTagA, componentTagB)
+  * from(world).entitiesHaving(ComponentA :: ComponentB)
   * }}}
   */
 trait From:
@@ -81,26 +81,40 @@ trait From:
 
   /** Retrieves entities that have exactly the specified set of components.
     *
-    * @param componentClass
-    *   the first required component tag
-    * @param componentClasses
-    *   A variable number of component tags defining the required components.
+    * @tparam C
+    *   The type of the component, constrained to [[ComponentChain]].
     * @return
     *   An iterable collection of [[Entity]] containing exactly the specified components.
     */
+  def entitiesHavingOnly[C <: ComponentChain : ComponentChainTag]: Iterable[Entity]
 
-  def entitiesHavingOnly(componentClass: ComponentTag[?], componentClasses: ComponentTag[?]*): Iterable[Entity]
+  /** Retrieves entities that have exactly the specified set of components.
+   *
+   * @tparam C
+   * The type of the component, constrained to [[ComponentChain]].
+   * @return
+   * An iterable collection of [[Entity]] containing exactly the specified components.
+   */
+  def entitiesHavingOnly[C <: Component: ComponentTag]: Iterable[Entity]
 
   /** Retrieves entities that have at least the specified set of components.
-    *
-    * @param componentClass
-    *   the first required component tag
-    * @param componentClasses
-    *   A variable number of component tags defining the minimum required components.
-    * @return
-    *   An iterable collection of [[Entity]] instances containing at least the specified components.
-    */
-  def entitiesHaving(componentClass: ComponentTag[?], componentClasses: ComponentTag[?]*): Iterable[Entity]
+   *
+   * @tparam C
+   *   The type of the component, constrained to [[Component]].
+   * @return
+   *   An iterable collection of [[Entity]] instances containing at least the specified components.
+   */
+  def entitiesHaving[C <: Component : ComponentTag]: Iterable[Entity]
+
+  /** Retrieves entities that have at least the specified set of components.
+   *
+   * @tparam C
+   * The type of the component, constrained to [[Component]].
+   * @return
+   * An iterable collection of [[Entity]] containing exactly the specified components.
+   */
+  def entitiesHaving[C <: ComponentChain : ComponentChainTag]: Iterable[Entity]
+
 
 object From:
   def apply(world: World): From = new FromImpl(world)
@@ -112,14 +126,18 @@ object From:
     override def kill(entity: Entity): World                        = world.removeEntity(entity)
     override def componentsOf(entity: Entity): FromComponentBuilder = FromComponentBuilder(world, entity)
 
-    override def entitiesHavingOnly(
-        componentClass: ComponentTag[?],
-        componentTags: ComponentTag[?]*
-    ): Iterable[Entity] =
-      world.entitiesWithComponents(componentClass +: componentTags*).toSeq.sortBy(_.id)
+    override def entitiesHavingOnly[C <: ComponentChain : ComponentChainTag]: Iterable[Entity] =
+      world.entitiesWithComponents[C]
 
-    override def entitiesHaving(componentClass: ComponentTag[?], componentClasses: ComponentTag[?]*): Iterable[Entity] =
-      world.entitiesWithAtLeastComponents(componentClass +: componentClasses*).toSeq.sortBy(_.id)
+    override def entitiesHavingOnly[C <: Component: ComponentTag]: Iterable[Entity] =
+      world.entitiesWithComponents[C]
+
+    override def entitiesHaving[C <: Component : ComponentTag]: Iterable[Entity] =
+      world.entitiesWithAtLeastComponents[C]
+
+    override def entitiesHaving[C <: ComponentChain : ComponentChainTag]: Iterable[Entity] =
+      world.entitiesWithAtLeastComponents[C]
+
 
 /** The [[FromComponentBuilder]] trait provides methods to access and modify components of a specific entity. It enables
   * retrieving or removing components by their type.
@@ -136,6 +154,7 @@ object From:
  * }}}
   */
 trait FromComponentBuilder:
+  
   /** Retrieves a specific component from an entity by type.
     *
     * @tparam C
@@ -143,7 +162,6 @@ trait FromComponentBuilder:
     * @return
     *   An Option containing the component if it exists, otherwise None.
     */
-
   def get[C <: Component: ComponentTag]: Option[C]
 
   /** Removes a specific component from an entity by type.
