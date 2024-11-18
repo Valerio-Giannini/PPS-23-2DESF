@@ -1,7 +1,5 @@
 package core
 
-import core.ComponentChain.given
-
 /** This trait represents the central context in an Entity-Component-System (ECS) framework.
  *
  * A World manages all entities, components, and systems.
@@ -22,7 +20,6 @@ trait World:
    * @return
    *   An option containing the [[Entity]] present in the world if exists, None otherwise
    */
-
   def entity(entity: Entity): Option[Entity]
 
   /** Creates a new entity with the specified components and adds it to the world.
@@ -33,8 +30,22 @@ trait World:
    *   The newly created [[Entity]] instance.
    */
   def createEntity[C <: ComponentChain : ComponentChainTag](components: C): Entity
+
+  /** Creates a new entity with the specified component and adds it to the world.
+   *
+   * @param component an instance of [[Component]] subtype.
+   * @return
+   * The newly created [[Entity]] instance.
+   */
   def createEntity[C <: Component : ComponentTag](component: C): Entity
+
+  /** Creates a new empty entity adds it to the world.
+   *
+   * @return
+   * The newly created [[Entity]] instance.
+   */
   def createEntity(): Entity
+
   /** Adds an existing entity to the world.
    *
    * @param entity
@@ -97,6 +108,8 @@ trait World:
 
   /** Retrieves entities that have exactly the specified set of components.
    *
+   * @tparam C
+   *   The type of the component, constrained to [[ComponentChain]].
    * @return
    *   An iterable collection of [[Entity]] containing exactly the specified components.
    */
@@ -104,6 +117,8 @@ trait World:
 
   /** Retrieves entities that have exactly the specified component.
    *
+   * @tparam C
+   *   The type of the component, constrained to [[Component]].
    * @return
    * An iterable collection of [[Entity]] containing exactly the specified component.
    */
@@ -111,6 +126,7 @@ trait World:
 
   /** Retrieves entities that have at least the specified set of components.
    *
+   * @tparam C The type of the component chain, which defines the required components.
    * @return
    *   An iterable collection of [[Entity]] instances containing at least the specified components.
    */
@@ -118,6 +134,7 @@ trait World:
 
   /** Retrieves entities that have at least the specified component.
    *
+   * @tparam C The type of the component chain, which defines the required components.
    * @return
    * An iterable collection of [[Entity]] instances containing at least the specified component.
    */
@@ -142,7 +159,7 @@ object World:
   def apply(): World = new WorldImpl
 
   private class WorldImpl extends World:
-    private var archetypes: Vector[Archetype] = Vector.empty
+    private var archetypes: Seq[Archetype] = Seq.empty
     private var systems: List[System]         = List.empty
 
     def entities: Iterable[Entity] =
@@ -209,7 +226,7 @@ object World:
     def getComponent[C <: Component: ComponentTag](entity: Entity): Option[C] =
       getArchetype(entity) match
         case Some(archetype) =>
-          archetype.get(entity) match
+          archetype.get(entity.id) match
             case Some(e) => e.get[C]
             case _       => None
         case _ => None

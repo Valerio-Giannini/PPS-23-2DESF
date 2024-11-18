@@ -1,6 +1,5 @@
 package core
 
-import org.scalatest.Inside.inside
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -34,26 +33,25 @@ class ArchetypeTest extends AnyWordSpec with Matchers:
         archetype.add(entity)
         archetype.entities shouldNot contain(entity)
 
-      "ignore attempts to add the same entity more than once" in:
+      "allow to update an entity" in:
         val archetype = Archetype(setC1)
         val entity = Entity(C1(1))
         archetype.add(entity)
-        val initialEntities = archetype.entities
-        archetype.add(entity)
-        archetype.entities shouldBe initialEntities
+        archetype.add(entity.add(C1(2)))
+
+        archetype.entities should have size 1
+        archetype.get(entity.id).get.get[C1] shouldBe Some(C1(2))
 
       "allow retrieving an entity if it exists in the archetype" in:
         val archetype = Archetype(setC1)
         val entity = Entity(C1(1))
 
         archetype.add(entity)
-        val retrievedEntity = archetype.get(entity)
-        inside(retrievedEntity) { case Some(e) =>
-          e.id shouldEqual entity.id
-        }
+        val retrievedEntity = archetype.get(entity.id)
+        retrievedEntity.get.id shouldEqual entity.id
 
         val entity2 = Entity(C2(2))
-        val retrievedEntity2 = archetype.get(entity2)
+        val retrievedEntity2 = archetype.get(entity2.id)
         retrievedEntity2 shouldBe None
 
       "allow removing an entity if it exists" in:

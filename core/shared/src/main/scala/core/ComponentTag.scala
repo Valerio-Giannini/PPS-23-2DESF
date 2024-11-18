@@ -2,14 +2,11 @@ package core
 
 import scala.quoted.{Expr, Quotes, Type}
 
-
-/** Type class to associate metadata with a Component subtype. */
+/** Type class to keep information about the type of a subtype of Component */
 trait ComponentTag[C]
 
-/** The given instance for deriving ComponentTag automatically. */
 inline given [C]: ComponentTag[C] = ${ deriveComponentTagImpl[C] }
 
-/** Helper function to derive a ComponentTag for a type C. */
 private def deriveComponentTagImpl[C: Type](using quotes: Quotes): Expr[ComponentTag[C]] =
   import quotes.reflect.*
 

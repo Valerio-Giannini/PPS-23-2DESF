@@ -2,88 +2,77 @@ package core
 
 import scala.collection.mutable
 
-/**
- * Represents an Archetype in an Entity-Component-System (ECS) framework.
- *
- * An Archetype defines a collection of entities sharing the same set of components.
- * By grouping entities based on their component types, archetypes optimize entity management,
- * allowing efficient querying and manipulation of entities with a specific composition.
- */
+/** Represents an Archetype in an Entity-Component-System (ECS) framework.
+  *
+  * An Archetype defines a collection of entities sharing the same set of components.
+  */
 sealed trait Archetype:
 
-  /**
-   * Provides the set of [[ComponentTag]] corresponding to the components associated with this Archetype.
-   *
-   * @return A set containing the tags of each component within the entity.
-   */
+  /** Provides the set of [[ComponentTag]] associated with this Archetype.
+    *
+    * @return
+    *   A Set containing the Component tags.
+    */
   def componentTags: Set[ComponentTag[_]]
 
-  /**
-   * The collection of entities contained within this archetype.
-   *
-   * @return An iterable collection of [[Entity]] instances.
-   */
+  /** The entities contained within this archetype.
+    *
+    * @return
+    *   An iterable collection of [[Entity]] instances.
+    */
   def entities: Iterable[Entity]
 
-  /**
-   * Adds an entity to this archetype if it contains the required component types.
-   *
-   * @param entity The entity to add.
-   * @return This Archetype instance, potentially updated with the added entity.
-   */
-  def add(entity: Entity): Archetype
+  /** Add an [[Entity]] to this archetype if it contains the required component types.
+    *
+    * @param entity
+    *   The entity to add.
+    * @return
+    *   `true` if the entity was added, `false` otherwise.
+    */
+  def add(entity: Entity): Boolean
 
-  /**
-   * Retrieves an entity from this archetype if present.
-   *
-   * @param entity The entity to retrieve.
-   * @return An Option containing the entity if it is present in the archetype, None otherwise.
-   */
-  def get(entity: Entity): Option[Entity]
+  /** Retrieves an [[Entity]] from this archetype if present.
+    *
+    * @param entity
+    *   The entity to retrieve.
+    * @return
+    *   An Option of the entity.
+    */
+  def get(entityId: Int): Option[Entity]
 
-  /**
-   * Removes an entity from this archetype if present.
-   *
-   * @param entity The entity to remove.
-   * @return This Archetype instance, potentially updated without the specified entity.
-   */
-  def remove(entity: Entity): Archetype
+  /** Removes an entity from this archetype if present.
+    *
+    * @param entity
+    *   The entity to remove.
+    * @return
+    *   `true` if the entity was removed, `false` otherwise.
+    */
+  def remove(entity: Entity): Boolean
 
-  /**
-   * Removes all entities from this archetype.
-   *
-   * @return This Archetype instance with all entities cleared.
-   */
-  def clearEntities(): Archetype
+  /** Removes all entities from this archetype.
+    */
+  def clearEntities(): Unit
 
-/**
- * A Factory for [[Archetype]].
- */
+/** A Factory for [[Archetype]].
+  */
 object Archetype:
 
   def apply(componentTags: Set[ComponentTag[_]]): Archetype =
     ArchetypeImpl(componentTags)
 
-  private class ArchetypeImpl(tags: Set[ComponentTag[_]]) extends Archetype:
-    private val entityContainer: mutable.HashSet[Entity] = mutable.HashSet.empty
+  private class ArchetypeImpl(val componentTags: Set[ComponentTag[_]]) extends Archetype:
+    private val entityContainer = mutable.HashMap.empty[Int, Entity]
 
-    def componentTags: Set[ComponentTag[_]] = tags
+    def entities: Iterable[Entity] = entityContainer.values
 
-    def entities: Iterable[Entity] = entityContainer
+    def add(entity: Entity): Boolean =
+      entity.componentTags == componentTags && entityContainer.put(entity.id, entity).isEmpty
 
-    def add(entity: Entity): Archetype =
-      if tags == entity.componentTags  then
-        entityContainer.add(entity)
-      this
+    def get(entityId: Int): Option[Entity] =
+      entityContainer get entityId
 
-    def get(entity: Entity): Option[Entity] =
-      Some(entity).find(entityContainer.contains)
+    def remove(entity: Entity): Boolean =
+      entityContainer.remove(entity.id).isDefined
 
-    def remove(entity: Entity): Archetype =
-      entityContainer -= entity
-      this
-
-    def clearEntities(): Archetype =
+    def clearEntities(): Unit =
       entityContainer.clear()
-      this
-

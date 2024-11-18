@@ -60,7 +60,9 @@ class CoreDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
       "allows to remove an existing component with componentOf and remove" in:
         val c2     = C2(2)
         var entity = into(world).spawnNewEntityWith(C1(1) :: c2)
+        println(from(world).componentsOf(entity))
         entity = from(world).componentsOf(entity).remove[C1]
+
         entity.componentTags should have size 1
         entity.componentTags should not contain summon[ComponentTag[C1]]
     "provide an into operator" which:

@@ -16,6 +16,6 @@ class ComponentChainTagTest extends AnyFlatSpec with Matchers:
 
   "ComponentChainTag for CNil" should "compile successfully" in:
     assertCompiles("summon[ComponentChainTag[CNil]]")
-  
+
 
 
