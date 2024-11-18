@@ -81,8 +81,27 @@ class ParamsViewImpl extends ParamsView:
                    onSave: Iterable[Parameter[_]] => Unit
                  ): Div =
 
+    /**
+     * Generates input fields for each parameter in `paramsList`.
+     *
+     * Each input field is initialized with the parameter's default value as its placeholder.
+     * The `value` attribute is set to the parameter's default value to prefill the input field.
+     *
+     * @note This collection pairs each `ViewParameter` with its corresponding Laminar `input` element,
+     *       allowing the input fields to be referenced later for validation or state updates.
+     * @example For a parameter with value `42`, an input field is created with
+     *          `placeholder = "42"` and `value = "42"`.
+     */
     val inputFields = paramsList.map { param =>
 
+      /**
+       * Creates a Laminar `input` element for the given parameter.
+       *
+       * - **`placeholder`**: Displays the parameter's default value when the input field is empty.
+       * - **`value`**: Sets the input field's initial value to the parameter's default value.
+       *
+       * @return a Laminar `input` element pre-configured with the parameter's metadata.
+       */
       val inputBox = input(
         placeholder := param.parameter.value.toString,
         value := param.parameter.value.toString
@@ -102,29 +121,75 @@ class ParamsViewImpl extends ParamsView:
      */
     def validateAll(): Unit =
 
+      /**
+       * Attempts to validate all input fields.
+       *
+       * - Extracts raw values from the input fields.
+       * - Converts the values to their expected types.
+       * - Checks constraints (e.g., minimum, maximum, and type correctness).
+       * - Provides real-time visual feedback by changing the input field's border color.
+       *
+       * @return a filtered collection of successfully validated parameters.
+       */
       val maybeResults = inputFields.flatMap { (viewParam, inputBox) =>
+        /**
+         * Extracts the raw value from the input field.
+         *
+         * - Uses the placeholder value if the input field is empty.
+         *
+         * @return the raw value as a string.
+         */
         val rawValue = if (inputBox.ref.value.isEmpty) inputBox.ref.placeholder else inputBox.ref.value
+        /**
+         * Parses the raw value to a `Double`, ensuring compatibility with numeric parameters.
+         *
+         * @return an optional `Double` value, or `None` if parsing fails.
+         */
         val parsedValue = Try(rawValue.toDouble).toOption
 
         parsedValue match
 
           case Some(value) =>
+            /**
+             * Checks if the value meets the minimum constraint.
+             *
+             * @return `true` if the value is above or equal to the minimum, or if no minimum is defined.
+             */
             val minCheck = viewParam.minValue.forall(min => value >= min.asInstanceOf[Double])
+            /**
+             * Checks if the value meets the maximum constraint.
+             *
+             * @return `true` if the value is below or equal to the maximum, or if no maximum is defined.
+             */
             val maxCheck = viewParam.maxValue.forall(max => value <= max.asInstanceOf[Double])
+            /**
+             * Verifies if the value matches the expected type.
+             *
+             * - For `IntParameter`, ensures the parsed value is an integer.
+             *
+             * @return `true` if the type matches, `false` otherwise.
+             */
             val correctType: Boolean = viewParam.parameter match
               case _: IntParameter => parsedValue.get == parsedValue.get.toInt
               case _ => true
 
             if minCheck && maxCheck && correctType then
-
+              /**
+               * Updates the input field's appearance to indicate success.
+               */
               inputBox.amend(
                 borderColor := "green",
                 borderWidth := "1px"
               )
 
+              /**
+               * Returns the validated parameter encapsulated as a `Some` object.
+               */
               Some(Parameter(value, viewParam.parameter.id).asInstanceOf[viewParam.parameter.type])
             else
-
+              /**
+               * Updates the input field's appearance to indicate an error.
+               */
               inputBox.amend(
                 borderColor := "red",
                 borderWidth := "1px"
@@ -133,6 +198,9 @@ class ParamsViewImpl extends ParamsView:
               None
 
           case None =>
+            /**
+             * Updates the input field's appearance to indicate a parsing error.
+             */
             inputBox.amend(
               borderColor := "red",
               borderWidth := "1px"
@@ -142,12 +210,30 @@ class ParamsViewImpl extends ParamsView:
 
       }
 
+      /**
+       * Checks if all parameters are valid and triggers the `onSave` callback.
+       *
+       * - Ensures the number of validated parameters matches the total number of input fields.
+       * - Passes the validated results to the `onSave` callback if all are valid.
+       */
       if maybeResults.size == paramsList.size then
         onSave(maybeResults)
 
+    /**
+     * Renders the UI for the parameter configuration, including input fields, constraints,
+     * and a submission button.
+     *
+     * - Displays validation constraints (e.g., minimum and maximum values) next to input fields.
+     * - Provides an "OK" button to trigger validation and submission.
+     *
+     * @return a Laminar `Div` containing all input fields and the "OK" button.
+     */
     div(
       inputFields.map { (param, inputBox) =>
 
+        /**
+         * Placeholder for displaying error messages (currently unused).
+         */
         val errorHandler = span()
 
         div(

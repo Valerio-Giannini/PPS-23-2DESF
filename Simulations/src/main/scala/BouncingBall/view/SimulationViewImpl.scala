@@ -76,18 +76,37 @@ class SimulationViewImpl extends SimulationView:
    * @param newStatsInfos a list of updated statistics to display in the view.
    */
   override def update(entities: Iterable[Entity], newStatsInfos: List[StatisticEntry]): Unit =
-    val updatedPositions = entities.collect {
+
+    /**
+     * Extracts the positions of entities that define the `Position` component.
+     *
+     * This collection maps each entity ID to its current (x, y) coordinates.
+     *
+     * @return a collection of tuples, where each tuple contains an entity ID and its position as `(Double, Double)`.
+     */
+    val updatedPositions = entities.collect:
       case entity if entity.get[Position].isDefined =>
         val pos = entity.get[Position].get
         (entity.id, (pos.x, pos.y))
-    }
 
-
+    /**
+     * Updates the `entitiesVar` reactive variable if the new positions differ from the current state.
+     *
+     * - Compares `updatedPositions` to the current state of `entitiesVar` using `.now()`.
+     * - Logs a message indicating the update when a change is detected.
+     * - Updates the `entitiesVar` variable with the new positions.
+     */
     if (updatedPositions != entitiesVar.now()) then
       println(s"Updating positions: $updatedPositions")
       entitiesVar.set(updatedPositions)
 
-
+    /**
+     * Updates the `statsVar` reactive variable if the new statistics differ from the current state.
+     *
+     * - Compares `newStatsInfos` to the current state of `statsVar` using `.now()`.
+     * - Logs a message indicating the update when a change is detected.
+     * - Updates the `statsVar` variable with the new statistics.
+     */
     if (newStatsInfos != statsVar.now()) then
       println(s"Updating stats: $newStatsInfos")
       statsVar.set(newStatsInfos)
