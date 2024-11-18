@@ -17,27 +17,12 @@ import org.scalajs.dom
  * labels, and data points. The class uses Laminar to manage rendering and state updates.
  */
 class ReportViewImpl extends ReportView:
-  /**
-   * Holds the list of report entries to be rendered.
-   */
+
   private var reportEntries: List[ReportEntry] = _
 
-  /**
-   * Initializes the view with a list of report entries.
-   *
-   * Prepares the data to be rendered, but does not display it until `show` is called.
-   *
-   * @param infos a list of `ReportEntry` objects containing the data points and optional axis labels.
-   */
   override def init(infos: List[ReportEntry]): Unit =
     reportEntries = infos
 
-  /**
-   * Displays the report view.
-   *
-   * Renders all graphs specified in the initialized report entries inside the
-   * "report-container" DOM element.
-   */
   override def show(): Unit =
     val container = dom.document.getElementById("report-container")
     container.innerHTML = ""
@@ -45,11 +30,6 @@ class ReportViewImpl extends ReportView:
     val allGraphsDiv = div(graphs)
     render(container, allGraphsDiv)
 
-  /**
-   * Closes the report view.
-   *
-   * Clears the content of the "report-container" DOM element, resetting the view state.
-   */
   override def close(): Unit =
     val container = dom.document.getElementById("report-container")
     container.innerHTML = ""
@@ -101,15 +81,6 @@ class ReportViewImpl extends ReportView:
       strokeWidth := "2"
     )
 
-    /**
-     * Adds axes with ticks and labels to the graph.
-     *
-     * - X-axis spans horizontally with numeric labels.
-     * - Y-axis spans vertically with numeric labels.
-     *
-     * @param entry the `ReportEntry` containing axis metadata.
-     * @return SVG elements representing the axes and labels.
-     */
     val axisLines = List(
       line(
         x1 := "0", y1 := "380", x2 := "500", y2 := "380",
@@ -141,15 +112,6 @@ class ReportViewImpl extends ReportView:
         textAnchor := "end"
       )
 
-    /**
-     * Sets the optional axis names for the graph.
-     *
-     * - X-axis name is positioned at the bottom center.
-     * - Y-axis name is rotated and positioned at the left center.
-     *
-     * @param entry the `ReportEntry` containing optional axis names.
-     * @return SVG text elements representing the axis names.
-     */
     val xAxisName = entry.labelX.map: label =>
       text(
         x := "250", y := "430",
@@ -167,15 +129,6 @@ class ReportViewImpl extends ReportView:
         transform := "rotate(-90 -40 190)"
       )
 
-    /**
-     * Constructs the SVG graph for a single report, including:
-     * - Data points connected by polylines.
-     * - X and Y axes with ticks and labels.
-     * - Optional axis names.
-     *
-     * @param entry the `ReportEntry` containing data and optional metadata.
-     * @return an SVG element as a Laminar `Div`.
-     */
     val svgGraph = svg(
       svgWidth := "500px",
       svgHeight := "400px",
