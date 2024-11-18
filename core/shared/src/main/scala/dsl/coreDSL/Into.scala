@@ -14,7 +14,7 @@ import core.*
   *
   * Spawn a new entity with specified components
   * {{{
-  * into(world).spawnNewEntityWith(componentA :: componentB)
+  * into(world).spawnNewEntityWith(componentA ::: componentB)
   * }}}
   *
   * Add an existing entity to the world

@@ -22,12 +22,12 @@ class ComponentsUpdate:
   @Setup(Level.Iteration)
   def setup(): Unit =
     world = World()
-    (1 to numEntities).foreach(_ => world.createEntity(C1(1) :: C2(1)))
+    (1 to numEntities).foreach(_ => world.createEntity(C1(1) ::: C2(1)))
 
   @Benchmark
   def componentsUpdate(): Unit =
     for
-      entity <- world.entitiesWithAtLeastComponents[C1 :: C2 :: CNil]
+      entity <- world.entitiesWithAtLeastComponents[C1 ::: C2 ::: CNil]
       c1 <- entity.get[C1]
       c2 <- entity.get[C2]
     do

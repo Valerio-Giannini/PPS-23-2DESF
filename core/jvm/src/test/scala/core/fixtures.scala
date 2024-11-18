@@ -11,7 +11,7 @@ class IncrementC1System extends System:
 
   def update(world: World): Unit =
     for
-      entity <- world.entitiesWithAtLeastComponents[C1 :: CNil]
+      entity <- world.entitiesWithAtLeastComponents[C1 ::: CNil]
       c1 <- entity.get[C1]
     do
       world.addComponent(entity, incrementC1(c1))

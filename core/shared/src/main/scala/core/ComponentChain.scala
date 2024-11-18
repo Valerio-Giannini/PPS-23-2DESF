@@ -10,15 +10,15 @@ object ComponentChain:
 
   def apply(): CNil.type = CNil
 
-  def apply[C <: Component: ComponentTag](component: C): C :: CNil = component :: CNil
+  def apply[C <: Component: ComponentTag](component: C): C ::: CNil = component ::: CNil
 
   implicit class CCOps[CC <: ComponentChain](chain: CC):
-    def ::[C <: Component: ComponentTag](head: C): C :: CC = core.::(head, chain)
+    def :::[C <: Component: ComponentTag](head: C): C ::: CC = core.:::(head, chain)
 
 /** Empty instance of [[ComponentChain]]
   */
 trait CNil extends ComponentChain:
-  def ::[C <: Component: ComponentTag](head: C): C :: CNil = core.::(head, this)
+  def :::[C <: Component: ComponentTag](head: C): C ::: CNil = core.:::(head, this)
 
 case object CNil extends CNil:
   override def iterator: Iterator[Nothing] = Iterator.empty
@@ -34,7 +34,7 @@ case object CNil extends CNil:
   *   type of the tail
   */
 @showAsInfix
-final case class ::[C <: Component: ComponentTag, S <: ComponentChain](h: C, t: S) extends ComponentChain:
+final case class :::[C <: Component: ComponentTag, S <: ComponentChain](h: C, t: S) extends ComponentChain:
   override def iterator = Iterator(h) ++ t.iterator
 
 import scala.quoted.{Expr, Quotes, Type}
@@ -73,6 +73,6 @@ private def deriveComponentChainTagImpl[L <: ComponentChain: Type](using
 inline private def getTags[L <: ComponentChain]: Seq[ComponentTag[_]] =
   import scala.compiletime.erasedValue
   inline erasedValue[L] match
-  case _: (head :: tail) =>
+  case _: (head ::: tail) =>
     summon[ComponentTag[head]].asInstanceOf[ComponentTag[_]] +: getTags[tail]
   case _ => Seq()

@@ -3,7 +3,7 @@ package BouncingBall.model
 import BouncingBall.model.GlobalParameters.{ballRadius, borderSize, deceleration}
 import core.{System, World}
 import dsl.DSL.*
-
+import core.*
 import core.given
 
 /**
@@ -23,7 +23,7 @@ class MovementSystem extends System:
    */
   override def update(world: World): Unit =
     for
-      entity <- from(world).entitiesHaving[Position :: Speed :: CNil]
+      entity <- from(world).entitiesHaving[Position ::: Speed ::: CNil]
       pos    <- from(world).componentsOf(entity).get[Position]
       speed  <- from(world).componentsOf(entity).get[Speed]
     do
@@ -65,8 +65,8 @@ class BoundaryBounceSystem extends System:
    */
   override def update(world: World): Unit =
     for
-      e <- world.entitiesWithComponents[Position :: Speed :: Dimension :: CNil]
-      entity <- from(world).entitiesHaving[Position :: Speed :: Dimension :: CNil]
+      e <- world.entitiesWithComponents[Position ::: Speed ::: Dimension ::: CNil]
+      entity <- from(world).entitiesHaving[Position ::: Speed ::: Dimension ::: CNil]
       pos <- from(world).componentsOf(entity).get[Position]
       speed <- from(world).componentsOf(entity).get[Speed]
       dim <- from(world).componentsOf(entity).get[Dimension]
@@ -112,7 +112,7 @@ class CollisionSystem extends System:
    * @param world the simulation world containing entities and components.
    */
   override def update(world: World): Unit =
-    val entities = from(world).entitiesHaving[Position :: Speed :: Dimension :: CNil].toSeq
+    val entities = from(world).entitiesHaving[Position ::: Speed ::: Dimension ::: CNil].toSeq
     for
       i <- entities.indices
       j <- (i + 1) until entities.size

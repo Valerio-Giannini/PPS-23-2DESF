@@ -10,12 +10,12 @@ class ComponentChainTest extends AnyFlatSpec with Matchers:
     componentChain should have size 1
 
   "A ComponentChain" should "be created with more than one component" in:
-    val componentChain = C1(1) :: C2(2)
+    val componentChain = C1(1) ::: C2(2)
     componentChain should have size 2
 
   "A ComponentChain" should "only be created with subtype of Component" in :
-    assertDoesNotCompile("C1(1) :: Component")
+    assertDoesNotCompile("C1(1) ::: Component")
 
   "A ComponentChain" should "be iterable" in:
-    val componentChain = C1(1) :: C2(2)
+    val componentChain = C1(1) ::: C2(2)
     componentChain.iterator.toList shouldEqual List(C1(1), C2(2))

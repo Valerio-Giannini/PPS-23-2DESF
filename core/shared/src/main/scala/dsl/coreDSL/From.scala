@@ -1,6 +1,7 @@
 package dsl.coreDSL
 
 import core.*
+import core.given
 
   /** The `From` trait provides a set of methods to query and manipulate entities within a `World`. It enables entity
   * retrieval, component filtering, entity counting, and targeted entity modifications.
@@ -30,11 +31,11 @@ import core.*
   * }}}
   * Retrieves entities that have exactly the specified set of components.
   * {{{
-  * from(world).entitiesHavingOnly[ComponentA :: ComponentB]
+  * from(world).entitiesHavingOnly[ComponentA ::: ComponentB]
   * }}}
   * Retrieves entities that have at least the specified set of components.
   * {{{
-  * from(world).entitiesHaving(ComponentA :: ComponentB)
+  * from(world).entitiesHaving(ComponentA ::: ComponentB)
   * }}}
   */
 trait From:

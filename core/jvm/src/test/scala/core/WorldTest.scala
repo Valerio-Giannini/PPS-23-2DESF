@@ -30,12 +30,12 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         world.entities should contain(entity)
         
       "allow creation of an entity with multiple components" in:
-        val entity = world.createEntity(C1(1) :: C2(2))
+        val entity = world.createEntity(C1(1) ::: C2(2))
         world.entities should contain(entity)
         entity.componentTags should have size 2
         
       "allow creation of an entity without duplicate components" in:
-        val entity = world.createEntity(C1(1) :: C1(2))
+        val entity = world.createEntity(C1(1) ::: C1(2))
         world.entities should contain(entity)
         entity.componentTags should have size 1
         
@@ -46,7 +46,7 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         world.entities should have size 1
         
       "allow the removal and reinsertion of an entity with its components" in:
-        val entity = world.createEntity(C1(1) :: C1(2))
+        val entity = world.createEntity(C1(1) ::: C1(2))
         world.entities should contain(entity)
         world.removeEntity(entity)
         world.entities shouldBe empty
@@ -69,7 +69,7 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         (1 to numEntities).foreach { _ =>
           world.createEntity(C1(1))
           world.createEntity(C2(2))
-          world.createEntity(C1(1) :: C2(2))
+          world.createEntity(C1(1) ::: C2(2))
         }
         val entitiesWithC1 = world.entitiesWithComponents[C1]
         all(entitiesWithC1.map(_.get[C1])) should not be empty
@@ -107,7 +107,7 @@ class WorldTest extends AnyWordSpec with Matchers with BeforeAndAfterEach:
         world.getComponent[C2](entity) shouldBe None
         
       "allow remove an existing component" in:
-        val entity = world.createEntity(C1(1) :: C2(2))
+        val entity = world.createEntity(C1(1) ::: C2(2))
         world.removeComponent[C2](entity)
         inside(world.entities.find(_.id == entity.id)) {
           case Some(e) =>
