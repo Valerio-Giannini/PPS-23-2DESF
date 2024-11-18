@@ -257,7 +257,7 @@ for tick <- 1 to 10 do
 |                                                                                                              | Modificare il core -> CrossProject        | Giannini | Finito      |
 |                                                                                                              | Integrare JCEF                            | Giannini | Iniziato    |
 | Come utente voglio poter configurare i parametri della mia simulazione (anche) tramite GUI prima di avviarla | Sistema per definire i parametri          | Giannini | Iniziato    |
-|                                                                                                              | Logica per passare i parametri alla view  | Bennici  | Iniziato    |
+|                                                                                                              | Logica per passare i parametri alla view  | Vasiliu  | Iniziato    |
 | Come utente voglio poter definire la mia simulazione con semplicità                                          | Definire DSL per core avanzato            | Vasiliu  | Finito      |
 | Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework              | Progettare le simulazioni                 | Tutti    | Da iniziare |
 |                                                                                                              | Implemetare le simulazioni                | Tutti    | Da iniziare |
@@ -295,10 +295,37 @@ for tick <- 1 to 10 do
 | Implementare la GUI                                                                                           | Studiare Laminar                         | Giannini  | Iniziato     |
 |                                                                                                               | Integrare JCEF                           | Giannini  | Iniziato     |
 | Come utente voglio poter configurare i parametri della mia simulazione (anche) tramite GUI prima di avviarla  | Sistema per definire i parametri         | Giannini  | Iniziato     |
-|                                                                                                               | Logica per passare i parametri alla view | Bennici   | Iniziato     |
+|                                                                                                               | Logica per passare i parametri alla view | Vasiliu   | Iniziato     |
 | Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework               | Progettare le simulazioni                | Tutti     | Da iniziare  |
 |                                                                                                               | Implemetare le simulazioni               | Tutti     | Da iniziare  |
 | Come utente voglio avere un report dell'andamento della simulazione                                           | Progettare come realizzare il report     | Vasiliu   | Iniziato     |
 | Come utente voglio sapere come sta evolvendo la simulazione                                                   | Progettare la logica                     | Vasiliu   | Da iniziare  |
 
 
+## Sprint 6 - 06/11/2024
+
+### Obbiettivo
+In questo sprint l'obbiettivo è di implementare la simulazione completa, integrando tutti i moduli: Core, DSL, View. Inoltre, ristrutturare il codice per rendere il framework più semplice ed intuitivo per l'utente.  
+I task necessari al raggiungimento di tali obbiettivi sono:
+
+- **Simulazione d'esempio:** Scrivere la simulazione completa utilizzando il DSL e integrando ogni aspetto della View.
+- **Refactor architetturale del codice.**
+
+
+| Product backlog item                                                                            | Sprint task               | Assignee | Status    |
+|-------------------------------------------------------------------------------------------------|---------------------------|----------|-----------|
+| Implementare la GUI                                                                             | Integrare JCEF            | Giannini | Iniziato  |
+| Come utente voglio aver accesso a simulazioni d'esempio preprogrammate utilizzando il framework | Progettare le simulazioni | Giannin  | Iniziato  |
+| Quality assurance                                                                               |                           | Tutti    | Iniziato  |
+
+
+### Review
+La simulazione è stata creata e integra tutti i moduli del progetto.
+
+## Sprint 7 - 12/11/2024
+
+### Obbiettivo
+L'obbiettivo di quest'ultimo sprint è ultimare il framework, avendo anche effettuato la quality assurance, e creare il `.jar` attraverso JCEF in modo che sia distribuibile ed eseguibile in locale come app Desktop.
+
+- **Quality Assurance:** Scala Doc e Controllo Qualità del codice.
+- **Distribuzione:** Terminare l'app JCEF in modo che crei un `.jar` eseguibile in Windows, Linux e MacOSX.
