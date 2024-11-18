@@ -23,7 +23,7 @@ object Launch:
     into(sim.world).include(BoundaryBounceSystem())
     into(sim.world).include(CollisionSystem())
 
-    simulation.askParam(deceleration).withMin(0).withMax(0.1).withLabel("Deceleration")
+    simulation.askParam(deceleration).withMin(0.01).withMax(0.1).withLabel("Deceleration")
     simulation.askParam(ballRadius).withMin(4).withMax(20).withLabel("Ball radius")
 
     simulation.runTill(() => Stats.numberOfMovingBalls > 0)
