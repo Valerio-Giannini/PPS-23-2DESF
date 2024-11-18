@@ -2,7 +2,7 @@ package BouncingBall.view
 
 
 import BouncingBall.model.GlobalParameters.{ballRadius, borderSize}
-import BouncingBall.model.Position
+import BouncingBall.model.{Position, Dimension}
 import com.raquo.airstream.core.Signal
 import com.raquo.airstream.state.Var
 import com.raquo.laminar.api.L.*
@@ -21,16 +21,16 @@ import scala.reflect.ClassTag
  * for reactivity and efficient DOM updates.
  */
 class SimulationViewImpl extends SimulationView:
-  
-  private val entitiesVar = Var[Iterable[(Int, (Double, Double))]](List.empty)
+
+  private val entitiesVar = Var[Iterable[(Int, (Double, Double), Int)]](List.empty)
   /**
    * Signal that emits updates to entity positions, ensuring distinct values to
    * avoid redundant updates.
    *
    * @return a `Signal` of the current entity positions.
    */
-  private def entitiesSignal: Signal[Iterable[(Int, (Double, Double))]] = entitiesVar.signal.distinct
-  
+  private def entitiesSignal: Signal[Iterable[(Int, (Double, Double), Int)]] = entitiesVar.signal.distinct
+
   private val statsVar = Var[List[StatisticEntry]](List.empty)
   /**
    * Signal that emits updates to the simulation statistics, ensuring distinct values.
@@ -38,26 +38,27 @@ class SimulationViewImpl extends SimulationView:
    * @return a `Signal` of the current statistics.
    */
   private def statsSignal: Signal[List[StatisticEntry]] = statsVar.signal.distinct
-  
+
   override def show(): Unit =
     val container = dom.document.getElementById("simulation-container")
     val worldDiv = renderWorld(entitiesSignal, statsSignal)
     render(container, worldDiv)
-  
+
   override def close(): Unit =
     val container = dom.document.getElementById("simulation-container")
     container.innerHTML = ""
-  
+
   override def update(entities: Iterable[Entity], newStatsInfos: List[StatisticEntry]): Unit =
 
-    val updatedPositions = entities.collect:
-      case entity if entity.get[Position].isDefined =>
+    val updatedComponents = entities.collect:
+      case entity if (entity.get[Position].isDefined && entity.get[Dimension].isDefined) =>
         val pos = entity.get[Position].get
-        (entity.id, (pos.x, pos.y))
+        val dim = entity.get[Dimension].get
+        (entity.id, (pos.x, pos.y), dim.x)
 
-    if (updatedPositions != entitiesVar.now()) then
-      println(s"Updating positions: $updatedPositions")
-      entitiesVar.set(updatedPositions)
+    if (updatedComponents != entitiesVar.now()) then
+      println(s"Updating positions: $updatedComponents")
+      entitiesVar.set(updatedComponents)
 
     if (newStatsInfos != statsVar.now()) then
       println(s"Updating stats: $newStatsInfos")
@@ -74,7 +75,7 @@ class SimulationViewImpl extends SimulationView:
    * @return a Laminar `Div` element containing the rendered world and statistics.
    */
   private def renderWorld(
-                           entitySignals: Signal[Iterable[(Int, (Double, Double))]],
+                           entitySignals: Signal[Iterable[(Int, (Double, Double),Int)]],
                            statsSignal: Signal[List[StatisticEntry]]
                          ): Div =
     println("RenderWorld chiamato")
@@ -88,9 +89,9 @@ class SimulationViewImpl extends SimulationView:
       border := "5px solid black",
       children <-- entitySignals.map { entities =>
         println(s"Entità da renderizzare: ${entities.mkString(", ")}")
-        entities.toSeq.map { case (entityId, position) =>
-          println(s"Rendering entità ID: $entityId, Posizione: $position")
-          renderEntity(entityId, position)
+        entities.toSeq.map { case (entityId, position, dimension) =>
+          println(s"Rendering entità ID: $entityId, Posizione: $position, Dimensione: $dimension")
+          renderEntity(entityId, position, dimension)
         }
       },
 
@@ -111,6 +112,7 @@ class SimulationViewImpl extends SimulationView:
   private def renderEntity(
                             id: Int,
                             pos: (Double, Double),
+                            dim: Int,
                             entityColor: String = "blue"
                           ): Div =
     val (x, y) = pos
@@ -119,8 +121,8 @@ class SimulationViewImpl extends SimulationView:
       position := "absolute",
       left := s"${x + borderSize()}px",
       bottom := s"${y + borderSize()}px",
-      width := s"${ballRadius()}px",
-      height := s"${ballRadius()}px",
+      width := s"${dim}px", //Possible to change dim with ballRadius() if You want to remove Dimension Component
+      height := s"${dim}px",
       backgroundColor := entityColor,
       borderRadius := "50%",
       display := "flex",

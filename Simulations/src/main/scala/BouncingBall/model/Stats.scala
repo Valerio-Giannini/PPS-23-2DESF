@@ -22,3 +22,4 @@ object Stats:
       speed <- from(world).componentsOf(entity).get[Speed]
     yield math.sqrt(speed.vx * speed.vx + speed.vy * speed.vy)
     if speeds.nonEmpty then speeds.sum / speeds.size else 0
+    
