@@ -21,10 +21,9 @@ class MovementSystem extends System:
    */
   override def update(world: World): Unit =
     for
-      entity <- from(world).entitiesHaving(POSITION, SPEED, DIMENSION)
+      entity <- from(world).entitiesHaving(POSITION, SPEED)
       pos    <- from(world).componentsOf(entity).get[Position]
       speed  <- from(world).componentsOf(entity).get[Speed]
-      dim  <- from(world).componentsOf(entity).get[Dimension]
     do
       val newX = pos.x + speed.vx
       val newY = pos.y + speed.vy
@@ -39,8 +38,8 @@ class MovementSystem extends System:
         case vy if vy < 0  => math.min(0.0, vy + deceleration())
         case _             => 0.0
 
-      val finalVx = if (math.abs(newVx) < deceleration() || dim.x > 2 * ballRadius())then 0.0 else newVx
-      val finalVy = if (math.abs(newVy) < deceleration() || dim.x >2 * ballRadius()) then 0.0 else newVy
+      val finalVx = if math.abs(newVx) < deceleration() then 0.0 else newVx
+      val finalVy = if math.abs(newVy) < deceleration() then 0.0 else newVy
 
       into(world)
         .componentsOf(entity)
@@ -68,6 +67,7 @@ class BoundaryBounceSystem extends System:
       pos <- from(world).componentsOf(entity).get[Position]
       speed <- from(world).componentsOf(entity).get[Speed]
       dim <- from(world).componentsOf(entity).get[Dimension]
+
     do
       var newVx = speed.vx
       var newVy = speed.vy
@@ -126,9 +126,6 @@ class CollisionSystem extends System:
       // Perform collision detection
       if isCollision(posA, posB, dimA, dimB)
     do
-      // Calculate the new Dimension after a collision
-      val newDimA = if dimA.x < 2 * ballRadius() then Dimension(dimA.x + 1) else Dimension(dimA.x)
-      val newDimB = if dimB.x < 2 * ballRadius() then Dimension(dimB.x + 1) else Dimension(dimB.x)
 
       // Calculate the vector separating the two entities
       val dx = posB.x - posA.x
@@ -165,9 +162,7 @@ class CollisionSystem extends System:
       )
 
       into(world).componentsOf(entityA).add(newSpeedA)
-      into(world).componentsOf(entityA).add(newDimA)
       into(world).componentsOf(entityB).add(newSpeedB)
-      into(world).componentsOf(entityB).add(newDimB)
 
   /**
    * Determines if two entities are colliding.
