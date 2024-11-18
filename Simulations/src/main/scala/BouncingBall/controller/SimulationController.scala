@@ -12,15 +12,14 @@ import scala.util.{Failure, Success}
 import dsl.DSL.*
 
 class SimulationController(sim: Simulation) extends Controller:
-  private var paramView: ParamsView = ParamsViewImpl()
+  private val paramView: ParamsView = ParamsViewImpl()
   private val reportView: ReportView = ReportViewImpl()
-  private var simulationView: SimulationView = SimulationViewImpl()
+  private val simulationView: SimulationView = SimulationViewImpl()
   private val tickInterval: Int = 18 // ms
-  private var currentTick: Int = 0
 
   given Simulation = sim
   
-  def start(): Unit =
+  override def start(): Unit =
     simulation.askedParameters match
       case p if p.nonEmpty =>
         paramView.init(p).onComplete {
@@ -29,7 +28,6 @@ class SimulationController(sim: Simulation) extends Controller:
             simulation.updateParameters(paramValues)
             initializeAndRun()
           case Failure(exception) =>
-            println(s"Errore nel caricamento dei parametri: ${exception.getMessage}")
         }
         paramView.show()
       case _ =>
@@ -37,21 +35,18 @@ class SimulationController(sim: Simulation) extends Controller:
 
   private def initializeAndRun(): Unit =
     simulationView.show()
-    currentTick = 1
-    scheduleNextTick()
+    scheduleNextTick(1)
 
-  private def scheduleNextTick(): Unit =
-    if simulation.shouldRun then
-      setTimeout(tickInterval) {
+  private def scheduleNextTick(currentTick: Int): Unit =
+    simulation.shouldRun match
+      case true => setTimeout(tickInterval) {
         simulation.update(currentTick)
         simulationView.update(from(sim.world).allEntities, simulation.stats)
-        currentTick += 1
-        scheduleNextTick()
+        scheduleNextTick(currentTick+1)
       }
-    else
-      end()
+      case _ => end()
 
-  def end(): Unit =
+  override def end(): Unit =
     simulationView.close()
 
     simulation.report match

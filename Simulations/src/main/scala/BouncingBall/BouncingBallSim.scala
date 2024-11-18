@@ -12,8 +12,8 @@ class BouncingBallSim extends Simulation:
 
     update(world)
 
-    AvgSpeed.add(Stats.calcAvgSpeed)
-    MovingBalls.add(Stats.numberOfMovingBalls)
+    AvgSpeed add Stats.calcAvgSpeed
+    MovingBalls add Stats.numberOfMovingBalls
 
 
 

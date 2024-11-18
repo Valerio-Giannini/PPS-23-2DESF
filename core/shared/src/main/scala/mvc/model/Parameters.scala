@@ -1,11 +1,10 @@
 package mvc.model
 
-class Parameter[T](var value: T, var id: Option[Int] = None):
+abstract class Parameter[T<: Int| Double](var value: T, var id: Option[Int] = None):
   def apply(): T = value
 
-class IntParameter(value: Int, id: Option[Int] = None) extends Parameter[Int](value, id)
-
 class DoubleParameter(value: Double, id: Option[Int] = None) extends Parameter[Double](value, id)
+class IntParameter(value: Int, id: Option[Int] = None) extends Parameter[Int](value, id)
 
 case class ViewParameter(parameter: Parameter[_], label: String, minValue: Option[AnyVal] = None, maxValue: Option[AnyVal] = None)
 

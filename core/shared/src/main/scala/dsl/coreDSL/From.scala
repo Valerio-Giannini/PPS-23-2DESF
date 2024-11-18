@@ -2,7 +2,7 @@ package dsl.coreDSL
 
 import core.*
 
-/** The `From` trait provides a set of methods to query and manipulate entities within a `World`. It enables entity
+  /** The `From` trait provides a set of methods to query and manipulate entities within a `World`. It enables entity
   * retrieval, component filtering, entity counting, and targeted entity modifications.
   *
   * Operators:

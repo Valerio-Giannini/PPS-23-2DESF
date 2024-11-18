@@ -1,6 +1,6 @@
 package BouncingBall.view
 
-import mvc.model.{IntParameter, Parameter, Parameters, ViewParameter}
+import mvc.model.{DoubleParameter, IntParameter, Parameter, Parameters, ViewParameter}
 import mvc.view.ParamsView
 import org.scalajs.dom
 import com.raquo.laminar.api.L.*
@@ -111,6 +111,7 @@ class ParamsViewImpl extends ParamsView:
           case Some(value) =>
             val minCheck = viewParam.minValue.forall(min => value >= min.asInstanceOf[Double])
             val maxCheck = viewParam.maxValue.forall(max => value <= max.asInstanceOf[Double])
+
             val correctType: Boolean = viewParam.parameter match
               case _: IntParameter => parsedValue.get == parsedValue.get.toInt
               case _ => true
@@ -122,7 +123,10 @@ class ParamsViewImpl extends ParamsView:
                 borderWidth := "1px"
               )
 
-              Some(Parameter(value, viewParam.parameter.id).asInstanceOf[viewParam.parameter.type])
+              viewParam.parameter match
+                case _: IntParameter => Some(IntParameter(value.toInt, viewParam.parameter.id))
+                case _: DoubleParameter => Some(DoubleParameter(value, viewParam.parameter.id))
+
             else
 
               inputBox.amend(

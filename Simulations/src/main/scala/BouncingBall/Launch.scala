@@ -19,38 +19,31 @@ object Launch:
     
     val controller = SimulationController(sim)
 
-    into(sim.world).include(MovementSystem())
-    into(sim.world).include(BoundaryBounceSystem())
-    into(sim.world).include(CollisionSystem())
+    into(sim.world) include MovementSystem()
 
-    simulation.askParam(deceleration).withLabel("Deceleration")
-    simulation.askParam(ballRadius).withMin(4).withMax(20).withLabel("ball radius")
+    into(sim.world) include MovementSystem()
 
-    simulation.runTill(() => Stats.numberOfMovingBalls > 0)
+    into(sim.world) include BoundaryBounceSystem()
+    into(sim.world) include CollisionSystem()
 
-    simulation.track(Stats.calcAvgSpeed).withLabel("Average speed")
-    simulation.track(Stats.numberOfMovingBalls).withLabel("Number of moving balls")
-    simulation.track(Stats.numberOfStoppedBalls).withLabel("Number of stopped balls")
+    simulation askParam deceleration withLabel "Deceleration"
+    simulation askParam ballRadius withMin 4 withMax 20  withLabel "ball radius"
+
+    simulation runTill {() => Stats.numberOfMovingBalls > 0}
+
+    simulation track Stats.calcAvgSpeed withLabel "Average speed"
+    simulation track Stats.numberOfMovingBalls withLabel "Number of moving balls"
+    simulation track Stats.numberOfStoppedBalls withLabel "Number of stopped balls"
+
+    simulation track {deceleration()} withLabel "Deceleration"
     
-    simulation.track({deceleration()}).withLabel("Deceleration")
     
-    
-    simulation.chart(AvgSpeed).withXLabel("time").withYLabel("speed").withLabel("Average speed")
-    simulation.chart(MovingBalls).withXLabel("time").withYLabel("number of balls").withLabel("Moving balls")
+    simulation chart AvgSpeed withXLabel "time" withYLabel "speed" withLabel "Average speed"
+    simulation chart MovingBalls withXLabel "time" withYLabel "number of balls" withLabel("Moving balls")
 
 
-//    val positions = List(
-//      (-200, 100), (-150, -150), (0, 0), (100, 150), (150, -100),
-//      (-100, -50), (200, 0), (-50, 200), (50, -200), (0, 100)
-//    )
-//
-//    val velocities = List(
-//      (4, -3), (-3, -0), (0, -4), (-0, -2), (8, 5),
-//      (5, -3), (-3, 5), (2, 2), (4, -5), (-5, 4)
-//    )
     val positions = List(
-
-      (-200, 100), (400, 100)
+      (-200, 100), (200, 100)
     )
 
     val velocities = List(
@@ -58,10 +51,10 @@ object Launch:
     )
 
     for ((pos, vel) <- positions.zip(velocities)) do
-      into(sim.world).spawnNewEntityWith(Position(pos._1, pos._2), Speed(vel._1, vel._2))
+      into(sim.world) spawnNewEntityWith(Position(pos._1, pos._2), Speed(vel._1, vel._2))
 
-    AvgSpeed.add(0, Stats.calcAvgSpeed)
-    MovingBalls.add(0, Stats.numberOfMovingBalls)
+    AvgSpeed add (0, Stats.calcAvgSpeed)
+    MovingBalls add (0, Stats.numberOfMovingBalls)
 
     
     controller.start()

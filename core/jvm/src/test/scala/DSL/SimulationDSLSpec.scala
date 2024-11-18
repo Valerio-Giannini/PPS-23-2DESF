@@ -3,12 +3,10 @@ package DSL
 import DSL.Stats.meanC1
 import core.{C1, ComponentTag, IncrementC1System, World}
 import dsl.DSL.*
-import mvc.model.{DataTracker, Point, Simulation, StatisticEntry}
+import mvc.model.{DataTracker, IntParameter, Point, Simulation, StatisticEntry, ViewParameter}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-
-object AvgC1 extends DataTracker
 
 object Stats:
   def meanC1(using world: World): Int =
@@ -41,6 +39,15 @@ class SimulationDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEac
     into(sim.world).spawnNewEntityWith(C1(valueOfC1))
 
   "The SimulationDSL with simulation operator" should:
+    "provide operators to ask parameters" in:
+      val param = new IntParameter(10)
+      val label = "param"
+      val min = 4
+      val max = 20
+      simulation askParam param withMin min withMax max withLabel label
+
+      simulation.askedParameters contains ViewParameter(param, label, Some(min), Some(max))
+
     "provide operators to control the simulation execution" in:
       simulation.runTill(()=> meanC1 < 10)
 
