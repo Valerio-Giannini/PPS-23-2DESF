@@ -48,7 +48,7 @@ trait CoreDSL:
     * @return
     *   a `From` instance initialized with the given `world`
     */
-  def from(world: World): From
+  def from(world: World): FromWord
 
   /** Initializes an `Into` instance for the given `world`, typically to add an element to the world
     *
@@ -57,7 +57,7 @@ trait CoreDSL:
     * @return
     *   an `Into` instance initialized with the given `world`
     */
-  def into(world: World): Into
+  def into(world: World): IntoWord
 
   /**
    * Resets the given `world` instance by clearing all its entities
@@ -84,9 +84,9 @@ trait CoreDSL:
 
 object CoreDSL extends CoreDSL:
   override def newWorld: World          = World()
-  override def from(world: World): From = From(world)
+  override def from(world: World): FromWord = FromWord(world)
 
-  override def into(world: World): Into = Into(world)
+  override def into(world: World): IntoWord = IntoWord(world)
 
   override def outerWorld: OuterWorld = OuterWorld()
 
