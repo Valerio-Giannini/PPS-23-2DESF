@@ -1,9 +1,10 @@
-package DSL
+package dsl
 
-import DSL.Stats.meanC1
+import dsl.Stats.meanC1
 import core.{C1, ComponentTag, IncrementC1System, World}
-import dsl.DSL.*
-import mvc.model.{DataTracker, IntParameter, Point, Simulation, StatisticEntry, ViewParameter}
+import dsl.coreDSL.CoreDSL.*
+import dsl.simulationDSL.SimulationDSL.*
+import mvc.model.{DataTracker, DoubleParameter, IntParameter, Point, Simulation, StatisticEntry, ViewParameter}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -40,13 +41,20 @@ class SimulationDSLSpec extends AnyWordSpec with Matchers with BeforeAndAfterEac
 
   "The SimulationDSL with simulation operator" should:
     "provide operators to ask parameters" in:
-      val param = new IntParameter(10)
+      val param = IntParameter(5, Some(1))
+      val param2 = IntParameter(4, Some(1))
+      val param3 = DoubleParameter(2, Some(1))
       val label = "param"
       val min = 4
       val max = 20
+
       simulation askParam param withMin min withMax max withLabel label
 
       simulation.askedParameters contains ViewParameter(param, label, Some(min), Some(max))
+
+      simulation.updateParameters(List(IntParameter(15, Some(0))))
+
+      param() shouldBe(15)
 
     "provide operators to control the simulation execution" in:
       simulation.runTill(()=> meanC1 < 10)

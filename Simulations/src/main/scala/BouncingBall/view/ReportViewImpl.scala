@@ -26,7 +26,7 @@ class ReportViewImpl extends ReportView:
   override def show(): Unit =
     val container = dom.document.getElementById("report-container")
     container.innerHTML = ""
-    val graphs = reportEntries.map(entry => _renderSingleReport(entry))
+    val graphs = reportEntries.map(entry => renderSingleReport(entry))
     val allGraphsDiv = div(graphs)
     render(container, allGraphsDiv)
 
@@ -45,7 +45,7 @@ class ReportViewImpl extends ReportView:
    * @param entry the `ReportEntry` containing data points and optional axis labels.
    * @return a Laminar `Div` element containing the rendered SVG graph.
    */
-  private def _renderSingleReport(entry: ReportEntry): Div =
+  private def renderSingleReport(entry: ReportEntry): Div =
     val colors = List("red", "blue", "green", "purple", "orange", "brown", "pink", "cyan", "magenta", "yellow")
 
     val pointsList = entry.points

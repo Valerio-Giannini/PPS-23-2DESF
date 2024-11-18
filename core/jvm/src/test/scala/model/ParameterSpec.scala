@@ -13,21 +13,21 @@ class ParameterSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
 
   "A Param" should:
       "store and retrieve an integer number" in:
-        val intParam = new IntParameter(10)
+        val intParam = IntParameter(10)
         intParam() shouldBe 10
       "store and retrieve a floating number" in:
-        val doubleParam = new DoubleParameter(5.5)
+        val doubleParam = DoubleParameter(5.5)
         doubleParam() shouldBe 5.5
       "allow updating its value" in:
-        val param = new IntParameter(10)
+        val param = IntParameter(10)
         val newValue = 20
         param.value = newValue
 
         param() shouldBe newValue
       "optionally have an id" in:
-        val paramWithId = new IntParameter(10, Some(1))
+        val paramWithId = IntParameter(10, Some(1))
 
-        val paramWithoutId = new IntParameter(20)
+        val paramWithoutId = IntParameter(20)
 
         paramWithId.id shouldBe Some(1)
         paramWithoutId.id shouldBe None
@@ -36,20 +36,20 @@ class ParameterSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach:
     "be empty when initialized" in:
       parameters.getRequestedParams shouldBe empty
     "contain asked parameters" in:
-      val param = new IntParameter(10)
+      val param = IntParameter(10)
       val viewParam = ViewParameter(param, "Parameter Label")
       parameters.askParam(viewParam)
 
       parameters.getRequestedParams contains viewParam
     "can be asked" which:
       "requires a label" in:
-        val param = new IntParameter(10)
+        val param = IntParameter(10)
         val viewParam = ViewParameter(param, "Parameter Label")
 
         viewParam.parameter shouldBe param
         viewParam.label shouldBe "Parameter Label"
       "can have a range" in:
-        val param = new IntParameter(10)
+        val param = IntParameter(10)
         val viewParam = ViewParameter(param, "Parameter Label", Some(0), Some(100))
 
         viewParam.parameter shouldBe param

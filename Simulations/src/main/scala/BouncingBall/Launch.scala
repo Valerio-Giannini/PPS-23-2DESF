@@ -5,9 +5,8 @@ import BouncingBall.model.{BoundaryBounceSystem, CollisionSystem, MovementSystem
 import BouncingBall.model.GlobalParameters.{ballRadius, deceleration}
 
 import BouncingBall.model.{AvgSpeed, MovingBalls, Stats}
-import BouncingBall.view.SimulationViewImpl
 import core.World
-import mvc.model.{Simulation}
+import mvc.model.Simulation
 
 
 import dsl.DSL.*

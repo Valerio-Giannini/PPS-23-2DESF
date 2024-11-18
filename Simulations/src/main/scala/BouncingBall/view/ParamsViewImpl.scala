@@ -33,7 +33,7 @@ class ParamsViewImpl extends ParamsView:
    * users to input and validate simulation parameters interactively.
    */
   override def show(): Unit =
-    val paramsConfig = _renderInit(parameters, results)
+    val paramsConfig = renderInit(parameters, results)
     val container = dom.document.getElementById("init-container")
     render(container, paramsConfig)
 
@@ -76,7 +76,7 @@ class ParamsViewImpl extends ParamsView:
    * @param onSave     a callback function to handle the validated parameter values.
    * @return a Laminar `Div` element containing the rendered input fields and a submission button.
    */
-  private def _renderInit(
+  private def renderInit(
                    paramsList: Iterable[ViewParameter],
                    onSave: Iterable[Parameter[_]] => Unit
                  ): Div =
